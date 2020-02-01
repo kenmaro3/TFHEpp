@@ -53,6 +53,22 @@ struct CircuitKey {
     }
 };
 
+struct PackingKey{
+    PackingKeySwitchKey packksk;
+    PackingKey(SecretKey sk){
+        for(int i = 0;i < DEF_n; i++){
+            for (int j = 0; j < DEF_that; j++){
+                for (uint32_t k = 0; k < (1 << DEF_basebitlvl01) - 1; k++){
+                    Polynomiallvl1 poly = {};
+                    poly[0] = sk.key.lvl0[i] * (k + 1) *
+                            (1U << (32 - (j + 1) * DEF_basebitlvl01));
+                    packksk[i][j][k] = trlweSymEncryptlvl1(poly,DEF_αpack,sk.key.lvl1);
+                }
+            }
+        }
+    }
+};
+
 struct CloudKey{
     GateKey gk;
     CircuitKey ck;
