@@ -145,9 +145,9 @@ void trgswfftExternalProductlvl1(TRLWElvl1 &res, const TRLWElvl1 &trlwe,
 void trgswfftExternalProductlvl2(TRLWElvl2 &res, const TRLWElvl2 &trlwe,
                                  const TRGSWFFTlvl2 &trgswfft)
 {
-    DecomposedTRLWEInFDlvl2 decvecfft;
+    alignas(32) DecomposedTRLWEInFDlvl2 decvecfft;
     DecompositionFFTlvl2(decvecfft, trlwe);
-    TRLWEInFDlvl2 restrlwefft;
+    alignas(32) TRLWEInFDlvl2 restrlwefft;
     MulInFD<DEF_nbar>(restrlwefft[0], decvecfft[0], trgswfft[0][0]);
     MulInFD<DEF_nbar>(restrlwefft[1], decvecfft[0], trgswfft[0][1]);
     for (int i = 1; i < 2 * DEF_lbar; i++) {

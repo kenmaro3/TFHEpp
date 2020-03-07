@@ -116,8 +116,8 @@ inline void GateBootstrappingTLWE2TLWEFFTlvl02(TLWElvl2 &res,
                                                const CircuitKey &ck,
                                                const uint64_t μs2)
 {
-    TRLWElvl2 acc;
-    TRLWElvl2 temp;
+    alignas(32) TRLWElvl2 acc;
+    alignas(32) TRLWElvl2 temp;
     uint32_t bara =
         2 * DEF_nbar - modSwitchFromTorus64<2 * DEF_nbar>(tlwe[DEF_n]);
     RotatedTestVector<uint64_t, DEF_nbar>(acc, bara, μs2);
