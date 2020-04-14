@@ -35,6 +35,12 @@ TLWElvl0 tlweSymEncryptlvl0(const uint32_t p, const double α,
     return tlweSymEncrypt<uint32_t, DEF_n>(p, α, key);
 }
 
+TLWElvl1 tlweSymEncryptlvl1(const uint32_t p, const double α,
+                            const Keylvl1 &key)
+{
+    return tlweSymEncrypt<uint32_t, DEF_N>(p, α, key);
+}
+
 template <typename T = uint32_t, uint32_t n = DEF_n>
 bool tlweSymDecrypt(const array<T, n + 1> &c, const array<T, n> &key)
 {

@@ -21,6 +21,12 @@ struct CircuitKey {
     CircuitKey() {}
 };
 
+struct PackingKey{
+    PackingKeylvl1 pack;
+    PackingKey(SecretKey sk);
+    PackingKey();
+};
+
 struct CloudKey {
     GateKey gk;
     CircuitKey ck;

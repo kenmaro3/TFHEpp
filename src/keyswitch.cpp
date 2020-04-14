@@ -1,4 +1,5 @@
 #include <cloudkey.hpp>
+#include <mulfft.hpp>
 
 namespace TFHEpp {
 void IdentityKeySwitchlvl10(TLWElvl0 &res, const TLWElvl1 &tlwe,
@@ -40,6 +41,52 @@ void PrivKeySwitchlvl21(TRLWElvl1 &res, const TLWElvl2 &tlwe, const int u,
                     res[1][p] -= privksk[u][i][j][aij - 1][1][p];
                 }
             }
+        }
+    }
+}
+
+void Packinglvl1(TRLWElvl1 &restrlwe, const PrepackTLWElvl1 &ptlwe, const PackingKey &pk){
+    constexpr uint32_t mask = (1U << DEF_Bgpkbit) - 1;
+    constexpr uint32_t halfBg = 1U << (DEF_Bgpkbit - 1);
+
+    restrlwe = {};
+    for(int i = 0;i<DEF_N;i++) restrlwe[1][i] = ptlwe[i][DEF_N];
+
+    for(int i = 0;i<DEF_N;i++){
+        //Init
+        Polynomiallvl1 poly = {};
+        for(int j = 0;j<DEF_N;j++) poly[j] = ptlwe[j][i];
+
+        //Decompose
+        DecomposedPolynomiallvl1 dpoly;
+        for(int j = 0;j<DEF_N;j++){
+            uint32_t temp = poly[j] + DEF_offsetpklvl1;
+            for(int k = 0;k<DEF_lpk;k++)
+                dpoly[k][j] = ((temp >> (numeric_limits<uint32_t>::digits - (k + 1) * DEF_Bgpkbit)) &
+                 mask) -
+                halfBg;
+        }
+
+        //IFFT
+        DecomposedPolynomialInFDlvl1 dpolyfft;
+        for(int j = 0;j<DEF_lpk;j++) TwistIFFTlvl1(dpolyfft[j],dpoly[j]);
+
+        //ExternalProduct
+        TRLWEInFDlvl1 trlwefft;
+        MulInFD<DEF_N>(trlwefft[0],dpolyfft[0],pk.pack[i][0][0]);
+        MulInFD<DEF_N>(trlwefft[1],dpolyfft[0],pk.pack[i][0][1]);
+        for(int j = 1;j<DEF_lpk;j++){
+            FMAInFD<DEF_N>(trlwefft[0],dpolyfft[j],pk.pack[i][j][0]);
+            FMAInFD<DEF_N>(trlwefft[1],dpolyfft[j],pk.pack[i][j][1]);
+        }
+        TRLWElvl1 trlwe;
+        TwistFFTlvl1(trlwe[0],trlwefft[0]);
+        TwistFFTlvl1(trlwe[1],trlwefft[1]);
+
+        //Subtruct
+        for(int j = 0;j<DEF_N;j++){
+            restrlwe[0][j] -= trlwe[0][j];
+            restrlwe[1][j] -= trlwe[1][j];
         }
     }
 }

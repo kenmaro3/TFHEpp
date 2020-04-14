@@ -77,34 +77,16 @@ inline void Decomposition(array<array<T, N>, 2 * l> &decvec,
     }
 }
 
-constexpr uint32_t offsetgenlvl1()
-{
-    uint32_t offset = 0;
-    for (int i = 1; i <= DEF_l; i++)
-        offset += DEF_Bg / 2 * (1U << (32 - i * DEF_Bgbit));
-    return offset;
-}
-
-constexpr uint64_t offsetgenlvl2()
-{
-    uint64_t offset = 0;
-    for (int i = 1; i <= DEF_lbar; i++)
-        offset += DEF_Bgbar / 2 * (1UL << (64 - i * DEF_Bgbitbar));
-    return offset;
-}
-
 inline void Decompositionlvl1(DecomposedTRLWElvl1 &decvec,
                               const TRLWElvl1 &trlwe)
 {
-    static constexpr uint32_t offset = offsetgenlvl1();
-    Decomposition<uint32_t, DEF_N, DEF_l, DEF_Bgbit, offset>(decvec, trlwe);
+    Decomposition<uint32_t, DEF_N, DEF_l, DEF_Bgbit, DEF_offsetlvl1>(decvec, trlwe);
 }
 
 inline void Decompositionlvl2(DecomposedTRLWElvl2 &decvec,
                               const TRLWElvl2 &trlwe)
 {
-    static constexpr uint64_t offset = offsetgenlvl2();
-    Decomposition<uint64_t, DEF_nbar, DEF_lbar, DEF_Bgbitbar, offset>(decvec,
+    Decomposition<uint64_t, DEF_nbar, DEF_lbar, DEF_Bgbitbar, DEF_offsetlvl2>(decvec,
                                                                       trlwe);
 }
 

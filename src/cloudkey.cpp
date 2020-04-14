@@ -1,4 +1,5 @@
 #include <cloudkey.hpp>
+#include <mulfft.hpp>
 
 namespace TFHEpp {
 
@@ -35,6 +36,19 @@ CircuitKey::CircuitKey(SecretKey sk)
     for (int i = 0; i < DEF_n; i++)
         bkfftlvl02[i] = trgswfftSymEncryptlvl2(
             static_cast<int32_t>(sk.key.lvl0[i]), DEF_αbklvl02, sk.key.lvl2);
+}
+
+PackingKey::PackingKey(SecretKey sk){
+    array<uint32_t, DEF_lpk> h;
+    for (int i = 0; i < DEF_lpk; i++) h[i] = 1U << (32 - (i + 1) * DEF_Bgpkbit);
+
+    for(int i = 0;i<DEF_N;i++){
+            for (int j = 0; j < DEF_lpk; j++) {
+                TRLWElvl1 trlwe = trlweSymEncryptZerolvl1(DEF_αbk, sk.key.lvl1);
+                trlwe[1][0] += sk.key.lvl1[i] * h[j];
+                for (int k = 0; k < 2; k++) TwistIFFTlvl1(pack[i][j][k], trlwe[k]);
+            }
+    }
 }
 
 }  // namespace TFHEpp
