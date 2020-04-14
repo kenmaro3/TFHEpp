@@ -30,7 +30,8 @@ struct PackingKey{
 struct CloudKey {
     GateKey gk;
     CircuitKey ck;
+    PackingKey pack;
     lweParams params;
-    CloudKey(SecretKey sk) : gk(sk), ck(sk) {}
+    CloudKey(SecretKey sk) : gk(sk), ck(sk), pack(sk) {}
 };
 }  // namespace TFHEpp
