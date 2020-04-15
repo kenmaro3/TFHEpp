@@ -81,7 +81,7 @@ void UWRITE(array<TRLWElvl1, 1 << (address_bit - width_bit)> &wumemory,const arr
     for(int i = 0;i<num_trlwe;i++){
         const bitset<address_bit-width_bit> addressbitset(i);
         for (int k = 0; k < address_bit-width_bit; k++)
-            CMUXFFTlvl1(wumemory[i], address[addressbitset[k+width_bit]][k], wumemory[i],
+            CMUXFFTlvl1(wumemory[i], address[addressbitset[k]][k+width_bit], wumemory[i],
                             packedram[i]);
     }
 }
@@ -95,12 +95,12 @@ void LWRITE(array<PrepackTLWElvl1,1 << (address_bit - width_bit)> &encram, const
     for(int i = 0;i<num_trlwe;i++){
         array<TRLWElvl1, width> temp;
         CMUXFFTlvl1(temp[0],address[0][0],wumemory[i],packedram[i]);
-        CMUXFFTlvl1(temp[1],address[0][1],wumemory[i],packedram[i]);
+        CMUXFFTlvl1(temp[1],address[1][0],wumemory[i],packedram[i]);
         for(int j = 1;j<width_bit;j++){
             const int chank = 1<<j;
             for(int k = 0;k<chank;k++){
-                CMUXFFTlvl1(temp[chank+k],address[j][1],temp[k],packedram[i]);
-                CMUXFFTlvl1(temp[k],address[j][0],temp[k],packedram[i]);
+                CMUXFFTlvl1(temp[chank+k],address[1][j],temp[k],packedram[i]);
+                CMUXFFTlvl1(temp[k],address[0][j],temp[k],packedram[i]);
             }
         }
         for(int j = 0;j<width;j++){
@@ -151,93 +151,107 @@ int main()
 
     for(int wrflag = 0;wrflag<=1;wrflag++){
 
-    for (array<uint8_t, DEF_N> &i : pmemory)
-        for (uint8_t &p : i) p = binary(engine);
-    for (int i = 0; i < num_trlwe; i++)
-        for (int j = 0; j < DEF_N; j++)
-            pmu[i][j] = pmemory[i][j] ? DEF_μ : -DEF_μ;
-    for (uint8_t &p : address) p = binary(engine);
+        for (array<uint8_t, DEF_N> &i : pmemory)
+            for (uint8_t &p : i) p = binary(engine);
+        for (int i = 0; i < num_trlwe; i++)
+            for (int j = 0; j < DEF_N; j++)
+                pmu[i][j] = pmemory[i][j] ? DEF_μ : -DEF_μ;
+        for (uint8_t &p : address) p = binary(engine);
 
-    uint32_t uaddress = 0;
-    uint32_t laddress = 0;
-    for (int i = 0; i < (address_bit - width_bit); i++)
-        uaddress += address[i + width_bit] << i;
-    for (int i = 0; i < width_bit; i++)
-        laddress += static_cast<uint32_t>(address[i]) << (i + word_bit);
+        uint32_t uaddress = 0;
+        uint32_t laddress = 0;
+        for (int i = 0; i < (address_bit - width_bit); i++)
+            uaddress += address[i + width_bit] << i;
+        for (int i = 0; i < width_bit; i++)
+            laddress += static_cast<uint32_t>(address[i]) << (i + word_bit);
 
-    encaddress = bootsSymEncrypt(address, *sk);
-    for (int i = 0; i < num_trlwe; i++)
-        for(int j = 0; j<DEF_N;j++)
-            encmemory[i][j] = tlweSymEncryptlvl1(pmu[i][j], DEF_αbk, (*sk).key.lvl1);
+        encaddress = bootsSymEncrypt(address, *sk);
+        for (int i = 0; i < num_trlwe; i++)
+            for(int j = 0; j<DEF_N;j++)
+                encmemory[i][j] = tlweSymEncryptlvl1(pmu[i][j], DEF_αbk, (*sk).key.lvl1);
 
-    for (int i = 0; i < word; i++)
-                writep[i] = pmemory[uaddress][laddress + i] > 0 ? 0 : 1;
-    
+        for (int i = 0; i < word; i++)
+                    writep[i] = (pmemory[uaddress][laddress + i] > 0) ? 0 : 1;
+        
 
-    TLWElvl0 encwrflag;
-    encwrflag = tlweSymEncryptlvl0((wrflag > 0) ? DEF_μ : -DEF_μ, DEF_α,
-                                           (*sk).key.lvl0);
-    vector<TLWElvl0> encwritep(word);
-    encwritep = bootsSymEncrypt(writep,*sk);
+        TLWElvl0 encwrflag;
+        encwrflag = tlweSymEncryptlvl0((wrflag > 0) ? DEF_μ : -DEF_μ, DEF_α,
+                                            (*sk).key.lvl0);
+        vector<TLWElvl0> encwritep(word);
+        encwritep = bootsSymEncrypt(writep,*sk);
 
 
-    start = chrono::system_clock::now();
+        start = chrono::system_clock::now();
 
-    // Addres CB
-    for (int i = 0; i < address_bit; i++) {
-        CircuitBootstrappingFFTwithInv((*bootedTGSW)[1][i], (*bootedTGSW)[0][i],
-                                       encaddress[i], (*ck).ck);
-    }
+        // Addres CB
+        for (int i = 0; i < address_bit; i++) {
+            CircuitBootstrappingFFTwithInv((*bootedTGSW)[1][i], (*bootedTGSW)[0][i],
+                                        encaddress[i], (*ck).ck);
+        }
 
-    //Packing
-    array<TRLWElvl1,num_trlwe> packedmem;
-    for(int i = 0; i<num_trlwe;i++) Packinglvl1(packedmem[i],encmemory[i],(*ck).pack);
-    TRLWElvl1 encumemory;
+        //Packing
+        array<TRLWElvl1,num_trlwe> packedmem;
+        for(int i = 0; i<num_trlwe;i++) Packinglvl1(packedmem[i],encmemory[i],(*ck).pack);
+        TRLWElvl1 encumemory;
 
-    //Read
-    URAMUX<address_bit, width_bit>(encumemory, (*bootedTGSW)[0], packedmem);
-    LRAMUX<address_bit, width_bit>(encreadres, (*bootedTGSW)[1], encumemory,
-                                   (*ck).gk.ksk);
-    //Control
-    array<TLWElvl1,word> writed;
-    for (int i = 0; i < word; i++){
-        TRLWElvl1 temp;
-                HomMUXwoSE(temp, encwrflag, encwritep[i], encreadres[i],
-                           (*ck).gk);
-        SampleExtractIndexlvl1(writed[i],temp,0);
-    }
+        //Read
+        URAMUX<address_bit, width_bit>(encumemory, (*bootedTGSW)[0], packedmem);
+        LRAMUX<address_bit, width_bit>(encreadres, (*bootedTGSW)[1], encumemory,
+                                    (*ck).gk.ksk);
+        //Control
+        array<TLWElvl1,word> writed;
+        for (int i = 0; i < word; i++){
+            TRLWElvl1 temp;
+                    HomMUXwoSE(temp, encwrflag, encwritep[i], encreadres[i],
+                            (*ck).gk);
+            SampleExtractIndexlvl1(writed[i],temp,0);
+        }
 
-    //write
-    array<TRLWElvl1, num_trlwe> wumemory;
-    UWRITE<address_bit, width_bit>(wumemory,packedmem,(*bootedTGSW),writed,(*ck).pack);
-    LWRITE<address_bit, width_bit>(encmemory,wumemory,packedmem,*bootedTGSW,(*ck).gk);
+        //write
+        array<TRLWElvl1, num_trlwe> wumemory;
+        UWRITE<address_bit, width_bit>(wumemory,packedmem,(*bootedTGSW),writed,(*ck).pack);
+        LWRITE<address_bit, width_bit>(encmemory,wumemory,packedmem,*bootedTGSW,(*ck).gk);
 
-    end = chrono::system_clock::now();
+        end = chrono::system_clock::now();
 
-    //readcheck
-    pres = bootsSymDecrypt(encreadres, *sk);
-    
-    array<bool, DEF_N> umemory;
-    umemory = trlweSymDecryptlvl1(encumemory, (*sk).key.lvl1);
+        //readcheck
+        pres = bootsSymDecrypt(encreadres, *sk);
+        
+        array<bool, DEF_N> umemory;
+        umemory = trlweSymDecryptlvl1(encumemory, (*sk).key.lvl1);
 
-    for (uint32_t i = 0; i < (1 << word_bit); i++)
-        assert(static_cast<int>(pres[i]) ==
-               static_cast<int>(pmemory[uaddress][laddress + i]));
+        for (uint32_t i = 0; i < (1 << word_bit); i++)
+            assert(static_cast<int>(pres[i]) ==
+                static_cast<int>(pmemory[uaddress][laddress + i]));
 
-    //writecheck
-    array<bool, word> pwriteres;
-    for (int i = 0; i < word; i++)
-                pwriteres[i] =
-                    tlweSymDecryptlvl1(encmemory[uaddress][laddress+i], (*sk).key.lvl1);
-    for (int i = 0; i < word; i++)
-                assert(static_cast<int>(pwriteres[i]) ==
-                       static_cast<int>((wrflag>0) ? writep[i]
-                                            : pmemory[uaddress][laddress+i]));
+        //writecheck
+        array<bool, word> pwriteres;
+        for (int i = 0; i < word; i++)
+                    pwriteres[i] =
+                        tlweSymDecryptlvl1(encmemory[uaddress][laddress+i], (*sk).key.lvl1);
+        for (int i = 0; i < word; i++)
+                assert(static_cast<int>(writep[i]) ==
+                       static_cast<int>(
+                           tlweSymDecryptlvl0(encwritep[i], (*sk).key.lvl0)));
 
-    cout << "Passed" << endl;
-    double elapsed =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count();
-    cout << elapsed << "ms" << endl;
+        for (int i = 0; i < word; i++)
+                    assert(static_cast<int>(tlweSymDecryptlvl1(writed[i],(*sk).key.lvl1)) ==
+                        static_cast<int>((wrflag>0) ? writep[i]
+                                                : pmemory[uaddress][laddress+i]));
+
+        for (int i = 0; i < word; i++)
+                    cout<<static_cast<int>(pwriteres[i]) <<
+                        static_cast<int>((wrflag>0) ? writep[i]
+                                                : pmemory[uaddress][laddress+i])<<endl;
+        for (int i = 0; i < word; i++)
+                    assert(static_cast<int>(pwriteres[i]) ==
+                        static_cast<int>((wrflag>0) ? writep[i]
+                                                : pmemory[uaddress][laddress+i]));
+
+        cout << "Passed" << endl;
+        double elapsed =
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                .count();
+        cout << elapsed << "ms" << endl;
     }
 }
