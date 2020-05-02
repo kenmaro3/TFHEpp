@@ -84,6 +84,7 @@ inline void RotatedTestVector(array<array<T, N>, 2> &testvector, uint32_t bara,
     }
 }
 
+// This is almost same as Blind Rotate in the original paper.
 void GateBootstrappingTLWE2TRLWEFFTlvl01(TRLWElvl1 &acc, const TLWElvl0 &tlwe,
                                          const GateKey &gk)
 {

@@ -2,6 +2,9 @@
 TFHEpp is full Scracthed pure C++ Ver. of TFHE. TFHEpp is slightly(about 10%) faster than original TFHE and supports Circuit Bootstrapping.
 TFHEpp depends on AVX2 becauise we use SPQLIOS FMA. If you want run TFHEpp without AVX2, see spqlios++ branch. It include pure C++ implementation of SPQLIOS as header only library, but slow.
 
+# Security Parameter
+The default parameter of TFHEpp guarantees 80bit security at the time of writing. If you need 128bit security, uncomment USE_80BIT_SECURITY macro in params.hpp.
+
 # Speed Test
 
 Following Code measure how many time homomorphic NAND takes on your computer with TFHEpp. 
