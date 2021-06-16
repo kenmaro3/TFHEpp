@@ -40,7 +40,7 @@ int main()
 
     for (uint8_t &i : pmemory) i = binary(engine);
     for (int i = 0; i < memsize; i++)
-        pmu[i][0] = pmemory[i] ? lvl0param::μ : -lvl0param::μ;
+        pmu[i][0] = pmemory[i] ? lvl0param::mu : -lvl0param::mu;
     for (uint8_t &p : address) p = binary(engine);
 
     array<array<TRGSWFFT<lvl1param>, address_bit - 1>, 2> *bootedTGSW =
@@ -50,14 +50,14 @@ int main()
     TLWE<lvl0param> encres;
     TRLWE<lvl1param> datum;
     Polynomial<lvl1param> respoly = {};
-    respoly[0] = pres ? lvl1param::μ : -lvl1param::μ;
+    respoly[0] = pres ? lvl1param::mu : -lvl1param::mu;
     array<TRLWE<lvl1param>, memsize> trlweaddress;
 
     encaddress = bootsSymEncrypt(address, *sk);
     for (int i = 0; i < memsize; i++)
         encmemory[i] =
-            trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::α, (*sk).key.lvl1);
-    datum = trlweSymEncrypt<lvl1param>(respoly, lvl1param::α, (*sk).key.lvl1);
+            trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::alpha, (*sk).key.lvl1);
+    datum = trlweSymEncrypt<lvl1param>(respoly, lvl1param::alpha, (*sk).key.lvl1);
 
     chrono::system_clock::time_point start, end;
     start = chrono::system_clock::now();
@@ -82,19 +82,19 @@ int main()
         msbaddress, encaddress[address_bit - 1], (*ck).gk.bkfftlvl01);
 
     trlweaddress[memsize >> 1] = msbaddress;
-    trlweaddress[memsize >> 1][1][0] += lvl1param::μ;
+    trlweaddress[memsize >> 1][1][0] += lvl1param::mu;
     for (int i = 0; i < lvl1param::n; i++) {
         trlweaddress[0][0][i] = -msbaddress[0][i];
         trlweaddress[0][1][i] = -msbaddress[1][i];
     }
-    trlweaddress[0][1][0] += lvl1param::μ;
+    trlweaddress[0][1][0] += lvl1param::mu;
 
     writeMUX<address_bit, (memsize >> 1), address_bit - 2>(trlweaddress,
                                                            *bootedTGSW);
     writeMUX<address_bit, 0, address_bit - 2>(trlweaddress, *bootedTGSW);
 
     for (int i = 0; i < memsize; i++) {
-        trlweaddress[i][1][0] -= lvl1param::μ;
+        trlweaddress[i][1][0] -= lvl1param::mu;
         ExtractSwitchAndHomMUX(encmemory[i], trlweaddress[i], datum,
                                encmemory[i], (*ck).gk);
     }

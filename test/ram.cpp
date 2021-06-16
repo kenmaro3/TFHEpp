@@ -33,7 +33,7 @@ int main()
 
     for (int i = 0; i < memsize; i++) {
         pmu[i] = {};
-        pmu[i][0] = pmemory[i] ? ksP::domainP::μ : -ksP::domainP::μ;
+        pmu[i][0] = pmemory[i] ? ksP::domainP::mu : -ksP::domainP::mu;
     }
     for (uint8_t &p : address) p = binary(engine);
     uint32_t addressint = 0;
@@ -58,12 +58,12 @@ int main()
     encaddress = bootsSymEncrypt(address, *sk);
     for (int i = 0; i < memsize; i++)
         (*encmemory)[i] = trlweSymEncrypt<typename ksP::domainP>(
-            pmu[i], ksP::domainP::α, (*sk).key.get<typename ksP::domainP>());
+            pmu[i], ksP::domainP::alpha, (*sk).key.get<typename ksP::domainP>());
     cs = tlweSymEncrypt<typename ksP::targetP>(
-        wrflag ? ksP::targetP::μ : -ksP::targetP::μ, ksP::targetP::α,
+        wrflag ? ksP::targetP::mu : -ksP::targetP::mu, ksP::targetP::alpha,
         (*sk).key.get<typename ksP::targetP>());
     c1 = tlweSymEncrypt<typename ksP::targetP>(
-        writep ? ksP::targetP::μ : -ksP::targetP::μ, ksP::targetP::α,
+        writep ? ksP::targetP::mu : -ksP::targetP::mu, ksP::targetP::alpha,
         (*sk).key.get<typename ksP::targetP>());
 
     chrono::system_clock::time_point start, end;

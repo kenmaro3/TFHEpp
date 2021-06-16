@@ -31,10 +31,10 @@ int main()
 
     for (int i = 0; i < num_test; i++)
         for (int j = 0; j < lvl1param::n; j++)
-            pmu1[i][j] = (p1[i][j] > 0) ? lvl1param::μ : -lvl1param::μ;
+            pmu1[i][j] = (p1[i][j] > 0) ? lvl1param::mu : -lvl1param::mu;
     for (int i = 0; i < num_test; i++)
         for (int j = 0; j < lvl1param::n; j++)
-            pmu0[i][j] = (p0[i][j] > 0) ? lvl1param::μ : -lvl1param::μ;
+            pmu0[i][j] = (p0[i][j] > 0) ? lvl1param::mu : -lvl1param::mu;
     vector<TRGSWFFT<lvl1param>> cs(num_test);
     vector<TRLWE<lvl1param>> c1(num_test);
     vector<TRLWE<lvl1param>> c0(num_test);
@@ -42,11 +42,11 @@ int main()
 
     for (int i = 0; i < num_test; i++)
         cs[i] =
-            trgswfftSymEncrypt<lvl1param>(ps[i], lvl1param::α, sk->key.lvl1);
+            trgswfftSymEncrypt<lvl1param>(ps[i], lvl1param::alpha, sk->key.lvl1);
     for (int i = 0; i < num_test; i++)
-        c1[i] = trlweSymEncrypt<lvl1param>(pmu1[i], lvl1param::α, sk->key.lvl1);
+        c1[i] = trlweSymEncrypt<lvl1param>(pmu1[i], lvl1param::alpha, sk->key.lvl1);
     for (int i = 0; i < num_test; i++)
-        c0[i] = trlweSymEncrypt<lvl1param>(pmu0[i], lvl1param::α, sk->key.lvl1);
+        c0[i] = trlweSymEncrypt<lvl1param>(pmu0[i], lvl1param::alpha, sk->key.lvl1);
 
     chrono::system_clock::time_point start, end;
     start = chrono::system_clock::now();
@@ -64,5 +64,5 @@ int main()
     double elapsed =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start)
             .count();
-    cout << elapsed / num_test << "μs" << endl;
+    cout << elapsed / num_test << "mus" << endl;
 }

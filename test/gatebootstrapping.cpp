@@ -18,7 +18,7 @@ int main()
     for (int test = 0; test < num_test; test++) {
         bool p = binary(engine) > 0;
         TLWE<lvl0param> tlwe = tlweSymEncrypt<lvl0param>(
-            p ? lvl0param::μ : -lvl0param::μ, lvl0param::α, sk.key.lvl0);
+            p ? lvl0param::mu : -lvl0param::mu, lvl0param::alpha, sk.key.lvl0);
         TLWE<lvl0param> bootedtlwe;
         GateBootstrapping(bootedtlwe, tlwe, *gk);
         bool p2 = tlweSymDecrypt<lvl0param>(bootedtlwe, sk.key.lvl0);

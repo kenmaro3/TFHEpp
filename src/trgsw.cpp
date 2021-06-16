@@ -132,12 +132,12 @@ INST(lvl1param);
 
 template <class P>
 TRGSW<P> trgswSymEncrypt(const typename make_signed<typename P::T>::type p,
-                         const double α, const Key<P> &key)
+                         const double alpha, const Key<P> &key)
 {
     constexpr array<typename P::T, P::l> h = hgen<P>();
 
     TRGSW<P> trgsw;
-    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(α, key);
+    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(alpha, key);
     for (int i = 0; i < P::l; i++) {
         trgsw[i][0][0] += static_cast<typename P::T>(p) * h[i];
         trgsw[i + P::l][1][0] += static_cast<typename P::T>(p) * h[i];
@@ -146,22 +146,22 @@ TRGSW<P> trgswSymEncrypt(const typename make_signed<typename P::T>::type p,
 }
 #define INST(P)                                                            \
     template TRGSW<P> trgswSymEncrypt<P>(                                  \
-        const typename make_signed<typename P::T>::type p, const double α, \
+        const typename make_signed<typename P::T>::type p, const double alpha, \
         const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
 #undef INST
 
 template <class P>
 TRGSWFFT<P> trgswfftSymEncrypt(
-    const typename make_signed<typename P::T>::type p, const double α,
+    const typename make_signed<typename P::T>::type p, const double alpha,
     const Key<P> &key)
 {
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, α, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, alpha, key);
     return ApplyFFT2trgsw<P>(trgsw);
 }
 #define INST(P)                                                            \
     template TRGSWFFT<P> trgswfftSymEncrypt<P>(                            \
-        const typename make_signed<typename P::T>::type p, const double α, \
+        const typename make_signed<typename P::T>::type p, const double alpha, \
         const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
 #undef INST

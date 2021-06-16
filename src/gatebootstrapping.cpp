@@ -13,17 +13,17 @@ using namespace std;
 
 template <class P>
 inline void RotatedTestVector(array<array<typename P::T, P::n>, 2> &testvector,
-                              const uint32_t bara, const typename P::T μ)
+                              const uint32_t bara, const typename P::T mu)
 {
     testvector[0] = {};
     if (bara < P::n) {
-        for (int i = 0; i < bara; i++) testvector[1][i] = -μ;
-        for (int i = bara; i < P::n; i++) testvector[1][i] = μ;
+        for (int i = 0; i < bara; i++) testvector[1][i] = -mu;
+        for (int i = bara; i < P::n; i++) testvector[1][i] = mu;
     }
     else {
         const typename P::T baraa = bara - P::n;
-        for (int i = 0; i < baraa; i++) testvector[1][i] = μ;
-        for (int i = baraa; i < P::n; i++) testvector[1][i] = -μ;
+        for (int i = 0; i < baraa; i++) testvector[1][i] = mu;
+        for (int i = baraa; i < P::n; i++) testvector[1][i] = -mu;
     }
 }
 
@@ -34,7 +34,7 @@ void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
 {
     uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(
                                             tlwe[P::domainP::n]);
-    RotatedTestVector<typename P::targetP>(acc, bara, P::targetP::μ);
+    RotatedTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
         if (bara == 0) continue;
@@ -71,12 +71,12 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
 template <class P>
 void GateBootstrappingTLWE2TLWEFFTvariableMu(
     TLWE<typename P::targetP> &res, const TLWE<typename P::domainP> &tlwe,
-    const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T μs2)
+    const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2)
 {
     TRLWE<typename P::targetP> acc, temp;
     uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(
                                             tlwe[P::domainP::n]);
-    RotatedTestVector<typename P::targetP>(acc, bara, μs2);
+    RotatedTestVector<typename P::targetP>(acc, bara, mus2);
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
         if (bara == 0) continue;
@@ -85,13 +85,13 @@ void GateBootstrappingTLWE2TLWEFFTvariableMu(
             acc, bkfft[i], bara);
     }
     SampleExtractIndex<typename P::targetP>(res, acc, 0);
-    res[P::targetP::n] += μs2;
+    res[P::targetP::n] += mus2;
 }
 #define INST(P)                                               \
     template void GateBootstrappingTLWE2TLWEFFTvariableMu<P>( \
         TLWE<typename P::targetP> & res,                      \
         const TLWE<typename P::domainP> &tlwe,                \
-        const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T μs2)
+        const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
 #undef INST
 

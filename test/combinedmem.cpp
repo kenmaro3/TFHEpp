@@ -174,13 +174,13 @@ int main()
                 for (int j = 0; j < numramtrlwe; j++) {
                     ramu[i][j] = {};
                     ramu[i][j][0] =
-                        ramp[j * words + i] ? lvl1param::μ : -lvl1param::μ;
+                        ramp[j * words + i] ? lvl1param::mu : -lvl1param::mu;
                 }
             }
             for (int i = 0; i < numromtrlwe; i++) {
                 for (int j = 0; j < lvl1param::n; j++) {
-                    romu[i][j] = romp[i * lvl1param::n + j] ? lvl1param::μ
-                                                            : -lvl1param::μ;
+                    romu[i][j] = romp[i * lvl1param::n + j] ? lvl1param::mu
+                                                            : -lvl1param::mu;
                 }
             }
 
@@ -214,19 +214,19 @@ int main()
 
             encaddress = bootsSymEncrypt(address, *sk);
             for (int i = 0; i < numromtrlwe; i++)
-                encrom[i] = trlweSymEncrypt<lvl1param>(romu[i], lvl1param::α,
+                encrom[i] = trlweSymEncrypt<lvl1param>(romu[i], lvl1param::alpha,
                                                        (*sk).key.lvl1);
             for (int i = 0; i < words; i++)
                 for (int j = 0; j < numramtrlwe; j++)
                     encram[i][j] = trlweSymEncrypt<lvl1param>(
-                        ramu[i][j], lvl1param::α, (*sk).key.lvl1);
+                        ramu[i][j], lvl1param::alpha, (*sk).key.lvl1);
 
             encwrflag = tlweSymEncrypt<lvl0param>(
-                (wrflag > 0) ? lvl0param::μ : -lvl0param::μ, lvl0param::α,
+                (wrflag > 0) ? lvl0param::mu : -lvl0param::mu, lvl0param::alpha,
                 (*sk).key.lvl0);
             for (int i = 0; i < words; i++)
                 encwritep[i] = tlweSymEncrypt<lvl0param>(
-                    writep[i] ? lvl0param::μ : -lvl0param::μ, lvl0param::α,
+                    writep[i] ? lvl0param::mu : -lvl0param::mu, lvl0param::alpha,
                     (*sk).key.lvl0);
 
             chrono::system_clock::time_point start, end;

@@ -13,7 +13,7 @@ inline void TBSRgen(TBSR<P, int_width> &tbsr)
     tbsr = {};
     for (int i = 0; i < int_width; i++)
         for (int j = 0; j < (1 << int_width); j++)
-            tbsr[i][1][j] = ((j & (1U << i)) > 0) ? P::μ : -P::μ;
+            tbsr[i][1][j] = ((j & (1U << i)) > 0) ? P::mu : -P::mu;
 }
 
 template <class P, uint32_t int_width>

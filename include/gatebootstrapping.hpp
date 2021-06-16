@@ -79,7 +79,7 @@ void GateBootstrappingManyLUT(
 template <class P>
 void GateBootstrappingTLWE2TLWEFFTvariableMu(
     TLWE<typename P::targetP> &res, const TLWE<typename P::domainP> &tlwe,
-    const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T μs2);
+    const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2);
 
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk);

@@ -25,7 +25,7 @@ int main()
         for (uint8_t &p : i) p = binary(engine);
     for (int i = 0; i < num_test; i++)
         for (int j = 0; j < lvl1param::n; j++)
-            pmu[i][j] = pa[i][j] ? lvl1param::μ : -lvl1param::μ;
+            pmu[i][j] = pa[i][j] ? lvl1param::mu : -lvl1param::mu;
     for (int i = 0; i < num_test; i++) pzeros[i] = false;
     vector<TRLWE<lvl1param>> ca(num_test);
     vector<TLWE<lvl0param>> czeros(num_test);
@@ -33,7 +33,7 @@ int main()
     vector<TRGSWFFT<lvl1param>> invbootedTGSW(num_test);
 
     for (int i = 0; i < num_test; i++)
-        ca[i] = trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::α, sk->key.lvl1);
+        ca[i] = trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::alpha, sk->key.lvl1);
     czeros = bootsSymEncrypt(pzeros, *sk);
 
     chrono::system_clock::time_point start, end;

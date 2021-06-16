@@ -8,6 +8,8 @@ void HomCONSTANTONE(TLWE<lvl0param> &res);
 void HomCONSTANTZERO(TLWE<lvl0param> &res);
 void HomNOT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
 void HomCOPY(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
+void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb);
+void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb);
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
              const TLWE<lvl0param> &cb, const GateKey &gk);
 void HomNOR(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,

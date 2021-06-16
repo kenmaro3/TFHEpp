@@ -16,7 +16,7 @@ inline void bkgen(BootstrappingKey<P> &bkfft, const SecretKey &sk)
         bkfft[i] = trgswSymEncrypt<typename P::targetP>(
             static_cast<typename make_signed<typename P::targetP::T>::type>(
                 sk.key.get<typename P::domainP>()[i]),
-            P::targetP::α, sk.key.get<typename P::targetP>());
+            P::targetP::alpha, sk.key.get<typename P::targetP>());
 }
 
 template <class P>
@@ -26,7 +26,7 @@ inline void bkfftgen(BootstrappingKeyFFT<P> &bkfft, const SecretKey &sk)
         bkfft[i] = trgswfftSymEncrypt<typename P::targetP>(
             static_cast<typename make_signed<typename P::targetP::T>::type>(
                 sk.key.get<typename P::domainP>()[i]),
-            P::targetP::α, sk.key.get<typename P::targetP>());
+            P::targetP::alpha, sk.key.get<typename P::targetP>());
 }
 
 template <class P>
@@ -40,7 +40,7 @@ inline void ikskgen(KeySwitchingKey<P> &ksk, const SecretKey &sk)
                         (1ULL
                          << (numeric_limits<typename P::targetP::T>::digits -
                              (j + 1) * P::basebit)),
-                    P::α, sk.key.get<typename P::targetP>());
+                    P::alpha, sk.key.get<typename P::targetP>());
 }
 
 struct GateKeywoFFT {

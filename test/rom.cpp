@@ -45,8 +45,8 @@ int main()
     for (int i = 0; i < num_trlwe; i++)
         for (int j = 0; j < ksP::domainP::n; j++)
             pmu[i][j] = pmemory[i][j]
-                            ? 2 * ksP::domainP::μ
-                            : -2 * ksP::domainP::μ;  // This will increase noise
+                            ? 2 * ksP::domainP::mu
+                            : -2 * ksP::domainP::mu;  // This will increase noise
                                                      // torellance.
     for (uint8_t &p : address) p = binary(engine);
 
@@ -58,7 +58,7 @@ int main()
     encaddress = bootsSymEncrypt(address, *sk);
     for (int i = 0; i < num_trlwe; i++)
         encmemory[i] = trlweSymEncrypt<typename ksP::domainP>(
-            pmu[i], ksP::domainP::α, (*sk).key.get<typename ksP::domainP>());
+            pmu[i], ksP::domainP::alpha, (*sk).key.get<typename ksP::domainP>());
 
     chrono::system_clock::time_point start, end;
     start = chrono::system_clock::now();

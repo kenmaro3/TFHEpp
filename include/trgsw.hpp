@@ -43,10 +43,10 @@ TRGSWNTT<P> TRGSW2NTT(const TRGSW<P> &trgsw);
 
 template <class P>
 TRGSW<P> trgswSymEncrypt(const typename make_signed<typename P::T>::type p,
-                         const double α, const Key<P> &key);
+                         const double alpha, const Key<P> &key);
 
 template <class P>
 TRGSWFFT<P> trgswfftSymEncrypt(
-    const typename make_signed<typename P::T>::type p, const double α,
+    const typename make_signed<typename P::T>::type p, const double alpha,
     const Key<P> &key);
 }  // namespace TFHEpp

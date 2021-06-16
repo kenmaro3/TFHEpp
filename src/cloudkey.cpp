@@ -52,7 +52,7 @@ CircuitKey<bsP, privksP>::CircuitKey(const SecretKey &sk)
                      u < (1 << privksP::basebit) - 1; u++) {
                     TRLWE<typename privksP::targetP> c =
                         trlweSymEncryptZero<typename privksP::targetP>(
-                            privksP::α,
+                            privksP::alpha,
                             sk.key.get<typename privksP::targetP>());
                     c[z][0] += (u + 1) * key[i]
                                << (numeric_limits<

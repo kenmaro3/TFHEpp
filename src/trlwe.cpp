@@ -6,33 +6,33 @@ namespace TFHEpp {
 using namespace std;
 
 template <class P>
-TRLWE<P> trlweSymEncryptZero(const double α, const Key<P> &key)
+TRLWE<P> trlweSymEncryptZero(const double alpha, const Key<P> &key)
 {
     uniform_int_distribution<typename P::T> Torusdist(
         0, std::numeric_limits<typename P::T>::max());
     TRLWE<P> c;
     for (typename P::T &i : c[0]) i = Torusdist(generator);
     PolyMul<P>(c[1], c[0], key);
-    for (typename P::T &i : c[1]) i += ModularGaussian<P>(0, α);
+    for (typename P::T &i : c[1]) i += ModularGaussian<P>(0, alpha);
     return c;
 }
 #define INST(P) \
-    template TRLWE<P> trlweSymEncryptZero<P>(const double α, const Key<P> &key)
+    template TRLWE<P> trlweSymEncryptZero<P>(const double alpha, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
-TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double α,
+TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double alpha,
                          const Key<P> &key)
 {
     TRLWE<P> c;
-    c = trlweSymEncryptZero<P>(α, key);
+    c = trlweSymEncryptZero<P>(alpha, key);
     for (int i = 0; i < P::n; i++) c[1][i] += p[i];
     return c;
 }
 #define INST(P)                                                               \
     template TRLWE<P> trlweSymEncrypt<P>(const array<typename P::T, P::n> &p, \
-                                         const double α, const Key<P> &key)
+                                         const double alpha, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 

@@ -27,14 +27,14 @@ int main()
         for (uint8_t &p : i) p = binary(engine);
     for (int i = 0; i < num_test; i++)
         for (int j = 0; j < lvl1param::n; j++)
-            pmu[i][j] = pa[i][j] ? lvl1param::μ : -lvl1param::μ;
+            pmu[i][j] = pa[i][j] ? lvl1param::mu : -lvl1param::mu;
     for (int i = 0; i < num_test; i++) pones[i] = true;
     vector<TRLWE<lvl1param>> ca(num_test);
     vector<TLWE<lvl0param>> cones(num_test);
     vector<TRGSWFFT<lvl1param>> bootedTGSW(num_test);
 
     for (int i = 0; i < num_test; i++)
-        ca[i] = trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::α, sk->key.lvl1);
+        ca[i] = trlweSymEncrypt<lvl1param>(pmu[i], lvl1param::alpha, sk->key.lvl1);
     cones = bootsSymEncrypt(pones, *sk);
 
     chrono::system_clock::time_point start, end;

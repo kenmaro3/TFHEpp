@@ -8,10 +8,10 @@ namespace TFHEpp {
 using namespace std;
 
 template <class P>
-TRLWE<P> trlweSymEncryptZero(const double α, const Key<P> &key);
+TRLWE<P> trlweSymEncryptZero(const double alpha, const Key<P> &key);
 
 template <class P>
-TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double α,
+TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double alpha,
                          const Key<P> &key);
 
 template <class P>
