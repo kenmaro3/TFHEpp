@@ -22,6 +22,7 @@ class Encoder
         double d;
         double half;
         double half_d;
+        double interp_num;
         bool is_include_negative;
 
         Encoder(double a, double b){
@@ -36,6 +37,8 @@ class Encoder
             this->d = b-a;
             this->half_d = (b-a)/2.;
             this->half = (b+a)/2.;
+
+            this->interp_num = 1.;
         }
 
         double encode_0_1(double x) const{
@@ -92,6 +95,7 @@ class Encoder
             }
             else{
                 //printf("here2\n");
+                //printf("x: %f\n", x);
                 return dtot32((x-this->a)/this->d);
             } 
         }
@@ -117,7 +121,7 @@ class Encoder
             }
         }
 
-        double decode(const uint32_t x){
+        double decode2(const uint32_t x){
             //printf("decrypt: %d\n", x);
             if(this->is_include_negative){
                 double tmp_0_1 = t32tod(x);
@@ -135,9 +139,46 @@ class Encoder
             }else{
                 double tmp_0_1 = t32tod(x);
                 //printf("tmp_0_1: %f\n", tmp_0_1);
-                tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+                //tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
                 return decode_sanitize(tmp_0_1 * this->d, this->b);
             }
+        }
+
+        double decode(const uint32_t x){
+            //printf("decrypt: %d\n", x);
+            if(this->is_include_negative){
+                double tmp_0_1 = t32tod(x);
+                //printf("tmp_0_1: %f\n", tmp_0_1);
+                assert(tmp_0_1 >= 0.);
+                tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+                if(tmp_0_1 > 0.5){
+                    double tmp2 = tmp_0_1 - 0.5;
+                    return decode_sanitize(this->a + tmp2 * this->d, this->b);
+                }else{
+                    return decode_sanitize(tmp_0_1 * this->d, this->b);
+
+                }
+
+            }else{
+                double tmp_0_1 = t32tod(x);
+
+                printf("tmp_0_1: %f\n", tmp_0_1);
+                //tmp_0_1 = this->interpret(tmp_0_1);
+                return decode_sanitize(tmp_0_1* this->d, this->b);
+            }
+        }
+
+        double interpret(double x){
+            x *= this->interp_num;
+            x = x - floor(x);
+
+            x = x/this->interp_num;
+
+            //if (this->interp_num != 1.){
+            //    x = x + 1./this->interp_num;
+            //}
+
+            return x;
         }
 
 };

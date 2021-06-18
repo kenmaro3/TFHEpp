@@ -43,78 +43,37 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &
 
 void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
 {
-    //lvl0param::T tmp;
-    //double b_decimal = b - int(b);
-    //int inv_b;
-    //if(b_decimal==0.){
-    //    inv_b = 0;
+    //double b_decimal = b - floor(b);
+    //if(b_decimal != 0){
+    //    encoder.interp_num *= 1.0/b_decimal;
     //}else{
-    //    inv_b = int(1./b_decimal);
     //}
 
+    //printf("interp %f\n", encoder.interp_num);
 
     if(b >=0){
         for (int i = 0; i <= lvl0param::n; i++){
 
-            double ca_i_double = encoder.decode(ca[i]);
+            double ca_i_double = encoder.decode2(ca[i]);
             double tmp_here = ca_i_double * b;
-            
-            //printf("\n");
-            //printf("%f\n", ca_i_double);
+            //printf("\n%f\n", ca_i_double);
             //printf("%f\n", tmp_here);
-            //tmp_here = std::round(tmp_here);
+            //printf("%f\n", tmp_here/ca_i_double);
 
+            //while(tmp_here > 1.5){
+            //    printf("mid: %f\n", tmp_here);
+            //    tmp_here -= 0.5;
+            //}
+            //printf("while: %f\n", tmp_here);
+            
             res[i] = encoder.encode_off_limit(tmp_here);
 
 
-            ////tmp = inv_b == 0. ? 0 : static_cast<lvl0param::T>(static_cast<lvl0param::T>(ca[i])/static_cast<lvl0param::T>(inv_b));
-            //if(inv_b == 0.){
-            //    tmp = 0;
-            //}else{
-            //    tmp = static_cast<lvl0param::T>(ca[i])/static_cast<lvl0param::T>(inv_b);
-            //}
-            ////printf("%lld\n", static_cast<lvl0param::T>(b));
-            ////printf("%lld\n", ca[i]*static_cast<lvl0param::T>(b));
-            ////printf("%lld\n", static_cast<lvl0param::T>(tmp));
-            ////res[i] = static_cast<lvl0param::T>(ca[i] * static_cast<int64_t>(b) + tmp);
-            //printf("\n");
-            //printf("%d\n", inv_b);
-            //printf("%lld\n", ca[i]);
-            //res[i] = static_cast<lvl0param::T>(ca[i] * static_cast<lvl0param::T>(b));
-            //printf("%lld\n", res[i]);
-            //printf("%lld\n", tmp);
-            //res[i] += static_cast<lvl0param::T>(tmp);
-            //printf("%lld\n", res[i]);
-            ////printf("%lld\n", res[i]);
-
-            ////lvl0param::T mid = (std::numeric_limits<lvl0param::T>::min() + std::numeric_limits<lvl0param::T>::max())/2;
-            ////if(ca[i] < mid){
-            ////    printf("debug1\n");
-            ////    tmp = inv_b == 0 ? 0 : ca[i]/inv_b;
-
-            ////    printf("%d\n", ca[i]);
-            ////    printf("%d\n", ca[i]*int(b));
-            ////    printf("%d\n", tmp);
-            ////    res[i] = ca[i] * int(b) + tmp;
-
-            ////}else{
-            ////    printf("debug2\n");
-            ////    lvl0param::T tmp1 = std::numeric_limits<lvl0param::T>::max() - ca[i];
-            ////    lvl0param::T tmp2 = inv_b == 0 ? 0 : tmp1/inv_b;
-            ////    lvl0param::T tmp3 = tmp1 * int(b);
-            ////    tmp = std::numeric_limits<lvl0param::T>::max() - tmp2 - tmp3; 
-            ////    res[i] = tmp;
-            ////}
         }
 
     }else{
         double tmp_b = abs(b);
         for (int i = 0; i <= lvl0param::n; i++){
-            ////res[i] = static_cast<lvl0param::T>((double)ca[i] * b);
-            //double tmp1 = (double)ca[i] * tmp_b;
-            //uint64_t tmp2 = -tmp1;
-            ////res[i] = static_cast<lvl0param::T>(tmp2);
-            //res[i] = tmp2;
 
             double b_decimal = tmp_b - int(tmp_b);
             int inv_b = int(1./b_decimal);

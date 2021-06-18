@@ -31,5 +31,14 @@ struct SecretKey {
     {
         archive(key.lvl0, key.lvl1, key.lvl2, params);
     }
+
+    template <class P>
+    void print(){
+        for (int i=0; i<P::n; i++){
+            printf("%d, ", key.get<P>()[i]);
+        }
+        printf("\n");
+
+    }
 };
 }  // namespace TFHEpp

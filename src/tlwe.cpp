@@ -64,8 +64,16 @@ template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 {
     typename P::T phase = c[P::n];
-    for (int i = 0; i < P::n; i++) phase -= c[i] * key[i];
+    //printf("phasen: %d\n", phase);
+    for (int i = 0; i < P::n; i++){
+        //printf("phasei: %d\n", c[i]);
+        //printf("phaseni: %d\n", c[i]*key[i]);
+        //printf("keyi: %lu\n", key[i]);
+        phase -= c[i] * key[i];
+    }
+    //printf("phasen: %d\n", phase);
     double res = encoder.decode(phase);
+    //printf("res: %f\n", res);
     return res;
 }
 #define INST(P) \
