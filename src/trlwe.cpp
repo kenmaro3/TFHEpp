@@ -1,4 +1,5 @@
 #include "trlwe.hpp"
+#include "tlwe.hpp"
 
 #include "mulfft.hpp"
 
@@ -22,6 +23,21 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
+TRLWE<P> trlweSymEncodeEncrypt(const array<double, P::n> &x, const double alpha,
+                         const Key<P> &key, Encoder &encoder)
+{
+    TRLWE<P> c;
+    c = trlweSymEncryptZero<P>(alpha, key);
+    for (int i = 0; i < P::n; i++) c[1][i] += encoder.encode(x[i]);
+    return c;
+}
+#define INST(P)                                                               \
+    template TRLWE<P> trlweSymEncodeEncrypt<P>(const array<double, P::n> &p, \
+                                         const double alpha, const Key<P> &key, Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#undef INST
+
+template <class P>
 TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double alpha,
                          const Key<P> &key)
 {
@@ -35,6 +51,26 @@ TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double alpha
                                          const double alpha, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
+
+template <class P>
+array<double, P::n> trlweSymDecryptDecode(const TRLWE<P> &c, const Key<P> &key, Encoder &encoder)
+{
+    Polynomial<P> mulres;
+    PolyMul<P>(mulres, c[0], key);
+    Polynomial<P> phase = c[1];
+    for (int i = 0; i < P::n; i++) phase[i] -= mulres[i];
+
+    array<double, P::n> p;
+    for (int i = 0; i < P::n; i++)
+        p[i] = encoder.decode(phase[i]);
+    return p;
+}
+#define INST(P)                                                      \
+    template array<double, P::n> trlweSymDecryptDecode<P>(const TRLWE<P> &c, \
+                                                  const Key<P> &key, Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#undef INST
+
 
 template <class P>
 array<bool, P::n> trlweSymDecrypt(const TRLWE<P> &c, const Key<P> &key)
@@ -53,6 +89,24 @@ array<bool, P::n> trlweSymDecrypt(const TRLWE<P> &c, const Key<P> &key)
 #define INST(P)                                                      \
     template array<bool, P::n> trlweSymDecrypt<P>(const TRLWE<P> &c, \
                                                   const Key<P> &key)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#undef INST
+
+template <class P>
+void InverseSampleExtractIndex(TRLWE<P> &trlwe, const TLWE<P> &tlwe, const int index)
+{
+    //for (int i = 0; i <= index; i++) tlwe[i] = trlwe[0][index - i];
+    for (int i = 0; i <= index; i++) trlwe[0][index - i] = tlwe[i];
+    //for (int i = index + 1; i < P::n; i++)
+    //    tlwe[i] = -trlwe[0][P::n + index - i];
+    for (int i = index + 1; i < P::n; i++)
+        trlwe[0][P::n + index - i] = -tlwe[i];
+    //tlwe[P::n] = trlwe[1][index];
+    trlwe[1][index] = tlwe[P::n];
+}
+#define INST(P)                                                                \
+    template void InverseSampleExtractIndex<P>(TRLWE<P> & trlwe, const TLWE<P> &tlwe, \
+                                        const int index)
 TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 

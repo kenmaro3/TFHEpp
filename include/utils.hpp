@@ -20,6 +20,26 @@ static thread_local randen::Randen<uint64_t> generator(trng());
 template <typename T>
 constexpr bool false_v = false;
 
+inline double frand(double fMin, double fMax)
+{
+    double f = (double)rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
+}
+
+
+inline double encode_sanitize(double x){
+    return x + frand(0.00001, 0.001);
+}
+
+inline double decode_sanitize(double x, double b){
+    if (abs(x-b) < 0.001){
+        return 0.;
+    }else{
+        return x;
+    }
+
+}
+
 // Double to Torus(32bit fixed-point number)
 inline uint32_t dtot32(double d)
 {
@@ -29,6 +49,19 @@ inline uint32_t dtot32(double d)
 inline uint32_t dtot30(double d)
 {
     return int32_t(int64_t((d - int64_t(d)) * (1LL << 30)));
+}
+
+
+inline double t32tod(uint32_t x){
+    double tmp_0_1 = static_cast<double>(x) / pow(2, 32);
+    //double tmp_0_1 = static_cast<double>(x >> 32);
+    return tmp_0_1;
+}
+
+inline double t30tod(uint32_t x){
+    double tmp_0_1 = static_cast<double>(x) / pow(2, 30);
+    return tmp_0_1;
+
 }
 
 // Modular Gaussian Distribution over Torus

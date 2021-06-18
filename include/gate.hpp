@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./cloudkey.hpp"
+#include "./tlwe.hpp"
 
 namespace TFHEpp {
 using namespace std;
@@ -9,7 +10,13 @@ void HomCONSTANTZERO(TLWE<lvl0param> &res);
 void HomNOT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
 void HomCOPY(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
 void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb);
+void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb);
+void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder);
+void HomADDCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const array<double, lvl1param::n> &b, Encoder &encoder);
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb);
+void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb);
+void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b);
+void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder);
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
              const TLWE<lvl0param> &cb, const GateKey &gk);
 void HomNOR(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,

@@ -21,10 +21,10 @@ int main()
         std::make_unique<TFHEpp::GateKey>(*sk);
 
     double a = 0.;
-    double b = 100.;
+    double b = 10.;
     //double x = -20.;
-    double x1 = 20.;
-    double x2 = 40.;
+    double x1 = 1.;
+    double x2 = 4.;
 
     //uint32_t p1 = dtot32(0.1);
     //uint32_t p2 = dtot32(0.2);
@@ -81,5 +81,26 @@ int main()
     double decs1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cs1, sk->key.lvl0, encoder);
 
     printf("HomSUB: %f, decs1: %f\n\n", x2-x1, decs1);
+
+    TFHEpp::TLWE<TFHEpp::lvl0param> cac1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+    double add_p = -1.3;
+    TFHEpp::HomADDCONST(cac1, c1, add_p, encoder);
+    double decac1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cac1, sk->key.lvl0, encoder);
+
+    printf("HomADDCONST: %f, decac1: %f\n\n", x1 + add_p, decac1);
+
+    TFHEpp::TLWE<TFHEpp::lvl0param> cmc1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+    double mult_p = 4.2;
+    TFHEpp::HomMULTCONST(cmc1, c1, mult_p, encoder);
+    double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
+
+    printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p, decmc1);
+
+    //TLWE<lvl0param> cpb1;
+    //ProgrammableBootstrapping(cpb1, c1, *gk.get());
+    //double decpb1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cpb1, sk->key.lvl0, encoder);
+
+    //printf("PBS: %f, decmc1: %f\n\n", x1, decpb1);
+
 
 }

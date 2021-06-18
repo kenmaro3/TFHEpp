@@ -38,39 +38,105 @@ class Encoder
             this->half = (b+a)/2.;
         }
 
-        uint32_t encode(double x) const{
+        double encode_0_1(double x) const{
             if(this->is_include_negative){
                 if(x-this->a < this->half_d){
                     x = this->b - abs(x);
-                    return dtot30((x-this->a)/this->d);
+                    return (x-this->a)/this->d;
                 }else{
                     x = x - this->half_d;
-                    return dtot30((x-this->a)/this->d);
+                    return (x-this->a)/this->d;
                 }
             }
             else{
-                return dtot30((x-this->a)/this->d);
+                return (x-this->a)/this->d;
+            } 
+
+        }
+
+        uint32_t encode(double x) const{
+            assert(x >= this->a);
+            assert(x <= this->b);
+            if (x == this->a) x = encode_sanitize(x);
+            if(this->is_include_negative){
+                if(x-this->a < this->half_d){
+                    x = this->b - abs(x);
+                    return dtot32((x-this->a)/this->d);
+                }else{
+                    x = x - this->half_d;
+                    return dtot32((x-this->a)/this->d);
+                }
+            }
+            else{
+                return dtot32((x-this->a)/this->d);
             } 
         }
 
-        double decode(const uint32_t x){
+        uint32_t encode_off_limit(double x) const{
+            while(x >= this->b){
+                x -= this->b;
+            }
+            while(x<=this->a){
+                x += this->b;
+            }
+            //printf("here: %f\n", x);
+            if (x == this->a) x = encode_sanitize(x);
             if(this->is_include_negative){
-                double tmp_0_1 = static_cast<double>(x) / pow(2, 30);
+                if(x-this->a < this->half_d){
+                    x = this->b - abs(x);
+                    return dtot32((x-this->a)/this->d);
+                }else{
+                    x = x - this->half_d;
+                    return dtot32((x-this->a)/this->d);
+                }
+            }
+            else{
+                //printf("here2\n");
+                return dtot32((x-this->a)/this->d);
+            } 
+        }
+
+        double decode_0_1(const double x){
+            if(this->is_include_negative){
+                double tmp_0_1 = x;
                 assert(tmp_0_1 >= 0.);
                 tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
                 if(tmp_0_1 > 0.5){
                     double tmp2 = tmp_0_1 - 0.5;
-                    return this->a + tmp2 * this->d;
+                    return decode_sanitize(this->a + tmp2 * this->d, this->b);
                 }else{
-                    return tmp_0_1 * this->d;
+                    return decode_sanitize(tmp_0_1 * this->d, this->b);
 
                 }
 
             }else{
-                uint32_t x1 = static_cast<uint32_t>(x);
-                double tmp_0_1 = static_cast<double>(x1) / pow(2, 30);
+                double tmp_0_1 = x;
+                //printf("tmp_0_1: %f\n", tmp_0_1);
                 tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
-                return tmp_0_1 * this->d;
+                return decode_sanitize(tmp_0_1 * this->d, this->b);
+            }
+        }
+
+        double decode(const uint32_t x){
+            //printf("decrypt: %d\n", x);
+            if(this->is_include_negative){
+                double tmp_0_1 = t32tod(x);
+                //printf("tmp_0_1: %f\n", tmp_0_1);
+                assert(tmp_0_1 >= 0.);
+                tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+                if(tmp_0_1 > 0.5){
+                    double tmp2 = tmp_0_1 - 0.5;
+                    return decode_sanitize(this->a + tmp2 * this->d, this->b);
+                }else{
+                    return decode_sanitize(tmp_0_1 * this->d, this->b);
+
+                }
+
+            }else{
+                double tmp_0_1 = t32tod(x);
+                //printf("tmp_0_1: %f\n", tmp_0_1);
+                tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+                return decode_sanitize(tmp_0_1 * this->d, this->b);
             }
         }
 
