@@ -51,84 +51,67 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &
     //}
 }
 
-void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int bits)
+void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int &b)
 {
-    double b_int = floor(b);
-    double b_decimal = b - floor(b);
 
-    double t1 = b_decimal * pow(2., bits);
-    double t2 = round(t1);
-    t1 = t2 / pow(2., bits);
 
-    double new_b = b_int + t1;
+    if(b >=0){
+        for (int i = 0; i <= lvl0param::n; i++){
 
-    encoder.d2 = encoder.d2 / double(bits);
-    printf("here d2: %f\n", encoder.d2);
-    //encoder.b = encoder.a + encoder.d;
-    double ind = 0;
-    while(encoder.d2*(ind+1) <= b_int){
-        ind += 1;
+            res[i] = ca[i] * b;
+        }
+
+    }else{
+        double tmp_b = abs(b);
+        for (int i = 0; i <= lvl0param::n; i++){
+
+            double b_decimal = tmp_b - int(tmp_b);
+            int inv_b = int(1./b_decimal);
+
+            lvl0param::T tmp = inv_b == 0 ? 0 : ca[i]/inv_b;
+            lvl0param::T tmp1 = ca[i] * int(tmp_b) + tmp;
+            res[i] = -tmp1;
+        }
+
     }
+}
+
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, Encoder &encoder2)
+{
+
+    uint32_t mid_old = encoder.encode(encoder.half);
+    int max_num = encoder2.b;
+    int precision = encoder2.bp;
+
+    encoder.a = encoder.a * max_num;
+    encoder.b = encoder.b * max_num;
+    encoder.d = encoder.b-encoder.a;
+    encoder.half_d = (encoder.b-encoder.a)/2.;
+    encoder.half = (encoder.b+encoder.a)/2.;
+    encoder.bp = encoder.bp + encoder2.bp;
+
+    uint32_t mid_new = encoder.encode(encoder.half);
+
+    printf("\n%llu\n", mid_old);
+    printf("%llu\n", mid_new);
 
 
-
-    vector<double>::iterator it;
-
-    //it = encoder.div.begin();
-    //it = encoder.div.insert(it, bits);
-    //it = encoder.ind.begin();
-    //it = encoder.ind.insert(it, ind);
-    //it = encoder.mul.begin();
-    //it = encoder.mul.insert(it, (encoder.a+encoder.b)/double(bits));
-
-    encoder.div.push_back(bits);
-    encoder.ind.push_back(ind);
-    encoder.mul.push_back(encoder.d2);
-
-    //encoder.div.push_back(2.);
-    //encoder.ind.push_back(0.);
-    //encoder.mul.push_back((encoder.a+encoder.b)/2.);
-    //if(b_decimal != 0){
-    //    encoder.interp_num *= 1.0/b_decimal;
-    //}else{
-    //}
-
-    //printf("interp %f\n", encoder.interp_num);
 
 
 
     if(b >=0){
         for (int i = 0; i <= lvl0param::n; i++){
 
-            //double ca_i_double = encoder.decode_second(ca[i]);
-            double ca_i_double = encoder.t32tod(ca[i]);
-            //double b_encode = encoder.encode_0_1(b);
-            double tmp_here = ca_i_double * new_b;
-
-            //double tmp_here = ca_i_double * b;
-            tmp_here = tmp_here - floor(tmp_here);
-            //printf("%f\n", tmp_here);
-            //printf("%f\n", tmp_here/ca_i_double);
-
-            //while(tmp_here > 1.5){
-            //    printf("mid: %f\n", tmp_here);
-            //    tmp_here -= 0.5;
-            //}
-            //printf("while: %f\n", tmp_here);
+            double b_0_1 = b / encoder2.b;
+            //uint32_t ca_minus_mid = ca[i] - mid_old;
+            //res[i] = ca_minus_mid * encoder2.dtotx(tmp);
+            //res[i] += mid_new;
+            res[i] = ca[i] * encoder2.dtotx(b_0_1);
+            //printf("\n%llu\n", ca[i]);
+            //printf("\n%llu\n", encoder2.dtotx(tmp));
+            //printf("%llu\n", res[i]);
             
-            res[i] = encoder.dtotx(tmp_here);
-            
-            //auto tmpa = encoder.encode_0_1(b);
-            //auto tmpb = encoder.dtotx(encoder.encode_0_1(b));
-            //cout << "here" << endl;
-            //cout << tmpa << endl;
-            //cout << tmpb << endl;
-            //res[i] = ca[i] * encoder.dtotx(encoder.encode_0_1(b));
-
-
         }
-    //encoder.b = encoder.b * encoder2.b;
-    //encoder.d = encoder.d * encoder2.b;
 
     }else{
         double tmp_b = abs(b);

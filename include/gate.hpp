@@ -15,9 +15,9 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &
 void HomADDCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const array<double, lvl1param::n> &b, Encoder &encoder);
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb);
 void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb);
-void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b);
+void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int &b);
 //void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, Encoder &encoder2);
-void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int bits);
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, Encoder &encoder2);
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
              const TLWE<lvl0param> &cb, const GateKey &gk);
 void HomNOR(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,

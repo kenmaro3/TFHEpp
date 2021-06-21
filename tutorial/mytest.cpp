@@ -11,6 +11,12 @@
 using namespace std;
 using namespace TFHEpp;
 
+#include <chrono>
+using namespace std::chrono;
+inline double get_time_sec(void){
+    return static_cast<double>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count())/1000000000;
+}
+
 int main()
 {
     printf("hello, world\n\n");
@@ -21,43 +27,14 @@ int main()
         std::make_unique<TFHEpp::GateKey>(*sk);
 
     double a = 0.;
-    double b = 10.;
+    double b = 100.;
     //double x = -20.;
-    double x1 = 1.;
-    double x2 = 4.;
-
-    //uint32_t p1 = dtot32(0.1);
-    //uint32_t p2 = dtot32(0.2);
-    //auto c1 = tlweSymEncrypt<lvl0param>(p1, lvl0param::alpha, sk->key.lvl0);
-    //auto c2 = tlweSymEncrypt<lvl0param>(p2, lvl0param::alpha, sk->key.lvl0);
-    //uint32_t d1 = tlweSymDecryptRaw<lvl0param>(c1, sk->key.lvl0);
-    //uint32_t d2 = tlweSymDecryptRaw<lvl0param>(c2, sk->key.lvl0);
-    //printf("alpha: %d\n", dtot32(lvl0param::alpha));
-    //printf("p1: %d\n", p1);
-    //printf("d1: %d\n", d1);
-    //printf("p1: %d\n", p2);
-    //printf("d1: %d\n", d2);
-    
-
-    //auto c3 = tlweSymEncrypt<lvl0param>(p1, lvl0param::alpha, sk->key.lvl0);
-    //HomADD(c3, c1, c2);
-    //uint32_t d3 = tlweSymDecryptRaw<lvl0param>(c3, sk->key.lvl0);
-    //printf(": %d\n", p1+p2);
-    //printf(": %d\n", d3);
-
-    //auto c4 = tlweSymEncrypt<lvl0param>(p1, lvl0param::alpha, sk->key.lvl0);
-    //HomSUB(c4, c2, c1);
-    //uint32_t d4 = tlweSymDecryptRaw<lvl0param>(c4, sk->key.lvl0);
-    //printf(": %d\n", p2-p1);
-    //printf(": %d\n", d4);
+    double x1 = 10.;
+    double x2 = 40.;
 
 
 
-    TFHEpp::Encoder encoder(a, b, 32);
-    //double test1 = encoder.encode(x);
-    //cout << test1 << endl;
-    //double test2 = encoder.encode(x+x);
-    //cout << test2 << endl;
+    TFHEpp::Encoder encoder(a, b, 16);
 
     TFHEpp::TLWE<TFHEpp::lvl0param> c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
     double dec1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c1, sk->key.lvl0, encoder);
@@ -93,27 +70,45 @@ int main()
     cout << "=============" << endl;
 
     TFHEpp::TLWE<TFHEpp::lvl0param> cmc1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
-    double mult_p1 = 5.5;
-    double mult_p2 = 1.5;
-    TFHEpp::HomMULTCONST(cmc1, c1, mult_p1, encoder, 2);
+    int mult_p1 = 5;
+    double mult_p2 = 1.2;
+    int max_num = 3;
+    int precision = 4;
+    double start, end;
+    start = get_time_sec();
+    TFHEpp::HomMULTCONSTINT(cmc1, c1, mult_p1);
+    end = get_time_sec();
+    cout << "time " << end-start << endl;
     double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
-    printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1, decmc1);
+    printf("HomMULTCONSTINT: %f, decmc1: %f\n\n", x1*mult_p1, decmc1);
 
-    //TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p1, encoder, 2);
-    //decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
-    //printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p1, decmc1);
-    cout << "=============" << endl;
+    Encoder const_encoder(0, 2, 8);
 
-    TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder, 2);
+    TFHEpp::HomMULTCONSTREAL(cmc1, c1, mult_p2, encoder, const_encoder);
+    cout << "encoder.a " << encoder.a << endl;
+    cout << "encoder.b " << encoder.b << endl;
+    cout << "encoder.d " << encoder.d << endl;
+    cout << "encoder.bp " << encoder.bp << endl;
+    end = get_time_sec();
+    cout << "time " << end-start << endl;
     decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
-    printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p2, decmc1);
+    printf("HomMULTCONSTREAL: %f, decmc1: %f\n\n", x1*mult_p2, decmc1);
 
-    cout << "=============" << endl;
-    //double mult_p2 = 1.25;
-    //TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder);
+    ////TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p1, encoder, 2);
+    ////decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
+    ////printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p1, decmc1);
+    //cout << "=============" << endl;
+
+    //TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder, 2);
     //decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
-
     //printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p2, decmc1);
+
+    //cout << "=============" << endl;
+    ////double mult_p2 = 1.25;
+    ////TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder);
+    ////decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
+
+    ////printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p2, decmc1);
 
 
     //sk->print<lvl0param>();

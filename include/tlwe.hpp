@@ -71,7 +71,7 @@ class Encoder
         }
 
         uint32_t dtotx(double d) const{
-            return int32_t(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+            return uint32_t(int64_t((d - int64_t(d)) * (1LL << this->bp)));
         }
 
         uint32_t encode(double x) const{
@@ -217,9 +217,9 @@ class Encoder
                 tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
 
                 printf("tmp_0_1b: %f\n", tmp_0_1);
-                tmp_0_1 = this->interpret(tmp_0_1);
-                return tmp_0_1;
-                //return decode_sanitize(tmp_0_1* this->d, this->b);
+                //tmp_0_1 = this->interpret(tmp_0_1);
+                //return tmp_0_1;
+                return decode_sanitize(tmp_0_1* this->d, this->b);
             }
         }
 
