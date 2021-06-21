@@ -22,7 +22,7 @@ int main()
 
     double a = 0.;
     double b = 100.;
-    TFHEpp::Encoder encoder(a, b);
+    TFHEpp::Encoder encoder(a, b, 32);
 
     vector<double> p_vec(lvl1param::n);
     //for(int i=0; i<lvl1param::n; i++) p_vec[i] = (double)(i)/100;

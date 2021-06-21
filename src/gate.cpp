@@ -38,12 +38,56 @@ void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
 void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
 {
     for (int i = 0; i < lvl0param::n; i++) res[i] = ca[i];
-    res[lvl0param::n] = ca[lvl0param::n] + dtot32(encoder.encode_0_1(b));
+    res[lvl0param::n] = ca[lvl0param::n] + encoder.dtotx(encoder.encode_0_1(b));
+    //for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i];
+    //for (int i = 0; i <= lvl0param::n; i++){
+    //    double tmp = encoder.decode_second(res[i]);
+    //    if(i == lvl0param::n){
+    //        tmp += encoder.encode_0_1(b);
+    //        res[i] = encoder.dtotx(tmp);
+    //    }else{
+    //        res[i] = encoder.dtotx(tmp);
+    //    }
+    //}
 }
 
-void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
+void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int bits)
 {
-    //double b_decimal = b - floor(b);
+    double b_int = floor(b);
+    double b_decimal = b - floor(b);
+
+    double t1 = b_decimal * pow(2., bits);
+    double t2 = round(t1);
+    t1 = t2 / pow(2., bits);
+
+    double new_b = b_int + t1;
+
+    encoder.d2 = encoder.d2 / double(bits);
+    printf("here d2: %f\n", encoder.d2);
+    //encoder.b = encoder.a + encoder.d;
+    double ind = 0;
+    while(encoder.d2*(ind+1) <= b_int){
+        ind += 1;
+    }
+
+
+
+    vector<double>::iterator it;
+
+    //it = encoder.div.begin();
+    //it = encoder.div.insert(it, bits);
+    //it = encoder.ind.begin();
+    //it = encoder.ind.insert(it, ind);
+    //it = encoder.mul.begin();
+    //it = encoder.mul.insert(it, (encoder.a+encoder.b)/double(bits));
+
+    encoder.div.push_back(bits);
+    encoder.ind.push_back(ind);
+    encoder.mul.push_back(encoder.d2);
+
+    //encoder.div.push_back(2.);
+    //encoder.ind.push_back(0.);
+    //encoder.mul.push_back((encoder.a+encoder.b)/2.);
     //if(b_decimal != 0){
     //    encoder.interp_num *= 1.0/b_decimal;
     //}else{
@@ -51,12 +95,18 @@ void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double 
 
     //printf("interp %f\n", encoder.interp_num);
 
+
+
     if(b >=0){
         for (int i = 0; i <= lvl0param::n; i++){
 
-            double ca_i_double = encoder.decode2(ca[i]);
-            double tmp_here = ca_i_double * b;
-            //printf("\n%f\n", ca_i_double);
+            //double ca_i_double = encoder.decode_second(ca[i]);
+            double ca_i_double = encoder.t32tod(ca[i]);
+            //double b_encode = encoder.encode_0_1(b);
+            double tmp_here = ca_i_double * new_b;
+
+            //double tmp_here = ca_i_double * b;
+            tmp_here = tmp_here - floor(tmp_here);
             //printf("%f\n", tmp_here);
             //printf("%f\n", tmp_here/ca_i_double);
 
@@ -66,10 +116,19 @@ void HomMULTCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double 
             //}
             //printf("while: %f\n", tmp_here);
             
-            res[i] = encoder.encode_off_limit(tmp_here);
+            res[i] = encoder.dtotx(tmp_here);
+            
+            //auto tmpa = encoder.encode_0_1(b);
+            //auto tmpb = encoder.dtotx(encoder.encode_0_1(b));
+            //cout << "here" << endl;
+            //cout << tmpa << endl;
+            //cout << tmpb << endl;
+            //res[i] = ca[i] * encoder.dtotx(encoder.encode_0_1(b));
 
 
         }
+    //encoder.b = encoder.b * encoder2.b;
+    //encoder.d = encoder.d * encoder2.b;
 
     }else{
         double tmp_b = abs(b);
@@ -96,7 +155,7 @@ void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1p
 void HomADDCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const array<double, lvl1param::n> &b, Encoder &encoder)
 {
     for (int i = 0; i < lvl1param::n; i++) res[0][i] = ca[0][i];
-    for (int i = 0; i < lvl1param::n; i++) res[1][i] = ca[1][i] + dtot32(encoder.encode_0_1(b[i]));
+    for (int i = 0; i < lvl1param::n; i++) res[1][i] = ca[1][i] + encoder.dtotx(encoder.encode_0_1(b[i]));
 }
 
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb)

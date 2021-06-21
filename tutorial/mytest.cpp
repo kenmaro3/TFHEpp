@@ -53,7 +53,7 @@ int main()
 
 
 
-    TFHEpp::Encoder encoder(a, b);
+    TFHEpp::Encoder encoder(a, b, 32);
     //double test1 = encoder.encode(x);
     //cout << test1 << endl;
     //double test2 = encoder.encode(x+x);
@@ -83,18 +83,32 @@ int main()
     printf("HomSUB: %f, decs1: %f\n\n", x2-x1, decs1);
 
     TFHEpp::TLWE<TFHEpp::lvl0param> cac1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
-    double add_p1 = -0.3;
+    double add_p1 = 0.32222;
     TFHEpp::HomADDCONST(cac1, c1, add_p1, encoder);
     double decac1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cac1, sk->key.lvl0, encoder);
 
     printf("HomADDCONST: %f, decac1: %f\n\n", x1 + add_p1, decac1);
 
+
+    cout << "=============" << endl;
+
     TFHEpp::TLWE<TFHEpp::lvl0param> cmc1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
-    double mult_p1 = 1.2;
-    TFHEpp::HomMULTCONST(cmc1, c1, mult_p1, encoder);
+    double mult_p1 = 5.5;
+    double mult_p2 = 1.5;
+    TFHEpp::HomMULTCONST(cmc1, c1, mult_p1, encoder, 2);
     double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
     printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1, decmc1);
 
+    //TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p1, encoder, 2);
+    //decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
+    //printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p1, decmc1);
+    cout << "=============" << endl;
+
+    TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder, 2);
+    decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);
+    printf("HomMULTCONST: %f, decmc1: %f\n\n", x1*mult_p1*mult_p2, decmc1);
+
+    cout << "=============" << endl;
     //double mult_p2 = 1.25;
     //TFHEpp::HomMULTCONST(cmc1, cmc1, mult_p2, encoder);
     //decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc1, sk->key.lvl0, encoder);

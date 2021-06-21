@@ -23,29 +23,22 @@ int main()
     double a = 0.;
     double b = 100.;
 
-    Encoder encoder(a, b);
+    Encoder encoder(a, b, 24);
 
-    double x1 = 10.;
-    double x2 = 50.;
+    double x1 = 3.;
+    double x2 = 4.5;
 
-    uint32_t tmp1 = encoder.encode(x1);
-    printf("%llu\n", tmp1);
-    uint32_t tmp2 = encoder.encode(x2);
-    printf("%llu\n", tmp2);
+    double test1 = encoder.decode(encoder.encode(x1));
 
-    double tmpd = encoder.encode_0_1(x1);
-    printf("%f\n", tmpd);
+    auto test2 = encoder.encode(x1);
+    auto test3 = encoder.encode(x2);
+    auto test4 = test2 + test3;
+    auto test5 = test2 * x2;
+    double test6 = encoder.decode(test4);
+    double test7 = encoder.decode(test5);
+    cout << test6 << endl;
+    cout << test7 << endl;
 
-    tmpd = tmpd * 3.2;
-
-    double tmpd2 = encoder.decode_0_1(tmpd);
-    printf("%f\n", tmpd2);
-
-    tmpd = encoder.encode_0_1(x2);
-    printf("%f\n", tmpd);
-
-    tmpd2 = encoder.decode_0_1(tmpd);
-    printf("%f\n", tmpd2);
 
 
 
