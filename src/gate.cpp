@@ -103,33 +103,55 @@ void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int 
 void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, Encoder &encoder2)
 {
 
-    //uint32_t mid_old = encoder.encode(encoder.half);
-    int max_num = encoder2.b;
-    int precision = encoder2.bp;
 
-    encoder.a = encoder.a * max_num;
-    encoder.b = encoder.b * max_num;
-    encoder.d = encoder.b-encoder.a;
-    encoder.half_d = (encoder.b-encoder.a)/2.;
-    encoder.half = (encoder.b+encoder.a)/2.;
-    encoder.bp = encoder.bp + encoder2.bp;
+    uint32_t prev_0 = encoder.encode(0.);
+    double b_abs = abs(encoder2.interpret_const(b));
+    double b_abs_tmp = b_abs - floor(b_abs);
+    
+    printf("b_abs: %f\n", b_abs);
 
 
     if(b >=0){
         for (int i = 0; i <= lvl0param::n; i++){
 
             //double b_0_1 = b / encoder2.b;
-            double b_0_1 = encoder2.encode_0_1(b);
+            uint32_t ca_minus_0 = ca[i] - prev_0;
+            double tmp = b_abs/encoder2.b;
+            uint32_t tmp_b = encoder2.embed_constant(b_abs, encoder2.b, encoder2.bp);
+            printf("tmp_b: %llu\n", tmp_b);
+            //double b_0_1 = encoder2.encode_0_1(b);// - encoder2.encode_0_1(encoder2.half);
+            //printf("prev_0: %llu\n", prev_0);
+            //printf("b_0_1: %f\n", b_0_1);
+            //printf("tmp: %f\n", tmp);
             //double b_0_1 = b / (encoder2.b - encoder2.a) + 0.5;
             //printf("\nb_0_1:: %f\n", b_0_1);
             //uint32_t ca_minus_mid = ca[i] - mid_old;
             //res[i] = ca_minus_mid * encoder2.dtotx(tmp);
             //res[i] += mid_new;
-            res[i] = ca[i] * encoder2.dtotx(b_0_1);
+            //res[i] = ca_minus_0 * encoder2.dtotx(tmp);
+            res[i] = ca_minus_0 * tmp_b;
             //printf("\n%llu\n", ca[i]);
             //printf("\n%llu\n", encoder2.dtotx(tmp));
             //printf("%llu\n", res[i]);
             
+        }
+        //uint32_t mid_old = encoder.encode(encoder.half);
+        int max_num = encoder2.b;
+        int precision = encoder2.bp;
+
+        encoder.a = encoder.a * max_num;
+        encoder.b = encoder.b * max_num;
+        encoder.d = encoder.b-encoder.a;
+        encoder.half_d = (encoder.b-encoder.a)/2.;
+        encoder.half = (encoder.b+encoder.a)/2.;
+        encoder.bp = encoder.bp + encoder2.bp;
+        encoder2.print();
+
+
+        uint32_t after_0 = encoder.encode(0.);
+
+        for (int i = 0; i <= lvl0param::n; i++){
+            res[i] += after_0;
         }
 
     }else{
@@ -145,6 +167,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
         }
 
     }
+
 }
 
 void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb)

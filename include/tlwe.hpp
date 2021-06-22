@@ -65,8 +65,40 @@ class Encoder
 
         }
 
+        double interpret_const(double x) const{
+            double tmp1 = x - floor(x);
+            double tmp2 = tmp1 * pow(2., this->bp);
+            double tmp3 = round(tmp2);
+            double tmp4 = tmp3 / pow(2., this->bp);
+            return tmp4 + floor(x);
+        }
+
+        uint32_t embed_constant(double x, double max, uint32_t precision){
+            uint32_t maximum = UINT32_MAX;
+            uint32_t embedded = std::round((double)maximum * (x / max));
+            uint32_t left = 0;
+            uint32_t right = maximum ;
+
+            for(uint32_t i = precision;0<i;i--){
+                uint32_t mid = (right-left) >> 1;
+                if(x<=left+mid) right = left + mid;
+                else left = left + mid;
+            }
+
+            uint32_t rounded = embedded-left <= right-embedded ? left : right;
+
+            return rounded;
+        }
+
         uint32_t dtotx(double d) const{
             return uint32_t(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+        }
+
+        void neagate(){
+            this->d *= -1.;
+            double tmp_a = this->a;
+            this->a = this->b;
+            this->b = tmp_a;
         }
 
         uint32_t encode(double x) const{
