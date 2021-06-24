@@ -41,16 +41,17 @@ int main()
     TFHEpp::Encoder encoder4(a, b, 16);
     TFHEpp::Encoder encoder5(a, b, 16);
     TFHEpp::Encoder encoder6(a, b, 16);
-    TFHEpp::Encoder encoder7(a, b, 16);
+    TFHEpp::Encoder encoder7(a, b, 10);
+    TFHEpp::Encoder encoder8(a, b, 4);
 
 
-    cout << "\n=============================" << endl;
+    //cout << "\n=============================" << endl;
 
-    TFHEpp::TLWE<TFHEpp::lvl0param> c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder1);
-    double dec1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c1, sk->key.lvl0, encoder1);
+    //TFHEpp::TLWE<TFHEpp::lvl0param> c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder1);
+    //double dec1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c1, sk->key.lvl0, encoder1);
 
-    printf("x1: %f, dec: %f\n", x1, dec1);
-    encoder1.print();
+    //printf("x1: %f, dec: %f\n", x1, dec1);
+    //encoder1.print();
 
 
     //cout << "\n=============================" << endl;
@@ -108,20 +109,20 @@ int main()
     //encoder1.print();
 
 
-    cout << "\n=============================" << endl;
-    double mult_p2 = -0.5;
-    //Encoder const_encoder(-1, 1, 4);
-    x1 = 10.;
-    int mult_bp = 4;
-    double mult_max = 4;
+    //cout << "\n=============================" << endl;
+    //double mult_p2 = -0.5;
+    ////Encoder const_encoder(-1, 1, 4);
+    //x1 = 10.;
+    //int mult_bp = 4;
+    //double mult_max = 4;
 
-    TFHEpp::TLWE<TFHEpp::lvl0param> cmc2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder5);
-    TFHEpp::HomMULTCONST01(cmc2, cmc2, mult_p2, encoder5, mult_bp);
-    //TFHEpp::HomMULTCONSTREAL(cmc2, cmc2, mult_p2, encoder5, mult_bp, mult_max);
-    //TFHEpp::HomMULTCONSTREALDEBUG(cmc2, cmc2, mult_p2, encoder5);
-    double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc2, sk->key.lvl0, encoder5);
-    printf("HomMULTCONSTREAL: %f, decmc1: %f\n\n", x1*mult_p2, decmc1);
-    encoder5.print();
+    //TFHEpp::TLWE<TFHEpp::lvl0param> cmc2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder5);
+    //TFHEpp::HomMULTCONST01(cmc2, cmc2, mult_p2, encoder5, mult_bp);
+    ////TFHEpp::HomMULTCONSTREAL(cmc2, cmc2, mult_p2, encoder5, mult_bp, mult_max);
+    ////TFHEpp::HomMULTCONSTREALDEBUG(cmc2, cmc2, mult_p2, encoder5);
+    //double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc2, sk->key.lvl0, encoder5);
+    //printf("HomMULTCONSTREAL: %f, decmc1: %f\n\n", x1*mult_p2, decmc1);
+    //encoder5.print();
 
     //uint32_t p1 = phase<lvl0param>(cmc2, sk->key.lvl0);
     //printf("p1: %llu\n", p1);
@@ -165,16 +166,27 @@ int main()
     ////printf("\n");
 
 
+    cout << "\n=============================" << endl;
+
+    x1 = 20.0;
+
+    TFHEpp::TLWE<TFHEpp::lvl0param> c7 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
+    double dec7 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c7, sk->key.lvl0, encoder7);
+
+    printf("x1: %f, dec: %f\n", x1, dec7);
+    encoder7.print();
   
 
-    //TLWE<lvl1param> cpb1;
-    //TFHEpp::TLWE<TFHEpp::lvl0param> c4 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
-    //ProgrammableBootstrappingWithoutKS(cpb1, c1, *gk.get(), encoder7);
-    //double decpb1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb1, sk->key.lvl1, encoder7);
+    cout << "\n=============================" << endl;
+    TLWE<lvl1param> cpb1;
+    TFHEpp::TLWE<TFHEpp::lvl0param> c8 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
+    ProgrammableBootstrappingWithoutKS(cpb1, c8, *gk.get(), encoder7);
+    double decpb1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb1, sk->key.lvl1, encoder7);
 
-    //sk->print<lvl0param>();
+    sk->print<lvl0param>();
+    //sk->print<lvl1param>();
 
-    //printf("PBS: %f, decmc1: %f\n\n", x1, decpb1);
+    printf("PBS: %f, decmc1: %f\n\n", x1, decpb1);
 
 
 }

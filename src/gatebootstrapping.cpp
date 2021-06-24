@@ -77,36 +77,43 @@ inline void CreateCustomTestVector(array<array<typename P::T, P::n>, 2> &testvec
     //test_encoder.print();
 
     testvector[0] = {};
-    if (bara < P::n) {
-        //printf("herefordebug1\n");
-        for(int i=0; i<P::n; i++){
-            double tmp = test_encoder.a + test_encoder.d*double(i)/double(P::n);
-            //printf("if\n");
-            //printf("tmp%d: %f\n",i, tmp);
-            //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
-            testvector[1][i] = test_encoder.encode(tmp);
-        }
+    for(int i=0; i<P::n; i++){
+        double tmp = test_encoder.a + test_encoder.d*double(i)/double(P::n);
+        //printf("if\n");
+        printf("tmp%d: %f\n",i, tmp);
+        printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
+        testvector[1][i] = test_encoder.encode(tmp);
     }
-    else {
-        //printf("herefordebug1b\n");
-        const typename P::T baraa = bara - P::n;
-        //printf("baraa: %llu\n", baraa);
-        for (int i = 0; i < baraa; i++){
-            //printf("else\n");
-            double tmp = test_encoder.a + test_encoder.d*double(P::n-baraa+i-1)/double(P::n);
-            //printf("tmp%d: %f\n",i, tmp);
-            //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
-            testvector[1][i] = test_encoder.encode(tmp);
-        }
-        for (int i = baraa; i < P::n; i++){
-            //printf("else\n");
-            double tmp = test_encoder.a + test_encoder.d*double(i-baraa)/double(P::n);
-            //printf("tmp%d: %f\n",i, tmp);
-            //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
-            testvector[1][i] = test_encoder.encode(tmp);
-        }
-    }
-    printf("my bara: %llu\n", bara);
+    //if (bara < P::n) {
+    //    //printf("herefordebug1\n");
+    //    for(int i=0; i<P::n; i++){
+    //        double tmp = test_encoder.a + test_encoder.d*double(i)/double(P::n);
+    //        //printf("if\n");
+    //        printf("tmp%d: %f\n",i, tmp);
+    //        //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
+    //        testvector[1][i] = test_encoder.encode(tmp);
+    //    }
+    //}
+    //else {
+    //    //printf("herefordebug1b\n");
+    //    const typename P::T baraa = bara - P::n;
+    //    printf("baraa: %llu\n", baraa);
+    //    for (int i = 0; i < baraa; i++){
+    //        //printf("else\n");
+    //        double tmp = test_encoder.a + test_encoder.d*double(P::n-baraa+i)/double(P::n);
+    //        printf("tmp%d: %f\n",i, tmp);
+    //        //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
+    //        testvector[1][i] = test_encoder.encode(tmp);
+    //    }
+    //    for (int i = baraa; i < P::n; i++){
+    //        //printf("else\n");
+    //        double tmp = test_encoder.a + test_encoder.d*double(i-baraa)/double(P::n);
+    //        printf("tmp%d: %f\n",i, tmp);
+    //        //printf("enc%d: %llu\n",i, test_encoder.encode(tmp));
+    //        testvector[1][i] = test_encoder.encode(tmp);
+    //    }
+    //}
+    //printf("my bara: %llu\n", bara);
 }
 
 template <class P>
@@ -123,6 +130,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
     //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
+        printf("bara_tlwe_%d: %llu\n", i, bara);
         if (bara == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
         CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(

@@ -71,9 +71,9 @@ double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encode
         //printf("keyi: %lu\n", key[i]);
         phase -= c[i] * key[i];
     }
-    //printf("phasen: %d\n", phase);
+    printf("phasen: %d\n", phase);
     double res = encoder.decode(phase);
-    //printf("res: %f\n", res);
+    printf("res: %f\n", (res-encoder.a)/encoder.d);
     return res;
 }
 #define INST(P) \
