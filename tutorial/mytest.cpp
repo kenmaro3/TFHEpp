@@ -96,7 +96,6 @@ int main()
     //cout << "\n=============================" << endl;
     //TFHEpp::TLWE<TFHEpp::lvl0param> cmc1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder1);
     //int mult_p1 = -5;
-    //double mult_p2 = 1.25;
     //int max_num = 3;
     //int precision = 4;
     //double start, end;
@@ -109,24 +108,33 @@ int main()
     //encoder1.print();
 
 
-    //cout << "\n=============================" << endl;
-    //Encoder const_encoder(-4, 4, 8);
+    cout << "\n=============================" << endl;
+    double mult_p2 = -0.5;
+    //Encoder const_encoder(-1, 1, 4);
+    x1 = 10.;
+    int mult_bp = 4;
+    double mult_max = 4;
 
-    //TFHEpp::TLWE<TFHEpp::lvl0param> cmc2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder5);
-    //TFHEpp::HomMULTCONSTREAL(cmc2, cmc2, mult_p2, encoder5, const_encoder);
-    //end = get_time_sec();
-    //cout << "time " << end-start << endl;
-    //decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc2, sk->key.lvl0, encoder5);
-    //printf("HomMULTCONSTREAL: %f, decmc1: %f\n\n", x1*mult_p2, decmc1);
-    //encoder5.print();
+    TFHEpp::TLWE<TFHEpp::lvl0param> cmc2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder5);
+    TFHEpp::HomMULTCONST01(cmc2, cmc2, mult_p2, encoder5, mult_bp);
+    //TFHEpp::HomMULTCONSTREAL(cmc2, cmc2, mult_p2, encoder5, mult_bp, mult_max);
+    //TFHEpp::HomMULTCONSTREALDEBUG(cmc2, cmc2, mult_p2, encoder5);
+    double decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cmc2, sk->key.lvl0, encoder5);
+    printf("HomMULTCONSTREAL: %f, decmc1: %f\n\n", x1*mult_p2, decmc1);
+    encoder5.print();
+
+    //uint32_t p1 = phase<lvl0param>(cmc2, sk->key.lvl0);
+    //printf("p1: %llu\n", p1);
+    //printf("p2: %llu\n", UINT32_MAX);
+
 
     ////TFHEpp::TLWE<TFHEpp::lvl0param> cneg1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder6);
-    ////encoder6.neagate();
+    ////encoder6.negate();
     ////decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cneg1, sk->key.lvl0, encoder6);
     ////printf("HomNEG: %f, decmc1: %f\n\n", x1*(-1.), decmc1);
     ////encoder6.print();
 
-    ////encoder6.neagate();
+    ////encoder6.negate();
     ////decmc1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(cneg1, sk->key.lvl0, encoder6);
     ////printf("HomNEG: %f, decmc1: %f\n\n", x1, decmc1);
     ////encoder6.print();
@@ -159,14 +167,14 @@ int main()
 
   
 
-    TLWE<lvl1param> cpb1;
-    TFHEpp::TLWE<TFHEpp::lvl0param> c4 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
-    ProgrammableBootstrappingWithoutKS(cpb1, c1, *gk.get(), encoder7);
-    double decpb1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb1, sk->key.lvl1, encoder7);
+    //TLWE<lvl1param> cpb1;
+    //TFHEpp::TLWE<TFHEpp::lvl0param> c4 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
+    //ProgrammableBootstrappingWithoutKS(cpb1, c1, *gk.get(), encoder7);
+    //double decpb1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb1, sk->key.lvl1, encoder7);
 
-    sk->print<lvl0param>();
+    //sk->print<lvl0param>();
 
-    printf("PBS: %f, decmc1: %f\n\n", x1, decpb1);
+    //printf("PBS: %f, decmc1: %f\n\n", x1, decpb1);
 
 
 }

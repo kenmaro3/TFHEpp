@@ -60,6 +60,17 @@ class Encoder
 
         }
 
+        void update(double a, double b, int bp){
+            this->a = a;
+            this->b = b;
+            this->d = b-a;
+            this->d2 = b-a;
+            this->half_d = (b-a)/2.;
+            this->half = (b+a)/2.;
+
+            this->bp = bp;
+        }
+
         double encode_0_1(double x) const{
             return (x-this->a)/this->d;
 
@@ -94,7 +105,7 @@ class Encoder
             return uint32_t(int64_t((d - int64_t(d)) * (1LL << this->bp)));
         }
 
-        void neagate(){
+        void negate(){
             this->d *= -1.;
             double tmp_a = this->a;
             this->a = this->b;

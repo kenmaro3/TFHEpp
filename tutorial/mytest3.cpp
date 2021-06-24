@@ -62,9 +62,11 @@ class ETLWE{
 
         ETLWE operator*(double x){
             Encoder const_encoder(-2, 2, 4);
+            int mult_bp = 4;
+            double mult_max = 5.;
             TFHEpp::TLWE<P> tmp_tlwe = this->tlwe;
             Encoder tmp_encoder = this->encoder;
-            TFHEpp::HomMULTCONSTREAL(this->tlwe, tmp_tlwe, x, this->encoder, const_encoder);
+            TFHEpp::HomMULTCONSTREAL(this->tlwe, tmp_tlwe, x, this->encoder, mult_bp, mult_max);
             return  *this;
         }
 };
