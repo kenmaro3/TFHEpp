@@ -12,4 +12,12 @@ template <class P>
 void CMUXFFTwithPolynomialMulByXaiMinusOne(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
                                            const typename P::T a);
 
+template <class P>
+void CMUXFFTwithPolynomialMulByXai(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
+                                           const typename P::T a);
+
+template <class P>
+void CMUXFFTwithPolynomialMulByXaiWITHKEY(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
+                                           const typename P::T a, Key<lvl0param> sk, int index);
+
 }  // namespace TFHEpp

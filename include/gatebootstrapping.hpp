@@ -53,6 +53,11 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
             res, bkfft[i], bara);
     }
 }
+
+template <class P>
+void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &acc,
+                                    const TLWE<typename P::domainP> &tlwe,
+                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder, Key<lvl0param> sk);
 template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,
@@ -96,6 +101,16 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk, Encoder &encoder);
 
+void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+                       const GateKey &gk, Encoder &encoder);
+
+void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk);
+
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk);
+template <class P>
+void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
+                                    const TLWE<typename P::domainP> &tlwe,
+                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder);
 }  // namespace TFHEpp

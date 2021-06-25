@@ -94,6 +94,12 @@ inline typename P::T modSwitchFromTorus(uint32_t phase)
     return ((phase + (1U << (31 - Mbit))) >> (32 - Mbit)) << bitwidth;
 }
 
+template <class P>
+inline typename P::T modSwitchFromTorusSpecific(uint32_t phase, int domain_bp, int target_bp)
+{
+    return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
+}
+
 // https://stackoverflow.com/questions/21191307/minimum-number-of-bits-to-represent-a-given-int
 template <uint32_t data>
 constexpr int bits_needed()
