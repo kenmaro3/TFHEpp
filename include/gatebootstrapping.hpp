@@ -61,12 +61,17 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
 template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,
-                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder);
+                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target);
 
 template <class P>
 void ProgrammableBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
                                    const TLWE<typename P::domainP> &tlwe,
-                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder);
+                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target);
+
+//template <class P>
+//void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG(TLWE<typename P::targetP> &res,
+//                                   const TLWE<typename P::domainP> &tlwe,
+//                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target);
 
 template <class P>
 void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
@@ -96,13 +101,13 @@ void GateBootstrappingTLWE2TLWEFFTvariableMu(
     const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2);
 
 void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder);
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
 
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk, Encoder &encoder);
 
 void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder);
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
 
 void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk);
@@ -112,5 +117,5 @@ void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
 template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,
-                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder);
+                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder encoder_target);
 }  // namespace TFHEpp

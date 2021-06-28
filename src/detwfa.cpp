@@ -28,27 +28,27 @@ void CMUXFFTwithPolynomialMulByXaiWITHKEY(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
     TRLWE<P> temp;
     PolynomialMulByXai<P>(temp[0], acc[0], a);
     PolynomialMulByXai<P>(temp[1], acc[1], a);
-    printf("a: %d\n", a);
-    printf("acc[0]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", acc[0][i]);
-    }
-    printf("\n");
-    printf("temp[0]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", temp[0][i]);
-    }
-    printf("\n");
-    printf("acc[1]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", acc[1][i]);
-    }
-    printf("\n");
-    printf("temp[1]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", temp[1][i]);
-    }
-    printf("\n");
+    //printf("a: %d\n", a);
+    //printf("acc[0]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", acc[0][i]);
+    //}
+    //printf("\n");
+    //printf("temp[0]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", temp[0][i]);
+    //}
+    //printf("\n");
+    //printf("acc[1]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", acc[1][i]);
+    //}
+    //printf("\n");
+    //printf("temp[1]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", temp[1][i]);
+    //}
+    //printf("\n");
     if(sk[index] == 1){
         for (int i = 0; i < P::n; i++) {
             //acc[0][i] += temp[0][i];
@@ -56,11 +56,15 @@ void CMUXFFTwithPolynomialMulByXaiWITHKEY(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
             acc[0][i] = temp[0][i];
             acc[1][i] = temp[1][i];
         }
-        printf("sk[%d] == 1\n", index);
+        //printf("sk[%d] == 1\n", index);
     }else{
-        printf("sk[%d] == 0\n", index);
+        //printf("sk[%d] == 0\n", index);
 
     }
+
+    
+    
+    
 
 }
 #define INST(P)                                             \
@@ -77,31 +81,31 @@ void CMUXFFTwithPolynomialMulByXai(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
     TRLWE<P> temp;
     PolynomialMulByXai<P>(temp[0], acc[0], a);
     PolynomialMulByXai<P>(temp[1], acc[1], a);
-    printf("a: %d\n", a);
-    printf("acc[0]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", acc[0][i]);
-    }
-    printf("\n");
-    printf("temp[0]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", temp[0][i]);
-    }
-    printf("\n");
-    printf("acc[1]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", acc[1][i]);
-    }
-    printf("\n");
-    printf("temp[1]: ");
-    for(int i=0; i<P::n; i++){
-        printf("%d, ", temp[1][i]);
-    }
-    printf("\n");
+    //printf("a: %d\n", a);
+    //printf("acc[0]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", acc[0][i]);
+    //}
+    //printf("\n");
+    //printf("temp[0]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", temp[0][i]);
+    //}
+    //printf("\n");
+    //printf("acc[1]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", acc[1][i]);
+    //}
+    //printf("\n");
+    //printf("temp[1]: ");
+    //for(int i=0; i<P::n; i++){
+    //    printf("%d, ", temp[1][i]);
+    //}
+    //printf("\n");
     trgswfftExternalProduct<P>(temp, temp, cs);
     for (int i = 0; i < P::n; i++) {
-        acc[0][i] += temp[0][i];
-        acc[1][i] += temp[1][i];
+        acc[0][i] = temp[0][i];
+        acc[1][i] = temp[1][i];
     }
 }
 #define INST(P)                                             \
