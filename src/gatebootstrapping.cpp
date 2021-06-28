@@ -162,10 +162,12 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
         //}
         //printf("\n");
 
-        for(int i=0; i<P::targetP::n; i++){
-            acc[0][i] = temp[0][i];
-            acc[1][i] = temp[1][i];
-        }
+        acc[0] = temp[0];
+        acc[1] = temp[1];
+        //for(int i=0; i<P::targetP::n; i++){
+        //    acc[0][i] = temp[0][i];
+        //    acc[1][i] = temp[1][i];
+        //}
     }
 
     //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
@@ -230,27 +232,27 @@ void ProgrammableBootstrappingTLWE2TLWEFFTDEBUGWITHKEY(TRLWE<typename P::targetP
 //TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
 //#undef INST
 
-//template <class P>
-//void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG(TRLWE<typename P::targetP> &res,
-//                                   const TLWE<typename P::domainP> &tlwe,
-//                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
-//{
-//    //TRLWE<typename P::targetP> res;
-//    ProgrammableBootstrappingTLWE2TRLWEFFT<P>(res, tlwe, bkfft, encoder_domain, encoder_target);
-//    //SampleExtractIndex<typename P::targetP>(res, acc, 0);
-//}
-//#define INST(P)                                     \
-//    template void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG<P>( \
-//        TRLWE<typename P::targetP> & res,            \
-//        const TLWE<typename P::domainP> &tlwe,      \
-//        const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
-//TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
-//#undef INST
+template <class P>
+void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG(TRLWE<typename P::targetP> &res,
+                                   const TLWE<typename P::domainP> &tlwe,
+                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
+{
+    //TRLWE<typename P::targetP> res;
+    ProgrammableBootstrappingTLWE2TRLWEFFT<P>(res, tlwe, bkfft, encoder_domain, encoder_target);
+    //SampleExtractIndex<typename P::targetP>(res, acc, 0);
+}
+#define INST(P)                                     \
+    template void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG<P>( \
+        TRLWE<typename P::targetP> & res,            \
+        const TLWE<typename P::domainP> &tlwe,      \
+        const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+#undef INST
 
 template <class P>
 void ProgrammableBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
                                    const TLWE<typename P::domainP> &tlwe,
-                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder encoder_target)
+                                   const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
 {
     TRLWE<typename P::targetP> acc;
     ProgrammableBootstrappingTLWE2TRLWEFFT<P>(acc, tlwe, bkfft, encoder_domain, encoder_target);
@@ -317,16 +319,16 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe
 }
 
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder)
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target)
 {
-    ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder);
+    ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target);
 }
 
-//void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       //const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target)
-//{
-    //ProgrammableBootstrappingTLWE2TLWEFFTDEBUG<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target);
-//}
+void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target)
+{
+    ProgrammableBootstrappingTLWE2TLWEFFTDEBUG<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target);
+}
 
 void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk)

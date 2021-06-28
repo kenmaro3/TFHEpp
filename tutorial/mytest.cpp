@@ -42,7 +42,7 @@ int main()
     TFHEpp::Encoder encoder5(a, b, 16);
     TFHEpp::Encoder encoder6(a, b, 16);
     TFHEpp::Encoder encoder7(a, b, 12);
-    TFHEpp::Encoder encoder8(a, b, 10);
+    TFHEpp::Encoder encoder8(a, b, 4);
 
 
     //cout << "\n=============================" << endl;

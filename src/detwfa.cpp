@@ -102,11 +102,14 @@ void CMUXFFTwithPolynomialMulByXai(TRLWE<P> &acc, const TRGSWFFT<P> &cs,
     //    printf("%d, ", temp[1][i]);
     //}
     //printf("\n");
+
     trgswfftExternalProduct<P>(temp, temp, cs);
-    for (int i = 0; i < P::n; i++) {
-        acc[0][i] = temp[0][i];
-        acc[1][i] = temp[1][i];
-    }
+    acc[0] = temp[0];
+    acc[1] = temp[1];
+    //for (int i = 0; i < P::n; i++) {
+    //    acc[0][i] = temp[0][i];
+    //    acc[1][i] = temp[1][i];
+    //}
 }
 #define INST(P)                                             \
     template void CMUXFFTwithPolynomialMulByXai<P>( \
