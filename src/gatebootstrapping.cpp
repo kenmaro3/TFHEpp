@@ -28,6 +28,14 @@ inline void RotatedTestVector(array<array<typename P::T, P::n>, 2> &testvector,
 }
 
 template <class P>
+inline void NotRotatedTestVector(array<array<typename P::T, P::n>, 2> &testvector,
+                              const typename P::T mu)
+{
+    testvector[0] = {};
+    for (int i = 0; i < P::n; i++) testvector[1][i] = mu;
+}
+
+template <class P>
 inline void MyCustomTestVector(array<array<typename P::T, P::n>, 2> &testvector,
                               const uint32_t bara, const typename P::T mu)
 {
@@ -45,13 +53,12 @@ inline void MyCustomTestVector(array<array<typename P::T, P::n>, 2> &testvector,
 
 template <class P>
 inline void CreateCustomTestVector(array<array<typename P::T, P::n>, 2> &testvector,
-                              const uint32_t bara, Encoder &encoder)
+                              const uint32_t bara, Encoder &encoder_target)
 {
-    Encoder test_encoder(encoder.a, encoder.b, encoder.bp);
     testvector[0] = {};
     for(int i=0; i<P::n; i++){
-        double tmp = test_encoder.a + test_encoder.d/2.*double(i)/double(P::n);
-        testvector[1][i] = test_encoder.encode(tmp);
+        double tmp = encoder_target.a + encoder_target.d/2.*double(i)/double(P::n);
+        testvector[1][i] = encoder_target.encode(tmp);
     }
 
 }
@@ -70,7 +77,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
     //printf("tmp2: %llu\n", tlwe[P::domainP::n]);
     //printf("mybara_tmp: %llu\n", bara_tmp);
     //printf("mybara0   : %llu\n", bara);
-    CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_domain);
+    CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target);
     TRLWE<typename P::targetP> temp;
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
@@ -134,7 +141,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
     //printf("tmp1: %d\n", P::domainP::n);
     //printf("tmp2: %llu\n", tlwe[P::domainP::n]);
     //printf("mybara0: %llu\n", bara);
-    CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_domain);
+    CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target);
     TRLWE<typename P::targetP> temp;
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
@@ -197,7 +204,41 @@ void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
 {
     uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(
                                             tlwe[P::domainP::n]);
-    RotatedTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
+    NotRotatedTestVector<typename P::targetP>(acc, P::targetP::mu);
+    TRLWE<typename P::targetP> temp;
+    if(bara!=0){
+        PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
+        PolynomialMulByXai<typename P::targetP>(temp[1], acc[1], bara);
+        printf("\n==================\n");
+        printf("baraforb: %d\n", bara);
+        printf("acc[0]: ");
+        for(int i=0; i<P::targetP::n; i++){
+            printf("%d, ", acc[0][i]);
+        }
+        printf("\n");
+        printf("temp[0]: ");
+        for(int i=0; i<P::targetP::n; i++){
+            printf("%d, ", temp[0][i]);
+        }
+        printf("\n");
+        printf("acc[1]: ");
+        for(int i=0; i<P::targetP::n; i++){
+            printf("%d, ", acc[1][i]);
+        }
+        printf("\n");
+        printf("temp[1]: ");
+        for(int i=0; i<P::targetP::n; i++){
+            printf("%d, ", temp[1][i]);
+        }
+        printf("\n");
+
+        acc[0] = temp[0];
+        acc[1] = temp[1];
+        //for(int i=0; i<P::targetP::n; i++){
+        //    acc[0][i] = temp[0][i];
+        //    acc[1][i] = temp[1][i];
+        //}
+    }
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
         if (bara == 0) continue;

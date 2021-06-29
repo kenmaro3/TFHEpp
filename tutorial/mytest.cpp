@@ -41,8 +41,8 @@ int main()
     TFHEpp::Encoder encoder4(a, b, 16);
     TFHEpp::Encoder encoder5(a, b, 16);
     TFHEpp::Encoder encoder6(a, b, 16);
-    TFHEpp::Encoder encoder7(a, b, 12);
-    TFHEpp::Encoder encoder8(a, b, 4);
+    TFHEpp::Encoder encoder7(a, b, 16);
+    TFHEpp::Encoder encoder8(a, b, 16);
 
 
     //cout << "\n=============================" << endl;
@@ -168,8 +168,11 @@ int main()
 
     cout << "\n=============================" << endl;
 
-    for(int i=0; i<20; i++){
-        x1 = a + (double)i*10.;
+    for(int i=0; i<1; i++){
+        //x1 = a + (double)i*10.;
+        x1 = -50.;
+        uint32_t temp1 = encoder7.encode(x1);
+        printf("original: %llu\n", temp1);
         //TFHEpp::TLWE<TFHEpp::lvl0param> c7 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
         //double dec7 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c7, sk->key.lvl0, encoder7);
 
@@ -179,13 +182,17 @@ int main()
 
         cout << "\n=============================" << endl;
         TLWE<lvl1param> cpbtry, cpb0, cpb1, cpb2, cpb3, cpb4, cpb5;
+        TLWE<lvl0param> ca;
         TRLWE<lvl1param> cpb;
         TFHEpp::TLWE<TFHEpp::lvl0param> c8 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder7);
 
-        ProgrammableBootstrappingWithoutSEWITHKEY(cpb, c8, *gk.get(), encoder7, encoder8, sk->key.lvl0);
+        //ProgrammableBootstrappingWithoutSEWITHKEY(cpb, c8, *gk.get(), encoder7, encoder8, sk->key.lvl0);
         //ProgrammableBootstrappingWithoutSE(cpb, c8, *gk.get(), encoder7, encoder8);
-        SampleExtractIndex<lvl1param>(cpb0, cpb, 0);
-        double decpb0 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb0, sk->key.lvl1, encoder7);
+        //SampleExtractIndex<lvl1param>(cpb0, cpb, 0);
+        ProgrammableBootstrappingWithoutKS(cpb0, c8, *gk.get(), encoder7, encoder8);
+        double decpb0 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(cpb0, sk->key.lvl1, encoder8);
+        //ProgrammableBootstrapping(ca, c8, *gk.get(), encoder7, encoder8);
+        //double decpb0 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(ca, sk->key.lvl0, encoder8);
         printf("BS: %f ==> %f, \n", x1, decpb0);
     }
     //double decp= TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c8, sk->key.lvl0, encoder7);
