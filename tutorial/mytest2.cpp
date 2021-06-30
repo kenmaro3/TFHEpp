@@ -14,15 +14,17 @@ using namespace TFHEpp;
 int main()
 {
     printf("hello, world\n\n");
+    double a = -100.;
+    double b = 100.;
+    TFHEpp::Encoder encoder(a, b, 31);
+    TFHEpp::Encoder encoder_ksk(0, 1, 31);
+
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
         std::make_unique<TFHEpp::SecretKey>();
     std::unique_ptr<TFHEpp::GateKey> gk =
-        std::make_unique<TFHEpp::GateKey>(*sk);
+        std::make_unique<TFHEpp::GateKey>(*sk, encoder);
 
-    double a = 0.;
-    double b = 100.;
-    TFHEpp::Encoder encoder(a, b, 32);
 
     vector<double> p_vec(lvl1param::n);
     //for(int i=0; i<lvl1param::n; i++) p_vec[i] = (double)(i)/100;
@@ -77,7 +79,8 @@ int main()
     for(int i=0; i<10; i++){
         const int index = 0;
         SampleExtractIndex<lvl1param>(ex_1, c1, i);
-        IdentityKeySwitch<lvl10param>(ex_0, ex_1, gk->ksk);
+        //IdentityKeySwitch<lvl10param>(ex_0, ex_1, gk->ksk);
+        IdentityKeySwitchWITHEncoder<lvl10param>(ex_0, ex_1, gk->ksk, encoder, encoder);
         double decex_0 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(ex_0, sk->key.lvl0, encoder);
         ex_res[i] = decex_0;
 
@@ -89,25 +92,25 @@ int main()
     printf("\n");
 
 
-    printf("\nISA:\n");
-    double x1 = 12.;
-    TLWE<lvl1param> c5 = tlweSymEncodeEncrypt<lvl1param>(x1, lvl1param::alpha, sk->key.lvl1, encoder);
-    TRLWE<lvl1param> c6 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
-    InverseSampleExtractIndex<lvl1param>(c6, c5, 1);
-    double dec5 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(c5, sk->key.lvl1, encoder);
-    printf(": %f, dec5: %f\n\n", x1, dec5);
-    array<double, lvl1param::n> d6 = trlweSymDecryptDecode<lvl1param>(c6, key.lvl1, encoder);
-    for(int i=0; i<10; i++) printf("%f, ", d6[i]);
-    printf("\n");
+    //printf("\nISA:\n");
+    //double x1 = 12.;
+    //TLWE<lvl1param> c5 = tlweSymEncodeEncrypt<lvl1param>(x1, lvl1param::alpha, sk->key.lvl1, encoder);
+    //TRLWE<lvl1param> c6 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
+    //InverseSampleExtractIndex<lvl1param>(c6, c5, 1);
+    //double dec5 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(c5, sk->key.lvl1, encoder);
+    //printf(": %f, dec5: %f\n\n", x1, dec5);
+    //array<double, lvl1param::n> d6 = trlweSymDecryptDecode<lvl1param>(c6, key.lvl1, encoder);
+    //for(int i=0; i<10; i++) printf("%f, ", d6[i]);
+    //printf("\n");
 
-    printf("\nHomADDCONST:\n");
-    array<double, lvl1param::n> x2;
-    for(int i=0; i<6; i++) x2[i] = 10. - double(i);
-    TRLWE<lvl1param> c7 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
-    HomADDCONST(c7, c7, x2, encoder);
-    array<double, lvl1param::n> d7 = trlweSymDecryptDecode<lvl1param>(c7, key.lvl1, encoder);
-    for(int i=0; i<10; i++) printf("%f, ", d7[i]);
-    printf("\n");
+    //printf("\nHomADDCONST:\n");
+    //array<double, lvl1param::n> x2;
+    //for(int i=0; i<6; i++) x2[i] = 10. - double(i);
+    //TRLWE<lvl1param> c7 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
+    //HomADDCONST(c7, c7, x2, encoder);
+    //array<double, lvl1param::n> d7 = trlweSymDecryptDecode<lvl1param>(c7, key.lvl1, encoder);
+    //for(int i=0; i<10; i++) printf("%f, ", d7[i]);
+    //printf("\n");
 
 
 }

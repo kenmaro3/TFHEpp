@@ -20,6 +20,15 @@ GateKey::GateKey(const SecretKey &sk)
     ikskgen<lvl10param>(ksk, sk);
 }
 
+GateKey::GateKey(const SecretKey &sk, Encoder &encoder)
+{
+    // Generete bkfft
+    bkfftgen<lvl01param>(bkfftlvl01, sk);
+
+    // Generete ksk for specific encoder
+    ikskgenSpecific<lvl10param>(ksk, sk, encoder);
+}
+
 GateKey::GateKey(const GateKeywoFFT &gkwofft)
 {
     for (int i = 0; i < lvl01param::domainP::n; i++)

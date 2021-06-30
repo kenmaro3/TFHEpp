@@ -57,7 +57,8 @@ inline void CreateCustomTestVector(array<array<typename P::T, P::n>, 2> &testvec
 {
     testvector[0] = {};
     for(int i=0; i<P::n; i++){
-        double tmp = encoder_target.a + encoder_target.d/2.*double(i)/double(P::n);
+        //double tmp = encoder_target.a + encoder_target.d/2.*double(i)/double(P::n);
+        double tmp = encoder_target.a + encoder_target.d*double(i)/double(P::n);
         testvector[1][i] = encoder_target.encode(tmp);
     }
 
@@ -68,9 +69,10 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
                                     const TLWE<typename P::domainP> &tlwe,
                                     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk)
 {
-    uint32_t bara_tmp = modSwitchFromTorusSpecific<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
+    uint32_t bara_tmp = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
     //uint32_t bara_tmp = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
-    uint32_t bara = 2 * P::targetP::n - bara_tmp;
+    //uint32_t bara = 2 * P::targetP::n - bara_tmp;
+    uint32_t bara = P::targetP::n - bara_tmp;
     //uint32_t bara = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
 
     //printf("tmp1: %d\n", P::domainP::n);
@@ -111,7 +113,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
     //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
         //bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
-        bara = modSwitchFromTorusSpecific<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
+        bara = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
         //printf("==============================\n");
         //printf("\nbara_tlwe_%d: %llu\n", i, bara);
         if (bara == 0) continue;
@@ -135,7 +137,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
 {
     //uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
-    uint32_t bara = 2 * P::targetP::n - modSwitchFromTorusSpecific<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
+    uint32_t bara = P::targetP::n - modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
     //uint32_t bara = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
 
     //printf("tmp1: %d\n", P::domainP::n);
@@ -179,7 +181,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
 
     //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
-        bara = modSwitchFromTorusSpecific<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
+        bara = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
         //printf("==============================\n");
         //printf("\nbara_tlwe_%d: %llu\n", i, bara);
         if (bara == 0) continue;
@@ -356,7 +358,7 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe
 {
     TLWE<lvl1param> tlwelvl1;
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(tlwelvl1, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target);
-    IdentityKeySwitch<lvl10param>(res, tlwelvl1, gk.ksk);
+    IdentityKeySwitchWITHEncoder<lvl10param>(res, tlwelvl1, gk.ksk, encoder_target, encoder_target);
 }
 
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
