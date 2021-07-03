@@ -69,53 +69,23 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
                                     const TLWE<typename P::domainP> &tlwe,
                                     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk)
 {
-    uint32_t bara_tmp = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
-    //uint32_t bara_tmp = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
-    //uint32_t bara = 2 * P::targetP::n - bara_tmp;
-    uint32_t bara = P::targetP::n - bara_tmp;
-    //uint32_t bara = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
-
-    //printf("tmp1: %d\n", P::domainP::n);
-    //printf("tmp2: %llu\n", tlwe[P::domainP::n]);
-    //printf("mybara_tmp: %llu\n", bara_tmp);
-    //printf("mybara0   : %llu\n", bara);
+    TLWE<typename P::domainP> temp1;
+    for(int i=0; i<=P::domainP::n; i++){
+        temp1[i] = tlwe[i] >> 1;
+    }
+    uint32_t bara_tmp = modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
+    uint32_t bara = 2 * P::targetP::n - bara_tmp;
     CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target);
     TRLWE<typename P::targetP> temp;
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
         PolynomialMulByXai<typename P::targetP>(temp[1], acc[1], bara);
-        //printf("\n==================\n");
-        //printf("baraforb: %d\n", bara);
-        //printf("acc[0]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", acc[0][i]);
-        //}
-        //printf("\n");
-        //printf("temp[0]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", temp[0][i]);
-        //}
-        //printf("\n");
-        //printf("acc[1]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", acc[1][i]);
-        //}
-        //printf("\n");
-        //printf("temp[1]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", temp[1][i]);
-        //}
-        //printf("\n");
         acc[0] = temp[0];
         acc[1] = temp[1];
     }
 
-    //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
-        //bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
-        bara = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
-        //printf("==============================\n");
-        //printf("\nbara_tlwe_%d: %llu\n", i, bara);
+        bara = modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[i], encoder_domain.bp, encoder_target.bp);
         if (bara == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
         //CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(
@@ -123,71 +93,33 @@ void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &a
             acc, bkfft[i], bara, sk, i);
     }
 }
-//#define INST(P)                                      \
-//    template void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY<P>( \
-//        TRLWE<typename P::targetP> & acc,            \
-//        const TLWE<typename P::domainP> &tlwe,       \
-//        const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder, Key<lvl0param> sk)
-//TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
-//#undef INST
 
 template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,
                                     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target)
 {
-    //uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
-    uint32_t bara = P::targetP::n - modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[P::domainP::n], encoder_domain.bp, encoder_target.bp);
-    //uint32_t bara = modSwitchFromTorus<typename P::targetP>(tlwe[P::domainP::n]);
+    TLWE<typename P::domainP> temp1;
+    for(int i=0; i<=P::domainP::n; i++){
+        temp1[i] = tlwe[i] >> 1;
+    }
+    uint32_t bara = 2 * P::targetP::n - modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
 
-    //printf("tmp1: %d\n", P::domainP::n);
-    //printf("tmp2: %llu\n", tlwe[P::domainP::n]);
-    //printf("mybara0: %llu\n", bara);
     CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target);
     TRLWE<typename P::targetP> temp;
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
         PolynomialMulByXai<typename P::targetP>(temp[1], acc[1], bara);
-        //printf("\n==================\n");
-        //printf("baraforb: %d\n", bara);
-        //printf("acc[0]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", acc[0][i]);
-        //}
-        //printf("\n");
-        //printf("temp[0]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", temp[0][i]);
-        //}
-        //printf("\n");
-        //printf("acc[1]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", acc[1][i]);
-        //}
-        //printf("\n");
-        //printf("temp[1]: ");
-        //for(int i=0; i<P::targetP::n; i++){
-        //    printf("%d, ", temp[1][i]);
-        //}
-        //printf("\n");
 
         acc[0] = temp[0];
         acc[1] = temp[1];
-        //for(int i=0; i<P::targetP::n; i++){
-        //    acc[0][i] = temp[0][i];
-        //    acc[1][i] = temp[1][i];
-        //}
     }
 
-    //MyCustomTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
     for (int i = 0; i < P::domainP::n; i++) {
-        bara = modSwitchFromTorusSpecificOneBP<typename P::targetP>(tlwe[i], encoder_domain.bp, encoder_target.bp);
-        //printf("==============================\n");
-        //printf("\nbara_tlwe_%d: %llu\n", i, bara);
+        bara = modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[i], encoder_domain.bp, encoder_target.bp);
         if (bara == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
-        //CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(
-        CMUXFFTwithPolynomialMulByXai<typename P::targetP>(
+        CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(
             acc, bkfft[i], bara);
     }
 }
@@ -211,35 +143,9 @@ void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
         PolynomialMulByXai<typename P::targetP>(temp[1], acc[1], bara);
-        printf("\n==================\n");
-        printf("baraforb: %d\n", bara);
-        printf("acc[0]: ");
-        for(int i=0; i<P::targetP::n; i++){
-            printf("%d, ", acc[0][i]);
-        }
-        printf("\n");
-        printf("temp[0]: ");
-        for(int i=0; i<P::targetP::n; i++){
-            printf("%d, ", temp[0][i]);
-        }
-        printf("\n");
-        printf("acc[1]: ");
-        for(int i=0; i<P::targetP::n; i++){
-            printf("%d, ", acc[1][i]);
-        }
-        printf("\n");
-        printf("temp[1]: ");
-        for(int i=0; i<P::targetP::n; i++){
-            printf("%d, ", temp[1][i]);
-        }
-        printf("\n");
 
         acc[0] = temp[0];
         acc[1] = temp[1];
-        //for(int i=0; i<P::targetP::n; i++){
-        //    acc[0][i] = temp[0][i];
-        //    acc[1][i] = temp[1][i];
-        //}
     }
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
@@ -267,13 +173,6 @@ void ProgrammableBootstrappingTLWE2TLWEFFTDEBUGWITHKEY(TRLWE<typename P::targetP
     ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY<P>(res, tlwe, bkfft, encoder_domain, encoder_target, sk);
     //SampleExtractIndex<typename P::targetP>(res, acc, 0);
 }
-//#define INST(P)                                     \
-//    template void ProgrammableBootstrappingTLWE2TLWEFFTDEBUGWITHKEY<P>( \
-//        TRLWE<typename P::targetP> & res,            \
-//        const TLWE<typename P::domainP> &tlwe,      \
-//        const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder, Key<lvl0param> sk)
-//TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
-//#undef INST
 
 template <class P>
 void ProgrammableBootstrappingTLWE2TLWEFFTDEBUG(TRLWE<typename P::targetP> &res,
