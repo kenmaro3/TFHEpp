@@ -260,11 +260,11 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe
     IdentityKeySwitchWITHEncoder<lvl10param>(res, tlwelvl1, gk.ksk, encoder_target, encoder_target);
 }
 
-//void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-//                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double))
-//{
-//    ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target, function);
-//}
+void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double))
+{
+    ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target, function);
+}
 
 //void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
 //                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target)
