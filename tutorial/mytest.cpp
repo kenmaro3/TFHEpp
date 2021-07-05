@@ -26,7 +26,7 @@ int main()
     double x1 = 10.;
     double x2 = 40.;
     double x3 = -50.;
-    int bs_bp = 28;
+    int bs_bp = 31;
 
     TFHEpp::Encoder encoder_bs(a, b, bs_bp);
 
