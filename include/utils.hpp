@@ -20,6 +20,14 @@ static thread_local randen::Randen<uint64_t> generator(trng());
 template <typename T>
 constexpr bool false_v = false;
 
+inline double my_identity_function(double x){
+    return x;
+}
+
+inline double my_relu_function(double x){
+    return x >= 0 ? x : 0.; 
+}
+
 inline double frand(double fMin, double fMax)
 {
     double f = (double)rand() / RAND_MAX;

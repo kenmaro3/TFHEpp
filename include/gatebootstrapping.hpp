@@ -101,16 +101,16 @@ void GateBootstrappingTLWE2TLWEFFTvariableMu(
     const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2);
 
 void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
+                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double));
 
-void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
+//void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+//                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double));
 
-void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
+//void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+//                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target);
 
-void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
-                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk);
+//void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,
+//                       const GateKey &gk, Encoder &encoder_domain, Encoder &encoder_target, Key<lvl0param> sk);
 
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk);

@@ -83,19 +83,27 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
+void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+{
+    typename P::T phase = c[P::n];
+    for (int i = 0; i < P::n; i++){
+        phase -= c[i] * key[i];
+    }
+    printf("phase: %llu\n", phase);
+}
+#define INST(P) \
+    template void showPhase<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#undef INST
+
+template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 {
     typename P::T phase = c[P::n];
-    //printf("phasen: %d\n", phase);
     for (int i = 0; i < P::n; i++){
-        //printf("phasei: %d\n", c[i]);
-        //printf("phaseni: %d\n", c[i]*key[i]);
-        //printf("keyi: %lu\n", key[i]);
         phase -= c[i] * key[i];
     }
-    //printf("phase: %d\n", phase);
     double res = encoder.decode(phase);
-    //printf("res: %f\n", (res-encoder.a)/encoder.d);
     return res;
 }
 #define INST(P) \

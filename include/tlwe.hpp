@@ -145,6 +145,9 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
     const array<typename P::T, P::n> &key, const Encoder &encoder);
 
 template <class P>
+void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
+
+template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>

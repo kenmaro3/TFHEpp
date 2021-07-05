@@ -36,10 +36,29 @@ void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
 }
 
+void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+{
+    for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
+    res[lvl0param::n] += encoder1.dtotx(0.5);
+}
+
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
 {
     encoder1.update(encoder1.a-encoder2.b, encoder1.b-encoder2.a, encoder1.bp+1);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
+}
+
+void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+{
+    for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
+}
+
+void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, Encoder &encoder_bs, GateKey &gk)
+{
+    TLWE<lvl0param> test_x_minus_y, test_bs;
+    TFHEpp::HomSUBFixedEncoder(test_x_minus_y, ca, cb, encoder1, encoder2);
+    TFHEpp::ProgrammableBootstrapping(test_bs, test_x_minus_y, gk, encoder1, encoder_bs, my_relu_function);
+    TFHEpp::HomADDFixedEncoder(res, test_bs, cb, encoder_bs, encoder2);
 }
 
 void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
