@@ -9,6 +9,7 @@ void HomCONSTANTONE(TLWE<lvl0param> &res);
 void HomCONSTANTZERO(TLWE<lvl0param> &res);
 void HomNOT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
 void HomCOPY(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca);
+void adjust_bp(TLWE<lvl0param> &c, Encoder &encoder, int bp_diff);
 void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2);
 void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2);
 void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb);
