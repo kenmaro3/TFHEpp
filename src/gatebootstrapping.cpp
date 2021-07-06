@@ -103,7 +103,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
     for(int i=0; i<=P::domainP::n; i++){
         temp1[i] = tlwe[i] >> 1;
     }
-    uint32_t bara = 2 * P::targetP::n - modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
+    uint32_t bara = 2 * P::targetP::n - modSwitchFromTorusSpecificTwoBP<P>(temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
 
     CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target, function);
     TRLWE<typename P::targetP> temp;
@@ -116,7 +116,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
     }
 
     for (int i = 0; i < P::domainP::n; i++) {
-        bara = modSwitchFromTorusSpecificTwoBP<typename P::targetP>(temp1[i], encoder_domain.bp, encoder_target.bp);
+        bara = modSwitchFromTorusSpecificTwoBP<P>(temp1[i], encoder_domain.bp, encoder_target.bp);
         if (bara == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
         CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(

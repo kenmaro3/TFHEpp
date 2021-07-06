@@ -134,9 +134,6 @@ template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>
-void PBDEBUG(const TLWE<P> &c, const Key<P> &key, Encoder &encoder_domain, Encoder &encoder_target);
-
-template <class P>
 array<typename P::T, P::n + 1> tlweSymEncrypt(
     const typename P::T p, const double alpha,
     const array<typename P::T, P::n> &key);

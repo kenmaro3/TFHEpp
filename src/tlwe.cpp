@@ -61,28 +61,6 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
-void PBDEBUG(const TLWE<P> &c, const Key<P> &key, Encoder &encoder_domain, Encoder &encoder_target)
-{
-    typename P::T phase = c[P::n];
-    uint32_t bara = -modSwitchFromTorusSpecificOneBP<lvl1param>(phase, encoder_domain.bp, encoder_target.bp+1);
-    printf("\n=======================\n");
-    printf("bara_b: %llu\n", bara);
-    for (int i = 0; i < P::n; i++){
-        uint32_t tmp = modSwitchFromTorusSpecificOneBP<lvl1param>(c[i]*key[i], encoder_domain.bp, encoder_target.bp+1);
-        bara += tmp;
-        printf("bara_a: %llu\n",tmp);
-    }
-    uint32_t res = modSwitchFromTorusSpecificOneBP<lvl1param>(bara, encoder_domain.bp, encoder_target.bp+1);
-
-    printf("res: %llu\n", bara);
-    //printf("res: %llu\n", res);
-}
-#define INST(P) \
-    template void PBDEBUG<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder_domain, Encoder &encoder_target)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
-#undef INST
-
-template <class P>
 void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 {
     typename P::T phase = c[P::n];

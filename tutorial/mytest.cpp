@@ -167,7 +167,7 @@ int main()
 
     for(int i=0; i<19; i++){
         x1 = a + (double)i*10.;
-        Encoder encoder(-100., 100., 31);
+        Encoder encoder(-100., 100., 38);
         cout << "\n=============================" << endl;
         TLWE<lvl1param> cpb1;
         TLWE<lvl0param> cpb0;

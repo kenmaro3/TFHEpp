@@ -103,19 +103,11 @@ inline typename P::T modSwitchFromTorus(uint32_t phase)
 }
 
 template <class P>
-inline typename P::T modSwitchFromTorusSpecificOneBP(uint32_t phase, int domain_bp, int target_bp)
+inline typename P::targetP::T modSwitchFromTorusSpecificTwoBP(typename P::domainP::T phase, int domain_bp, int target_bp)
 {
     //return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
     //return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
-    return (phase >> (domain_bp - lvl1param::nbit)) % (1UL << (lvl1param::nbit));
-}
-
-template <class P>
-inline typename P::T modSwitchFromTorusSpecificTwoBP(uint32_t phase, int domain_bp, int target_bp)
-{
-    //return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
-    //return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
-    return (phase >> (domain_bp - lvl1param::nbit - 1)) % (1UL << (lvl1param::nbit + 1));
+    return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL << (P::targetP::nbit + 1));
 }
 
 // https://stackoverflow.com/questions/21191307/minimum-number-of-bits-to-represent-a-given-int
