@@ -89,10 +89,10 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &
 {
     for (int i = 0; i < lvl0param::n; i++) res[i] = ca[i];
     if(b>0){
-        uint32_t tmp = encoder.encode(b + encoder.a);
+        lvl0param::T tmp = encoder.encode(b + encoder.a);
         res[lvl0param::n] = ca[lvl0param::n] + tmp;
     }else{
-        uint32_t tmp = encoder.encode(-b + encoder.a);
+        lvl0param::T tmp = encoder.encode(-b + encoder.a);
         res[lvl0param::n] = ca[lvl0param::n] - tmp;
 
     }
@@ -135,7 +135,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     assert(b<=mult_max);
     assert(b>=(-1)*mult_max);
 
-    uint32_t prev_0 = encoder.encode(0.);
+    lvl0param::T prev_0 = encoder.encode(0.);
     double b_abs_decimal = abs(b);
 
     vector<double> test2;
@@ -146,7 +146,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     int index = find_index(b_abs_decimal, test2);
     
     for (int i = 0; i <= lvl0param::n; i++){
-        uint32_t ca_minus_0;
+        lvl0param::T ca_minus_0;
         if(i==lvl0param::n){
             ca_minus_0 = ca[i] - prev_0;
         }else{
@@ -155,7 +155,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
         res[i] = ca_minus_0 * index;
     }
     encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
-    uint32_t after_0 = encoder.encode(0.);
+    lvl0param::T after_0 = encoder.encode(0.);
     res[lvl0param::n] += after_0;
 
     if(b >=0){
@@ -168,7 +168,7 @@ void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const doubl
 {
     assert(b<=1.);
     assert(b>=-1.);
-    uint32_t prev_0 = encoder.encode(0.);
+    lvl0param::T prev_0 = encoder.encode(0.);
     double b_abs_decimal = abs(b);
 
     vector<double> test2;
@@ -179,7 +179,7 @@ void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const doubl
     int index = find_index(b_abs_decimal, test2);
     
     for (int i = 0; i <= lvl0param::n; i++){
-        uint32_t ca_minus_0;
+        lvl0param::T ca_minus_0;
         if(i==lvl0param::n){
             ca_minus_0 = ca[i] - prev_0;
         }else{
@@ -188,7 +188,7 @@ void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const doubl
         res[i] = ca_minus_0 * index;
     }
     encoder.update(encoder.a*1, encoder.b*1, encoder.bp+mult_bp);
-    uint32_t after_0 = encoder.encode(0.);
+    lvl0param::T after_0 = encoder.encode(0.);
     res[lvl0param::n] += after_0;
 
     if(b >=0){

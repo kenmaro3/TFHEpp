@@ -84,27 +84,6 @@ class Encoder
             return tmp4 + floor(x);
         }
 
-        uint32_t embed_constant(double x, double max, uint32_t precision){
-            uint32_t maximum = UINT32_MAX;
-            uint32_t embedded = std::round((double)maximum * (x / max));
-            uint32_t left = 0;
-            uint32_t right = maximum ;
-
-            for(uint32_t i = precision;0<i;i--){
-                uint32_t mid = (right-left) >> 1;
-                if(x<=left+mid) right = left + mid;
-                else left = left + mid;
-            }
-
-            uint32_t rounded = embedded-left <= right-embedded ? left : right;
-
-            return rounded;
-        }
-
-        uint32_t dtotx(double d) const{
-            return uint32_t(int64_t((d - int64_t(d)) * (1LL << this->bp)));
-        }
-
         void negate(){
             this->d *= -1.;
             double tmp_a = this->a;
@@ -112,24 +91,28 @@ class Encoder
             this->b = tmp_a;
         }
 
-        uint32_t encode(double x) const{
+        lvl0param::T dtotx(double d) const{
+            return static_cast<lvl0param::T>(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+        }
+
+        lvl0param::T encode(double x) const{
             assert(x >= this->a);
             assert(x <= this->b);
             if (x == this->a) x = encode_sanitize(x);
             return dtotx((x-this->a)/this->d);
         }
 
-        double txtod(uint32_t x) const{
+        double txtod(lvl0param::T x) const{
             double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
             return tmp_0_1;
         }
 
-        double t32tod(uint32_t x) const{
-            double tmp_0_1 = static_cast<double>(x) / pow(2, 32);
+        double t32tod(lvl0param::T x) const{
+            double tmp_0_1 = static_cast<double>(x) / pow(2, std::numeric_limits<lvl0param::T>::digits);
             return tmp_0_1;
         }
 
-        double decode(const uint32_t x){
+        double decode(const lvl0param::T x){
             double tmp_0_1 = this->txtod(x);
             tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
             return tmp_0_1 * this->d + this->a;

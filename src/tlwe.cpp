@@ -23,7 +23,7 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
     uniform_int_distribution<typename P::T> Torusdist(
         0, numeric_limits<typename P::T>::max());
     array<typename P::T, P::n + 1> res = {};
-    uint32_t p = encoder.encode(x);
+    lvl0param::T p = encoder.encode(x);
     res[P::n] = ModularGaussian<P>(p, alpha);
     for (int i = 0; i < P::n; i++) {
         res[i] = Torusdist(generator);
