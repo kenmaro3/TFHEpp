@@ -7,110 +7,237 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include <cassert>
 
 using namespace std;
 using namespace TFHEpp;
 
-int main()
-{
+#include <chrono>
+using namespace std::chrono;
+inline double get_time_sec(void){
+    return static_cast<double>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count())/1000000000;
+}
+
+
+void print_vec_1d(vector<double> x){
+    for(int i=0; i<x.size(); i++){
+        printf("%f, ", x[i]);
+    }
+    printf("\n");
+}
+
+void print_vec_2d(vector<vector<double>> x){
+    for(int i=0; i<x.size(); i++){
+        print_vec_1d(x[i]);
+    }
+    printf("\n");
+}
+
+int main(){
     printf("hello, world\n\n");
-    double a = -100.;
-    double b = 100.;
-    TFHEpp::Encoder encoder(a, b, 31);
-    TFHEpp::Encoder encoder_ksk(0, 1, 31);
+    double encoder_a = -2.;
+    double encoder_b = 2.;
+    int bs_bp = 31;
+
+    TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
         std::make_unique<TFHEpp::SecretKey>();
     std::unique_ptr<TFHEpp::GateKey> gk =
-        std::make_unique<TFHEpp::GateKey>(*sk, encoder);
+        std::make_unique<TFHEpp::GateKey>(*sk, encoder_bs);
 
 
-    vector<double> p_vec(lvl1param::n);
-    //for(int i=0; i<lvl1param::n; i++) p_vec[i] = (double)(i)/100;
-    for(int i=0; i<5; i++) p_vec[i] = (double)(i);
+    int dim1 = 4;
+    int dim2 = 3;
+    vector<vector<double>> w(dim1, vector<double>(dim2));
+    vector<double> b(dim2);
+    vector<double> x(dim1);
 
-    cout << "lvl1" << endl;
-    lweKey key;
-    array<double, lvl1param::n> pmu;
-    for (int i = 0; i < lvl1param::n; i++)
-        pmu[i] =  p_vec[i];
+    printf("\n=============================================================\n");
+    cout << "settings" << endl;
+    cout << "dim1: " <<  w.size() << endl;
+    cout << "dim2: " << w[0].size() << endl;
+    
+    assert(w.size() == dim1);
+    assert(w[0].size() == dim2);
+    assert(b.size() == dim2);
+    assert(x.size() == dim1);
 
-    TRLWE<TFHEpp::lvl1param> c1 = trlweSymEncodeEncrypt<lvl1param>(pmu, lvl1param::alpha, key.lvl1, encoder);
-    TRLWE<TFHEpp::lvl1param> c2 = trlweSymEncodeEncrypt<lvl1param>(pmu, lvl1param::alpha, key.lvl1, encoder);
-    array<double, lvl1param::n> d1 = trlweSymDecryptDecode<lvl1param>(c1, key.lvl1, encoder);
-    array<double, lvl1param::n> d2 = trlweSymDecryptDecode<lvl1param>(c2, key.lvl1, encoder);
-    for(int i=0; i<10; i++) printf("%f, ", d1[i]);
-    printf("\n");
-    for(int i=0; i<10; i++) printf("%f, ", d2[i]);
-    printf("\n");
-
-    //TRLWE<TFHEpp::lvl1param> c3 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, key.lvl1);
-    TRLWE<TFHEpp::lvl1param> c3;
-    HomADD(c3, c1, c2);
-    array<double, lvl1param::n> d3 = trlweSymDecryptDecode<lvl1param>(c3, key.lvl1, encoder);
-    for(int i=0; i<10; i++) printf("%f, ", d3[i]);
-    printf("\n");
-
-    //TRLWE<TFHEpp::lvl1param> c4 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, key.lvl1);
-    TRLWE<TFHEpp::lvl1param> c4;
-    HomSUB(c4, c1, c2);
-    array<double, lvl1param::n> d4 = trlweSymDecryptDecode<lvl1param>(c4, key.lvl1, encoder);
-    for(int i=0; i<10; i++) printf("%f, ", d4[i]);
-    printf("\n");
-
-    vector<double> ex_res(10);
-    TLWE<lvl1param> ex_1;
-    for(int i=0; i<10; i++){
-        const int index = 0;
-        SampleExtractIndex<lvl1param>(ex_1, c1, i);
-        double decex_1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(ex_1, sk->key.lvl1, encoder);
-        ex_res[i] = decex_1;
+    for(int i=0; i<w.size(); i++){
+        for(int j=0; j<w[0].size(); j++){
+            w[i][j] = (double)i * 0.1;
+        }
 
     }
-    printf("\nSE:\n");
-    for(int i=0; i<10; i++){
-        printf("%f, ", ex_res[i]);
+    for(int i=0; i<b.size(); i++){
+        b[i] = (double)i * (-0.1);
     }
-    printf("\n");
-
-
-    TLWE<lvl0param> ex_0;
-    for(int i=0; i<10; i++){
-        const int index = 0;
-        SampleExtractIndex<lvl1param>(ex_1, c1, i);
-        //IdentityKeySwitch<lvl10param>(ex_0, ex_1, gk->ksk);
-        IdentityKeySwitchWITHEncoder<lvl10param>(ex_0, ex_1, gk->ksk, encoder, encoder);
-        double decex_0 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(ex_0, sk->key.lvl0, encoder);
-        ex_res[i] = decex_0;
-
+    for(int i=0; i<x.size(); i++){
+        x[i] = (double)i * 0.1;
     }
-    printf("\nSE -> KS:\n");
-    for(int i=0; i<10; i++){
-        printf("%f, ", ex_res[i]);
+
+
+    cout << "vec x" << endl;
+    print_vec_1d(x);
+
+    cout << "vec w" << endl;
+    print_vec_2d(w);
+
+    cout << "vec b" << endl;
+    print_vec_1d(b);
+
+
+    Encoder encoder(encoder_a, encoder_b, 31);
+    vector<TLWE<lvl0param>> cs(dim1);
+    vector<Encoder> encoders(dim1);
+
+    for(int i=0; i<dim1; i++){
+        Encoder encoder(encoder_a, encoder_b, 31);
+        cs[i] = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x[i], lvl0param::alpha, sk->key.lvl0, encoder);
+        encoders[i] = encoder;
     }
-    printf("\n");
+    vector<double> decs;
+    for(int i=0; i<cs.size(); i++){
+        decs.push_back(TFHEpp::tlweSymDecryptDecode<lvl0param>(cs[i], sk->key.lvl0, encoders[i]));
+    }
+    cout << "decs" << endl;
+    print_vec_1d(decs);
 
 
-    //printf("\nISA:\n");
-    //double x1 = 12.;
-    //TLWE<lvl1param> c5 = tlweSymEncodeEncrypt<lvl1param>(x1, lvl1param::alpha, sk->key.lvl1, encoder);
-    //TRLWE<lvl1param> c6 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
-    //InverseSampleExtractIndex<lvl1param>(c6, c5, 1);
-    //double dec5 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl1param>(c5, sk->key.lvl1, encoder);
-    //printf(": %f, dec5: %f\n\n", x1, dec5);
-    //array<double, lvl1param::n> d6 = trlweSymDecryptDecode<lvl1param>(c6, key.lvl1, encoder);
-    //for(int i=0; i<10; i++) printf("%f, ", d6[i]);
-    //printf("\n");
 
-    //printf("\nHomADDCONST:\n");
-    //array<double, lvl1param::n> x2;
-    //for(int i=0; i<6; i++) x2[i] = 10. - double(i);
-    //TRLWE<lvl1param> c7 = trlweSymEncryptZero<lvl1param>(lvl1param::alpha, sk->key.lvl1);
-    //HomADDCONST(c7, c7, x2, encoder);
-    //array<double, lvl1param::n> d7 = trlweSymDecryptDecode<lvl1param>(c7, key.lvl1, encoder);
-    //for(int i=0; i<10; i++) printf("%f, ", d7[i]);
-    //printf("\n");
+    //####################################################################################################
+    // cipher calc 
+    vector<vector<TLWE<lvl0param>>> cs_copy(dim2, vector<TLWE<lvl0param>>(dim1));
+    for(int i=0; i<dim2; i++){
+        cs_copy[i] = cs;
+    }
+    vector<vector<Encoder>> encoder_copy(dim2, vector<Encoder>(dim1));
+    for(int i=0; i<dim2; i++){
+        encoder_copy[i] = encoders;
+    }
+
+    assert(cs_copy.size() == dim2);
+    assert(cs_copy[0].size() == dim1);
+
+    vector<TLWE<lvl0param>> csw(dim2);
+    vector<Encoder> encodersw(dim2);
+    for(int j=0; j<dim2; j++){
+        //cout << "loop1: " << j << endl;
+        TLWE<lvl0param> tmp;
+        TFHEpp::HomMULTCONSTREAL(tmp, cs_copy[j][0], w[0][j], encoder_copy[j][0], 8, 1);
+        for(int i=1; i<dim1; i++){
+            //cout << "loop2: " << i << endl;
+            TLWE<lvl0param> tmp2;
+            TFHEpp::HomMULTCONSTREAL(tmp2, cs_copy[j][i], w[i][j], encoder_copy[j][i], 8, 1);
+            if(i==1){
+                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i], true);
+            }else{
+                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i], false);
+            }
+            //TFHEpp::HomADD(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i]);
+        }
+        csw[j] = tmp;
+        encodersw[j] = encoder_copy[j][0];
+    }
+    assert(csw.size() == dim2);
+
+
+    vector<TLWE<lvl0param>> cswb(dim2);
+    vector<Encoder> encoderswb(dim2);
+    for(int i=0; i<dim2; i++){
+        TFHEpp::HomADDCONST(cswb[i], csw[i], b[i], encodersw[i]);
+        encoderswb[i] = encodersw[i];
+    }
+    assert(cswb.size() == dim2);
+
+    vector<TLWE<lvl0param>> cswbr(dim2);
+    vector<Encoder> encoderswbr(dim2);
+    encoder_bs.update(encoderswb[0].a, encoderswb[0].b, encoder_bs.bp);
+    for(int i=0; i<dim2; i++){
+        TFHEpp::ProgrammableBootstrapping(cswbr[i], cswb[i], *gk.get(), encoderswb[i], encoder_bs, my_relu_function);
+        encoderswbr[i] = encoder_bs;
+    }
+
+
+
+    printf("\n=============================================================\n");
+    cout << "res_cipher" << endl;
+    vector<double> decsw;
+    for(int i=0; i<csw.size(); i++){
+        decsw.push_back(TFHEpp::tlweSymDecryptDecode<lvl0param>(csw[i], sk->key.lvl0, encodersw[i]));
+    }
+
+    cout << "decsw" << endl;
+    print_vec_1d(decsw);
+
+    vector<double> decswb;
+    for(int i=0; i<cswb.size(); i++){
+        decswb.push_back(TFHEpp::tlweSymDecryptDecode<lvl0param>(cswb[i], sk->key.lvl0, encoderswb[i]));
+    }
+
+    cout << "decswb" << endl;
+    print_vec_1d(decswb);
+
+    vector<double> decswbr;
+    for(int i=0; i<cswbr.size(); i++){
+        decswbr.push_back(TFHEpp::tlweSymDecryptDecode<lvl0param>(cswbr[i], sk->key.lvl0, encoderswbr[i]));
+    }
+
+    cout << "decswbr" << endl;
+    print_vec_1d(decswbr);
+
+
+    //TLWE<lvl0param> tmp_bs;
+    ////TFHEpp::ProgrammableBootstrapping(tmp_bs, cswb[0], *gk.get(), encoderswb[0], encoder_bs, my_identity_function);
+    //Encoder encoder_tmp1(-2, 2, 39);
+    //for(int i=0; i<dim2; i++){
+    //    TFHEpp::ProgrammableBootstrapping(tmp_bs, cswb[i], *gk.get(), encoder_tmp1, encoder_bs, my_identity_function);
+    //    double tmp_dec = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp_bs, sk->key.lvl0, encoder_bs);
+    //    cout << "here " << tmp_dec << endl;
+    //}
+    //encoderswb[0].print();
+    //encoder_bs.print();
+
+    //####################################################################################################
+    // validation with raw calc 
+    vector<double> raww(dim2);
+    for(int j=0; j<dim2; j++){
+        double tmp = x[0] * w[0][j];
+        for(int i=1; i<dim1; i++){
+            tmp += x[i] * w[i][j];
+        }
+        raww[j] = tmp;
+    }
+    printf("\n=============================================================\n");
+    cout << "res_raw" << endl;
+    cout << "raww" << endl;
+    print_vec_1d(raww);
+
+    vector<double> rawwb(dim2);
+    for(int i=0; i<dim2; i++){
+        rawwb[i] = raww[i] + b[i];
+    }
+
+    cout << "rawwb" << endl;
+    print_vec_1d(rawwb);
+
+
+    vector<double> rawwbr(dim2);
+    for(int i=0; i<dim2; i++){
+        rawwbr[i] = my_relu_function(rawwb[i]);
+    }
+
+    cout << "rawwbr" << endl;
+    print_vec_1d(rawwbr);
+
+
+
+
+
+
+
+
 
 
 }

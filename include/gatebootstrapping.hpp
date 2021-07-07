@@ -58,6 +58,11 @@ template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFTWITHKEY(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,
                                     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder, Key<lvl0param> sk);
+//template <class P>
+//void ProgrammableBootstrappingTLWE2TRLWEFFTNegative(TRLWE<typename P::targetP> &acc,
+//                                    const TLWE<typename P::domainP> &tlwe,
+//                                    const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target);
+
 template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
                                     const TLWE<typename P::domainP> &tlwe,

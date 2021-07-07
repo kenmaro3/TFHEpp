@@ -24,6 +24,7 @@ class Encoder
         double half;
         double half_d;
         int bp;
+        int count_fixed_encoder_ops;
 
 
         void print(){
@@ -37,6 +38,11 @@ class Encoder
 
         }
 
+        static Encoder copy(Encoder &encoder){
+            Encoder tmp(encoder.a, encoder.b, encoder.bp);
+            return tmp;
+        }
+
         Encoder(){
             this->a = -10.;
             this->b = 10.;
@@ -46,6 +52,7 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = 16;
+            this->count_fixed_encoder_ops = 0;
         };
 
         Encoder(double a, double b, int bp){
@@ -57,6 +64,7 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = bp;
+            this->count_fixed_encoder_ops = 0;
 
         }
 
@@ -69,6 +77,7 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = bp;
+            this->count_fixed_encoder_ops = 0;
         }
 
         double encode_0_1(double x) const{

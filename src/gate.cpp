@@ -48,13 +48,16 @@ void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
 }
 
-void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, bool is_count_up=false)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
     res[lvl0param::n] += encoder1.dtotx(0.5);
+    if(is_count_up){
+        encoder1.count_fixed_encoder_ops += 1;
+    }
 }
 
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
@@ -66,12 +69,15 @@ void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
 }
 
-void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, bool is_count_up=false)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
+    if(is_count_up){
+        encoder1.count_fixed_encoder_ops += 1;
+    }
 }
 
 void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, Encoder &encoder_bs, GateKey &gk)
