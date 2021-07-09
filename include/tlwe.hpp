@@ -17,14 +17,14 @@ using namespace std;
 class Encoder
 {
     public:
-        double a;
-        double b;
+        double a;  // input lower bound
+        double b;  // input upper bound
         double d;
         double d2;
         double half;
         double half_d;
-        int bp;
-        int count_fixed_encoder_ops;
+        int bp;    // bit precision including noise bit (lvl0param::T - bp is padding bit)
+        // bp = (noise bit + plaintext precision bit)
 
 
         void print(){
@@ -52,7 +52,6 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = 16;
-            this->count_fixed_encoder_ops = 0;
         };
 
         Encoder(double a, double b, int bp){
@@ -64,7 +63,6 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = bp;
-            this->count_fixed_encoder_ops = 0;
 
         }
 
@@ -77,7 +75,6 @@ class Encoder
             this->half = (b+a)/2.;
 
             this->bp = bp;
-            this->count_fixed_encoder_ops = 0;
         }
 
         double encode_0_1(double x) const{
@@ -100,8 +97,79 @@ class Encoder
             this->b = tmp_a;
         }
 
+        static lvl0param::T dtotx(double d, int bpx){
+            double tmp = d - floor(d);
+            tmp = tmp * pow(2., bpx);
+            double tmp2 = tmp - floor(tmp);
+            if(tmp2 < 0.5){
+                return static_cast<lvl0param::T>(tmp);
+            }else{
+                return static_cast<lvl0param::T>(tmp+1);
+            }
+
+        }
+
+        static lvl0param::T dtotx(double d, double max,  int bpx){
+            d = d/max;
+            double tmp = d - floor(d);
+            tmp = tmp * pow(2., bpx);
+            double tmp2 = tmp - floor(tmp);
+            if(tmp2 < 0.5){
+                return static_cast<lvl0param::T>(tmp);
+            }else{
+                return static_cast<lvl0param::T>(tmp+1);
+            }
+        }
+
+        static uint64_t dtotx64(double d, double max,  int bpx){
+            d = d/max;
+            double tmp = d - floor(d);
+            tmp = tmp * pow(2., bpx);
+            double tmp2 = tmp - floor(tmp);
+            printf("tmp: %llu\n", tmp);
+            if(tmp2 < 0.5){
+                return static_cast<uint64_t>(tmp);
+            }else{
+                return static_cast<uint64_t>(tmp+1);
+            }
+
+        }
+
         lvl0param::T dtotx(double d) const{
-            return static_cast<lvl0param::T>(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+            //return static_cast<lvl0param::T>(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+            double tmp = d - floor(d);
+            tmp = tmp * pow(2., this->bp);
+            double tmp2 = tmp - floor(tmp);
+            if(tmp2 < 0.5){
+                return static_cast<lvl0param::T>(tmp);
+            }else{
+                return static_cast<lvl0param::T>(tmp+1);
+            }
+        }
+
+        uint64_t dtotx64(double d) const{
+            //return static_cast<lvl0param::T>(int64_t((d - int64_t(d)) * (1LL << this->bp)));
+            double tmp = d - floor(d);
+            if(this->bp<=32){
+                uint64_t tmp2 = uint64_t(tmp * pow(2, 32));
+                printf("tmp2 > dtotx64: %llu\n", tmp2);
+                printf("bp > dtotx64: %d\n", this->bp);
+                return tmp2;
+            }else{
+                uint64_t tmp2 = uint64_t(tmp * pow(2, 32));
+                printf("tmp2 > dtotx64: %llu\n", tmp2);
+                printf("bp > dtotx64: %d\n", this->bp);
+                tmp2 = tmp2 << (this->bp-32);
+                printf("tmp2 > dtotx64: %llu\n", tmp2);
+                return tmp2;
+            }
+            //tmp = tmp * pow(2., this->bp);
+            //double tmp2 = tmp - floor(tmp);
+            //if(tmp2 < 0.5){
+            //    return static_cast<uint64_t>(tmp);
+            //}else{
+            //    return static_cast<uint64_t>(tmp+1);
+            //}
         }
 
         lvl0param::T encode(double x) const{
@@ -111,9 +179,30 @@ class Encoder
             return dtotx((x-this->a)/this->d);
         }
 
-        double txtod(lvl0param::T x) const{
-            double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
-            return tmp_0_1;
+        uint64_t encode64(double x) const{
+            assert(x >= this->a);
+            assert(x <= this->b);
+            if (x == this->a) x = encode_sanitize(x);
+            double tmp = (x-this->a)/this->d;
+            printf("tmp encode: %f\n", tmp);
+            return dtotx64(tmp);
+            //return dtotx64((x-this->a)/this->d);
+        }
+
+        //double txtod(lvl0param::T x) const{
+        //    double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
+        //    return tmp_0_1;
+        //}
+
+        double txtod(uint64_t x) const{
+            if(this->bp >32){
+                uint32_t tmp_x = x >> 32;
+                double tmp_0_1 = static_cast<double>(tmp_x) / pow(2, this->bp-32);
+                return tmp_0_1;
+            }else{
+                double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
+                return tmp_0_1;
+            }
         }
 
         double t32tod(lvl0param::T x) const{
@@ -121,8 +210,16 @@ class Encoder
             return tmp_0_1;
         }
 
-        double decode(const lvl0param::T x){
+        //double decode(const lvl0param::T x){
+        //    double tmp_0_1 = this->txtod(x);
+        //    printf("tmp_0_1: %f\n", tmp_0_1);
+        //    tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+        //    return tmp_0_1 * this->d + this->a;
+        //}
+        
+        double decode(const uint64_t x){
             double tmp_0_1 = this->txtod(x);
+            printf("tmp_0_1: %f\n", tmp_0_1);
             tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
             return tmp_0_1 * this->d + this->a;
         }
@@ -141,6 +238,9 @@ void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
+
+template <class P>
+double tlweSymDecryptDecode64(const array<uint64_t, lvl0param::n+1> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>
 array<typename P::T, P::n + 1> tlweSymEncrypt(

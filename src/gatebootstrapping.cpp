@@ -69,8 +69,8 @@ inline void CreateCustomTestVector(array<array<typename P::T, P::n>, 2> &testvec
 {
     testvector[0] = {};
     for(int i=0; i<P::n; i++){
-        //double tmp = encoder_target.a + encoder_target.d/2.*double(i)/double(P::n);
-        double tmp = encoder_target.a + encoder_target.d*double(i)/double(P::n);
+        double tmp = encoder_target.a + encoder_target.d/2.*double(i)/double(P::n);
+        //double tmp = encoder_target.a + encoder_target.d*double(i)/double(P::n);
         testvector[1][i] = encoder_target.encode(function(tmp));
     }
 
@@ -149,15 +149,16 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
 {
     TLWE<typename P::domainP> temp1;
     for(int i=0; i<=P::domainP::n; i++){
-        temp1[i] = tlwe[i] >> 1;
+        //temp1[i] = tlwe[i] >> 1;
+        temp1[i] = tlwe[i];
     }
     uint32_t bara = 2 * P::targetP::n - modSwitchFromTorusSpecificTwoBP<P>(temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
 
-    if(encoder_domain.count_fixed_encoder_ops%2==0){
-        CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target, function);
-    }else{
-        CreateCustomTestVectorNegative<typename P::targetP>(acc, bara, encoder_target, function);
-    }
+    //if(encoder_domain.count_fixed_encoder_ops%2==0){
+    CreateCustomTestVector<typename P::targetP>(acc, bara, encoder_target, function);
+    //}else{
+    //    CreateCustomTestVectorNegative<typename P::targetP>(acc, bara, encoder_target, function);
+    //}
     TRLWE<typename P::targetP> temp;
     if(bara!=0){
         PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
@@ -319,7 +320,6 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe
     TLWE<lvl1param> tlwelvl1;
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(tlwelvl1, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target, function);
     IdentityKeySwitchWITHEncoder<lvl10param>(res, tlwelvl1, gk.ksk, encoder_target, encoder_target);
-    encoder_target.count_fixed_encoder_ops = encoder_domain.count_fixed_encoder_ops;
 }
 
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res, const TLWE<lvl0param> &tlwe,

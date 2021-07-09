@@ -131,9 +131,9 @@ int main(){
             TLWE<lvl0param> tmp2;
             TFHEpp::HomMULTCONSTREAL(tmp2, cs_copy[j][i], w[i][j], encoder_copy[j][i], 8, 1);
             if(i==1){
-                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i], true);
+                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i]);
             }else{
-                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i], false);
+                TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i]);
             }
             //TFHEpp::HomADD(tmp, tmp, tmp2, encoder_copy[j][0], encoder_copy[j][i]);
         }

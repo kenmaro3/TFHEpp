@@ -48,16 +48,13 @@ void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
 }
 
-void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, bool is_count_up=false)
+void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
     res[lvl0param::n] += encoder1.dtotx(0.5);
-    if(is_count_up){
-        encoder1.count_fixed_encoder_ops += 1;
-    }
 }
 
 void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
@@ -69,15 +66,12 @@ void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0para
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
 }
 
-void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, bool is_count_up=false)
+void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
-    if(is_count_up){
-        encoder1.count_fixed_encoder_ops += 1;
-    }
 }
 
 void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, Encoder &encoder_bs, GateKey &gk)
@@ -104,22 +98,87 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &
     }
 }
 
-void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int &b)
+void HomMULTCONSTREAL2(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
 {
-    if(b >=0){
-        for (int i = 0; i <= lvl0param::n; i++){
-            res[i] = ca[i] * b;
+    lvl0param::T prev_0 = encoder.encode(0.);
+    
+    for (int i = 0; i <= lvl0param::n; i++){
+        lvl0param::T ca_minus_0;
+        if(i==lvl0param::n){
+            ca_minus_0 = ca[i] - prev_0;
+        }else{
+            ca_minus_0 = ca[i];
         }
-    }else{
-        double tmp_b = abs(b);
-        for (int i = 0; i <= lvl0param::n; i++){
-            double b_decimal = tmp_b - int(tmp_b);
-            int inv_b = int(1./b_decimal);
-            lvl0param::T tmp = inv_b == 0 ? 0 : ca[i]/inv_b;
-            lvl0param::T tmp1 = ca[i] * int(tmp_b) + tmp;
-            res[i] = -tmp1;
-        }
+        res[i] = ca_minus_0 * b;
     }
+    //encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    //lvl0param::T after_0 = encoder.encode(0.);
+    res[lvl0param::n] += prev_0;
+
+}
+
+//void HomMULTCONSTINT(array<uint64_t, lvl0param::n+1> &res, const array<uint64_t, lvl0param::n+1> &ca, const int &b, Encoder &encoder)
+//{
+//    uint64_t prev_0 = encoder.encode(0.);
+//    //double b_abs_decimal = abs(b);
+//
+//    //int index = find_index(b_abs_decimal, test2);
+//    
+//    for (int i = 0; i <= lvl0param::n; i++){
+//        uint64_t ca_minus_0;
+//        if(i==lvl0param::n){
+//            ca_minus_0 = ca[i] - prev_0;
+//        }else{
+//            ca_minus_0 = ca[i];
+//        }
+//        //res[i] = ca_minus_0 * index;
+//        res[i] = ca_minus_0 * b;
+//    }
+//    //encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+//    //lvl0param::T after_0 = encoder.encode(0.);
+//    res[lvl0param::n] += prev_0;
+//
+//}
+
+void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int &b, Encoder &encoder)
+{
+    lvl0param::T prev_0 = encoder.encode(0.);
+    //double b_abs_decimal = abs(b);
+
+    //int index = find_index(b_abs_decimal, test2);
+    
+    for (int i = 0; i <= lvl0param::n; i++){
+        lvl0param::T ca_minus_0;
+        if(i==lvl0param::n){
+            ca_minus_0 = ca[i] - prev_0;
+        }else{
+            ca_minus_0 = ca[i];
+        }
+        //res[i] = ca_minus_0 * index;
+        res[i] = ca_minus_0 * b;
+    }
+    //encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    //lvl0param::T after_0 = encoder.encode(0.);
+    res[lvl0param::n] += prev_0;
+
+    //if(b >=0){
+    //}else{
+    //    HomMULTCONSTINT(res, res, -1);
+    //}
+    //if(b >=0){
+    //    for (int i = 0; i <= lvl0param::n; i++){
+    //        res[i] = ca[i] * b;
+    //    }
+    //}else{
+    //    double tmp_b = abs(b);
+    //    for (int i = 0; i <= lvl0param::n; i++){
+    //        double b_decimal = tmp_b - int(tmp_b);
+    //        int inv_b = int(1./b_decimal);
+    //        lvl0param::T tmp = inv_b == 0 ? 0 : ca[i]/inv_b;
+    //        lvl0param::T tmp1 = ca[i] * int(tmp_b) + tmp;
+    //        res[i] = -tmp1;
+    //    }
+    //}
 }
 
 
@@ -136,7 +195,78 @@ int find_index(double x, vector<double> y){
     return res;
 }
 
-void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
+void convert_t_to_t2(array<uint64_t, lvl0param::n+1> &res, const TLWE<lvl0param> &ca)
+{
+    for(int i=0; i<=lvl0param::n; i++){
+        res[i] = ca[i];
+    }
+}
+
+
+void HomMULTCONSTREAL5(array<uint64_t, lvl0param::n+1> &res, const array<uint64_t, lvl0param::n+1> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
+{
+    assert(b<=mult_max);
+    assert(b>=(-1)*mult_max);
+
+    uint64_t prev_0 = encoder.encode64(0.);
+    printf("prev_0: %llu\n", prev_0);
+    double b_abs_decimal = abs(b);
+
+    uint64_t index = Encoder::dtotx64(b, mult_max, mult_bp);
+    printf("index: %llu\n", index);
+    
+    for (int i = 0; i <= lvl0param::n; i++){
+        uint64_t ca_minus_0;
+        if(i==lvl0param::n){
+            ca_minus_0 = (ca[i] - prev_0) % (1ULL<<(encoder.bp + mult_bp));
+        }else{
+            ca_minus_0 = ca[i] % (1ULL<<(encoder.bp + mult_bp));
+        }
+        printf("res[i] before: %llu\n", res[i]);
+        res[i] = (ca_minus_0 * index) % (1ULL<<(encoder.bp + mult_bp));
+        printf("res[i] after: %llu\n", res[i]);
+    }
+    encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    uint64_t after_0 = encoder.encode64(0.)% (1ULL<<(encoder.bp));
+    printf("after_0: %llu\n", after_0);
+    
+    //res[lvl0param::n] = after_0;
+    printf("res[n] before: %llu\n", res[lvl0param::n]);
+    res[lvl0param::n] = (res[lvl0param::n] + after_0) % (1ULL<<(encoder.bp));
+    printf("res[n] after: %llu\n", res[lvl0param::n]);
+
+}
+
+void HomMULTCONSTREAL4(array<uint64_t, lvl0param::n+1> &res, const array<uint64_t, lvl0param::n+1> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
+{
+    assert(b<=mult_max);
+    assert(b>=(-1)*mult_max);
+
+    uint64_t prev_0 = encoder.encode64(0.);
+    double b_abs_decimal = abs(b);
+
+    uint64_t index = Encoder::dtotx64(b, mult_max, mult_bp);
+    
+    for (int i = 0; i <= lvl0param::n; i++){
+        uint64_t ca_minus_0;
+        if(i==lvl0param::n){
+            ca_minus_0 = ca[i] - prev_0;
+        }else{
+            ca_minus_0 = ca[i];
+        }
+        res[i] = ca_minus_0 * index;
+    }
+    encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    uint64_t after_0 = encoder.encode64(0.);
+    res[lvl0param::n] += after_0;
+
+    //if(b >=0){
+    //}else{
+    //    HomMULTCONSTINT(res, res, -1);
+    //}
+}
+
+void HomMULTCONSTREAL3(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
 {
     assert(b<=mult_max);
     assert(b>=(-1)*mult_max);
@@ -144,12 +274,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     lvl0param::T prev_0 = encoder.encode(0.);
     double b_abs_decimal = abs(b);
 
-    vector<double> test2;
-    for(int i=0; i<(1U << mult_bp); i++){
-        test2.push_back((double)i*(double)mult_max/pow(2., mult_bp));
-    }
-
-    int index = find_index(b_abs_decimal, test2);
+    lvl0param::T index = Encoder::dtotx(b, mult_max, mult_bp);
     
     for (int i = 0; i <= lvl0param::n; i++){
         lvl0param::T ca_minus_0;
@@ -166,7 +291,46 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
 
     if(b >=0){
     }else{
-        HomMULTCONSTINT(res, res, -1);
+        HomMULTCONSTINT(res, res, -1, encoder);
+    }
+}
+
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
+{
+    assert(b<=mult_max);
+    assert(b>=(-1)*mult_max);
+
+    lvl0param::T prev_0 = encoder.encode(0.);
+    printf("previous_0: %llu\n", prev_0);
+    double b_abs_decimal = abs(b);
+
+    //vector<double> test2;
+    //for(int i=0; i<(1U << mult_bp); i++){
+    //    test2.push_back((double)i*(double)mult_max/pow(2., mult_bp));
+    //}
+
+    //int index = find_index(b_abs_decimal, test2);
+
+    lvl0param::T index = Encoder::dtotx(b_abs_decimal, mult_max, mult_bp);
+    printf("index: %llu\n", index);
+    
+    for (int i = 0; i <= lvl0param::n; i++){
+        lvl0param::T ca_minus_0;
+        if(i==lvl0param::n){
+            ca_minus_0 = ca[i] - prev_0;
+        }else{
+            ca_minus_0 = ca[i];
+        }
+        res[i] = ca_minus_0 * index;
+    }
+    encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    lvl0param::T after_0 = encoder.encode(0.);
+    printf("after_0: %llu\n", after_0);
+    res[lvl0param::n] += after_0;
+
+    if(b >=0){
+    }else{
+        HomMULTCONSTINT(res, res, -1, encoder);
     }
 }
 
@@ -199,7 +363,7 @@ void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const doubl
 
     if(b >=0){
     }else{
-        HomMULTCONSTINT(res, res, -1);
+        HomMULTCONSTINT(res, res, -1, encoder);
     }
 
 

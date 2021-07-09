@@ -167,7 +167,7 @@ int main()
 
     for(int i=0; i<19; i++){
         x1 = a + (double)i*10.;
-        Encoder encoder(-100., 100., 38);
+        Encoder encoder(-100., 100., 22);
         cout << "\n=============================" << endl;
         TLWE<lvl1param> cpb1;
         TLWE<lvl0param> cpb0;
@@ -265,30 +265,30 @@ int main()
     //}
 
 
-    for(int i=0; i<1; i++){
-        cout << "\n=============================" << endl;
-        TLWE<lvl0param> test1, test2, test3, test4;
-        //Encoder encoder1(a-100, b+100, 16);
-        Encoder encoder1(a, b, 34);
-        //Encoder encoder1(a, b, 16);
-        Encoder encoder2(a, b, 34);
-        double x1 = 20.;
-        double x2 = 40.;
-        double m1 = 2.2;
-        test1 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x1, lvl0param::alpha, sk->key.lvl0, encoder1);
-        test2 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x2, lvl0param::alpha, sk->key.lvl0, encoder2);
-        double dec_tmp = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test1, sk->key.lvl0, encoder1);
-        printf("x1: %f = %f\n",x1, dec_tmp);
-        dec_tmp = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test2, sk->key.lvl0, encoder2);
-        printf("x2: %f = %f\n",x2, dec_tmp);
+    //for(int i=0; i<1; i++){
+    //    cout << "\n=============================" << endl;
+    //    TLWE<lvl0param> test1, test2, test3, test4;
+    //    //Encoder encoder1(a-100, b+100, 16);
+    //    Encoder encoder1(-2, 2, 16);
+    //    //Encoder encoder1(a, b, 16);
+    //    Encoder encoder2(-2, 2, 16);
+    //    double x1 = 0.4;
+    //    double x2 = 0.2;
+    //    double m1 = 2.2;
+    //    test1 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x1, lvl0param::alpha, sk->key.lvl0, encoder1);
+    //    test2 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x2, lvl0param::alpha, sk->key.lvl0, encoder2);
+    //    double dec_tmp = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test1, sk->key.lvl0, encoder1);
+    //    printf("x1: %f = %f\n",x1, dec_tmp);
+    //    dec_tmp = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test2, sk->key.lvl0, encoder2);
+    //    printf("x2: %f = %f\n",x2, dec_tmp);
 
-        //TFHEpp::adjust_bp(test1, encoder1, 1);
-        TFHEpp::HomADD(test3, test1, test2, encoder1, encoder2);
-        double dec_res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test3, sk->key.lvl0, encoder1);
-        printf("ADD: %f = %f\n",x1+x2, dec_res);
-        //printf("x1: %f = %f\n",x1, dec_res);
-        encoder1.print();
-    }
+    //    //TFHEpp::adjust_bp(test1, encoder1, 1);
+    //    TFHEpp::HomADD(test3, test1, test2, encoder1, encoder2);
+    //    double dec_res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(test3, sk->key.lvl0, encoder1);
+    //    printf("ADD: %f = %f\n",x1+x2, dec_res);
+    //    //printf("x1: %f = %f\n",x1, dec_res);
+    //    encoder1.print();
+    //}
 
     //for(int i=0; i<1; i++){
     //    cout << "\n=============================" << endl;
@@ -314,44 +314,5 @@ int main()
     //    //encoder1.print();
     //}
 
-    // ======================================================
-    // trying to figure out the behavior after fixed encoder operation #TODO check this.. 
-    for(int i=0; i<1; i++){
-        cout << "=================" << endl;
-        double x1 = 0.5;
-        TLWE<lvl0param> tmp0, tmp, tmp_bs,tmp_bs2,tmp_bs3, tmp1, tmp2, tmp3, tmp4;
-        Encoder encoder_tmp(-2, 2, 31);
-        Encoder encoder_bs1(-2, 2, 31);
-        tmp = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x1, lvl0param::alpha, sk->key.lvl0, encoder_tmp);
-        TFHEpp::HomMULTCONSTREAL(tmp1, tmp, 0.5, encoder_tmp, 8, 1);
-        TFHEpp::HomADDFixedEncoder(tmp2, tmp1, tmp1, encoder_tmp, encoder_tmp, true);
-        TFHEpp::HomADDFixedEncoder(tmp3, tmp2, tmp2, encoder_tmp, encoder_tmp);
-        TFHEpp::HomADDFixedEncoder(tmp4, tmp3, tmp2, encoder_tmp, encoder_tmp);
-        //TFHEpp::HomADDCONST(tmp3 ,tmp3, 0.2, encoder_tmp);
-        TFHEpp::ProgrammableBootstrapping(tmp_bs, tmp4, *gk.get(), encoder_tmp, encoder_bs1, my_relu_function);
-        Encoder encoder_tmp2(-2, 2, 31);
-        tmp0 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(0.1, lvl0param::alpha, sk->key.lvl0, encoder_tmp2);
-        TFHEpp::HomADDFixedEncoder(tmp_bs2, tmp_bs, tmp0, encoder_bs1, encoder_tmp2, true);
-        printf("hereeeeee: %d\n", encoder_bs1.count_fixed_encoder_ops);
-        TFHEpp::ProgrammableBootstrapping(tmp_bs3, tmp_bs2, *gk.get(), encoder_bs1, encoder_bs1, my_relu_function);
-        //double dec_tmp = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp, sk->key.lvl0, encoder_tmp);
-        //cout << "dec_tmp " << dec_tmp << endl;
-        double dec_tmp1 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp1, sk->key.lvl0, encoder_tmp);
-        cout << "dec_tmp1 " << dec_tmp1 << endl;
-        double dec_tmp2 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp2, sk->key.lvl0, encoder_tmp);
-        cout << "dec_tmp2 " << dec_tmp2 << endl;
-        double dec_tmp3 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp3, sk->key.lvl0, encoder_tmp);
-        cout << "dec_tmp3 " << dec_tmp3 << endl;
-        double dec_tmp4 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp4, sk->key.lvl0, encoder_tmp);
-        cout << "dec_tmp4 " << dec_tmp4 << endl;
-        double dec_bs = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp_bs, sk->key.lvl0, encoder_bs1);
-        cout << "dec_bs " << dec_bs << endl;
-        double dec_bs2 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp_bs2, sk->key.lvl0, encoder_bs1);
-        cout << "dec_bs2 " << dec_bs2 << endl;
-        double dec_bs3 = TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp_bs3, sk->key.lvl0, encoder_bs1);
-        cout << "dec_bs3 " << dec_bs3 << endl;
-        // ======================================================
-
-    }
 
 }
