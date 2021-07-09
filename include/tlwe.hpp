@@ -126,7 +126,7 @@ class Encoder
             double tmp = d - floor(d);
             tmp = tmp * pow(2., bpx);
             double tmp2 = tmp - floor(tmp);
-            printf("tmp: %llu\n", tmp);
+            //printf("tmp: %llu\n", tmp);
             if(tmp2 < 0.5){
                 return static_cast<uint64_t>(tmp);
             }else{
@@ -152,15 +152,15 @@ class Encoder
             double tmp = d - floor(d);
             if(this->bp<=32){
                 uint64_t tmp2 = uint64_t(tmp * pow(2, 32));
-                printf("tmp2 > dtotx64: %llu\n", tmp2);
-                printf("bp > dtotx64: %d\n", this->bp);
+                //printf("tmp2 > dtotx64: %llu\n", tmp2);
+                //printf("bp > dtotx64: %d\n", this->bp);
                 return tmp2;
             }else{
                 uint64_t tmp2 = uint64_t(tmp * pow(2, 32));
-                printf("tmp2 > dtotx64: %llu\n", tmp2);
-                printf("bp > dtotx64: %d\n", this->bp);
+                //printf("tmp2 > dtotx64: %llu\n", tmp2);
+                //printf("bp > dtotx64: %d\n", this->bp);
                 tmp2 = tmp2 << (this->bp-32);
-                printf("tmp2 > dtotx64: %llu\n", tmp2);
+                //printf("tmp2 > dtotx64: %llu\n", tmp2);
                 return tmp2;
             }
             //tmp = tmp * pow(2., this->bp);
@@ -184,7 +184,7 @@ class Encoder
             assert(x <= this->b);
             if (x == this->a) x = encode_sanitize(x);
             double tmp = (x-this->a)/this->d;
-            printf("tmp encode: %f\n", tmp);
+            //printf("tmp encode: %f\n", tmp);
             return dtotx64(tmp);
             //return dtotx64((x-this->a)/this->d);
         }

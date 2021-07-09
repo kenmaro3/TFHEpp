@@ -301,7 +301,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     assert(b>=(-1)*mult_max);
 
     lvl0param::T prev_0 = encoder.encode(0.);
-    printf("previous_0: %llu\n", prev_0);
+    //printf("previous_0: %llu\n", prev_0);
     double b_abs_decimal = abs(b);
 
     //vector<double> test2;
@@ -312,7 +312,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     //int index = find_index(b_abs_decimal, test2);
 
     lvl0param::T index = Encoder::dtotx(b_abs_decimal, mult_max, mult_bp);
-    printf("index: %llu\n", index);
+    //printf("index: %llu\n", index);
     
     for (int i = 0; i <= lvl0param::n; i++){
         lvl0param::T ca_minus_0;
@@ -325,7 +325,7 @@ void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const dou
     }
     encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
     lvl0param::T after_0 = encoder.encode(0.);
-    printf("after_0: %llu\n", after_0);
+    //printf("after_0: %llu\n", after_0);
     res[lvl0param::n] += after_0;
 
     if(b >=0){
