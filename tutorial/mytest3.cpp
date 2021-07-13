@@ -37,7 +37,7 @@ int main(){
     printf("hello, world\n\n");
     double encoder_a = -2.;
     double encoder_b = 2.;
-    int bs_bp = 24;
+    int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
 
@@ -47,7 +47,7 @@ int main(){
     std::unique_ptr<TFHEpp::GateKey> gk =
         std::make_unique<TFHEpp::GateKey>(*sk, encoder_bs);
 
-    double x = -0.4;
+    double x = 1.6; 
     double x2 = 0.6;
     double d, mult;
     mult = 0.5;
@@ -56,12 +56,19 @@ int main(){
     TLWE<lvl0param> c1, c2, c3;
     c1 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x, lvl0param::alpha, sk->key.lvl0, encoder);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
-    printf("original x: %f\n", d);
+    printf("original %f = %f\n",x, d);
     
-    TFHEpp::HomMULTCONSTREAL(c2, c1, mult, encoder2, 6, 2);
+    TFHEpp::HomMULTCONSTREAL(c2, c1, mult, encoder2, 4, 2);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c2, sk->key.lvl0, encoder2);
-    printf("mult x: %f\n", d);
+    printf("mult %f = %f\n",x*mult, d);
     encoder2.print();
+    TFHEpp::HomMULTCONSTREAL(c2, c2, mult, encoder2, 4, 2);
+    d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c2, sk->key.lvl0, encoder2);
+    printf("mult %f = %f\n",x*mult*mult, d);
+    encoder2.print();
+    printf("\n++++++++++\n");
+    showPhase<lvl0param>(c2, sk->key.lvl0, encoder2);
+
 
     printf("\n===============================\n");
     //TFHEpp::HomMULTCONSTREAL(c2, c1, mult, encoder2, 6, 2);
@@ -93,48 +100,28 @@ int main(){
     }
     printf("\n===============================\n");
     encoder_bs.print();
-    
+
+    //for(int j=0; j<=lvl0param::n; j++){
+    //    c1[j] = c1[j] >> 4;
+    //}
+    //encoder_bs.update(encoder_bs.a, encoder_bs.b, encoder_bs.bp-4);
+
+    //for(int i=0; i<3; i++){
+    //    showPhase<lvl0param>(c1, sk->key.lvl0, encoder_bs);
+    //}
+
+    //TFHEpp::cleanPhase<lvl0param>(c1, sk->key.lvl0, encoder_bs);
+    //d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
+    //printf("after clean: %f = %f\n", x*mult, d);
+
     //TFHEpp::HomMULTCONSTREAL(c1, c1, mult, encoder_bs, 6, 2);
-    //TFHEpp::HomMULTCONSTINT(c1, c1, 2, encoder_bs);
+    TFHEpp::HomMULTCONSTINT(c1, c1, 2, encoder_bs);
     //TFHEpp::HomMULTCONSTREAL2(c1, c1, 2.2, encoder_bs);
-    
-    //c3 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x2, lvl0param::alpha, sk->key.lvl0, encoder_bs);
-    //d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c3, sk->key.lvl0, encoder_bs);
-    //printf("before conversion x: %f = %f\n",x2, d);
-    array<uint64_t, lvl0param::n+1> c1_2;
-    //TFHEpp::convert_t_to_t2(c1_2, c1);
-    TFHEpp::convert_t_to_t2(c1_2, c1);
-    for(int i=0; i<=lvl0param::n; i++){
-        printf("%d: %llu, ", i, c1_2[i]);
-    }
-    printf("\n");
-    d = TFHEpp::tlweSymDecryptDecode64<lvl0param>(c1_2, sk->key.lvl0, encoder_bs);
-    printf("after conversion x: %f = %f\n",x, d);
-    //printf("after conversion x: %f = %f\n",x2, d);
+    //mult = 1.2;
+    //TFHEpp::HomMULTCONSTREAL(c1, c1, mult, encoder_bs, 6, 2);
+    d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
+    printf("mult_after_bs: %f = %f\n", x*mult, d);
     encoder_bs.print();
-    //return 0;
 
-
-
-    for(int i=0; i<1; i++){
-        Encoder encoder_tmp(encoder_bs.a, encoder_bs.b, encoder_bs.bp);
-        //Encoder encoder_tmp(encoder.a, encoder.b, encoder.bp);
-        //array<uint64_t, lvl0param::n+1> c1_2;
-        //TFHEpp::convert_t_to_t2(c1_2, c1);
-        mult = 2.;
-        //for(int j=0; j<=lvl0param::n; j++){
-        //    printf("c1_2[%d]: %llu\n", j, c1_2[j]);
-        //}
-        //printf("\n");
-        //TFHEpp::HomMULTCONSTREAL4(c1_2, c1_2, mult, encoder_tmp, 6, 4);
-        TFHEpp::HomMULTCONSTREAL4(c1_2, c1_2, mult, encoder_tmp, 6, 4);
-        //TFHEpp::HomMULTCONSTINT(c1_2, c1_2, 3, encoder_bs);
-        d = TFHEpp::tlweSymDecryptDecode64<lvl0param>(c1_2, sk->key.lvl0, encoder_tmp);
-        printf("x: %f = %f\n",x*mult, d);
-        encoder_tmp.print();
-    }
-    //encoder_bs.print();
-    
-
-
+    return 0;
 }

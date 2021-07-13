@@ -55,24 +55,40 @@ class Encoder
         };
 
         Encoder(double a, double b, int bp){
+            //this->a = a;
+            //this->b = b;
+            //this->d = b-a;
+            //this->d2 = b-a;
+            //this->half_d = (b-a)/2.;
+            //this->half = (b+a)/2.;
+            //this->bp = bp;
+
             this->a = a;
-            this->b = b;
-            this->d = b-a;
-            this->d2 = b-a;
-            this->half_d = (b-a)/2.;
-            this->half = (b+a)/2.;
+            double tmp = b-a;
+            this->b = b + tmp;
+            this->d = this->b-this->a;
+            this->half_d = (this->b-this->a)/2.;
+            this->half = (this->b+this->a)/2.;
 
             this->bp = bp;
 
         }
 
         void update(double a, double b, int bp){
+            //this->a = a;
+            //this->b = b;
+            //this->d = b-a;
+            //this->d2 = b-a;
+            //this->half_d = (b-a)/2.;
+            //this->half = (b+a)/2.;
+            //this->bp = bp;
+
             this->a = a;
-            this->b = b;
-            this->d = b-a;
-            this->d2 = b-a;
-            this->half_d = (b-a)/2.;
-            this->half = (b+a)/2.;
+            double tmp = b-a;
+            this->b = b + tmp;
+            this->d = this->b-this->a;
+            this->half_d = (this->b-this->a)/2.;
+            this->half = (this->b+this->a)/2.;
 
             this->bp = bp;
         }
@@ -189,37 +205,42 @@ class Encoder
             //return dtotx64((x-this->a)/this->d);
         }
 
-        //double txtod(lvl0param::T x) const{
-        //    double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
-        //    return tmp_0_1;
-        //}
-
-        double txtod(uint64_t x) const{
-            if(this->bp >32){
-                uint32_t tmp_x = x >> 32;
-                double tmp_0_1 = static_cast<double>(tmp_x) / pow(2, this->bp-32);
-                return tmp_0_1;
-            }else{
-                double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
-                return tmp_0_1;
-            }
+        double txtod(lvl0param::T x) const{
+            double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
+            return tmp_0_1;
         }
+
+        double txtod64(uint64_t x) const{
+            double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
+            return tmp_0_1;
+        }
+
+        //double txtod(uint64_t x) const{
+        //    if(this->bp >32){
+        //        uint32_t tmp_x = x >> 32;
+        //        double tmp_0_1 = static_cast<double>(tmp_x) / pow(2, this->bp-32);
+        //        return tmp_0_1;
+        //    }else{
+        //        double tmp_0_1 = static_cast<double>(x) / pow(2, this->bp);
+        //        return tmp_0_1;
+        //    }
+        //}
 
         double t32tod(lvl0param::T x) const{
             double tmp_0_1 = static_cast<double>(x) / pow(2, std::numeric_limits<lvl0param::T>::digits);
             return tmp_0_1;
         }
 
-        //double decode(const lvl0param::T x){
-        //    double tmp_0_1 = this->txtod(x);
-        //    printf("tmp_0_1: %f\n", tmp_0_1);
-        //    tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
-        //    return tmp_0_1 * this->d + this->a;
-        //}
-        
-        double decode(const uint64_t x){
+        double decode(const lvl0param::T x){
             double tmp_0_1 = this->txtod(x);
-            printf("tmp_0_1: %f\n", tmp_0_1);
+            //printf("tmp_0_1: %f\n", tmp_0_1);
+            tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
+            return tmp_0_1 * this->d + this->a;
+        }
+        
+        double decode64(const uint64_t x){
+            double tmp_0_1 = this->txtod64(x);
+            //printf("64tmp_0_1: %f\n", tmp_0_1);
             tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
             return tmp_0_1 * this->d + this->a;
         }
@@ -235,6 +256,11 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
 
 template <class P>
 void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
+
+void showPhase64(const array<uint64_t, lvl0param::n+1> &c, const array<uint32_t, lvl0param::n> &key, Encoder &encoder);
+
+template <class P>
+void cleanPhase(TLWE<P> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);

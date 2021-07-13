@@ -61,6 +61,23 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
+void cleanPhase(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+{
+    typename P::T phase = c[P::n];
+    for (int i = 0; i < P::n; i++){
+        phase -= c[i] * key[i];
+    }
+    printf("phase: %llu\n", phase);
+    typename P::T phase_int = phase % (1UL << encoder.bp);
+    typename P::T phase_tmp = phase - phase_int;
+    c[P::n] -= phase_tmp;
+}
+#define INST(P) \
+    template void cleanPhase<P>(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#undef INST
+
+template <class P>
 void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 {
     typename P::T phase = c[P::n];
@@ -75,35 +92,12 @@ TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
 #undef INST
 
 template <class P>
-double tlweSymDecryptDecode64(const array<uint64_t, lvl0param::n+1> &c, const Key<P> &key, Encoder &encoder)
-{
-    //printf("dec2\n");
-    //uint64_t phase = (c[P::n]) % (1ULL << encoder.bp);
-    uint64_t phase = c[P::n];
-    //printf("phase[n]: %llu\n", phase);
-    for (int i = 0; i < P::n; i++){
-        phase = (phase - c[i] * key[i])% (1ULL << encoder.bp);
-        //phase = phase - c[i] * key[i];
-    }
-    //phase = phase % (1ULL << encoder.bp);
-    //printf("phase showing: %llu\n", phase);
-    double res = encoder.decode(phase);
-    return res;
-}
-#define INST(P) \
-    template double tlweSymDecryptDecode64<P>(const array<uint64_t, lvl0param::n+1> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
-#undef INST
-
-template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 {
-    //printf("dec1\n");
     typename P::T phase = c[P::n];
     for (int i = 0; i < P::n; i++){
-        phase = (phase - c[i] * key[i])%(1ULL<<encoder.bp);
+        phase = (phase - c[i] * key[i]);
     }
-    //printf("phase showing: %llu\n", phase);
     double res = encoder.decode(phase);
     return res;
 }
