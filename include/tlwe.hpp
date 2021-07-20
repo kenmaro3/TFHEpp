@@ -19,58 +19,75 @@ class Encoder
     public:
         double a;  // input lower bound
         double b;  // input upper bound
+        double effective_b;
         double d;
         double d2;
         double half;
         double half_d;
         int bp;    // bit precision including noise bit (lvl0param::T - bp is padding bit)
         // bp = (noise bit + plaintext precision bit)
+        bool is_type_second;
 
 
         void print(){
+            printf("=========================================\n");
             printf("\nEncoder Print\n");
             printf("a     : %f\n", this->a);
             printf("b     : %f\n", this->b);
+            printf("effective_b     : %f\n", this->effective_b);
             printf("d     : %f\n", this->d);
             printf("half  : %f\n", this->half);
             printf("half_d: %f\n", this->half_d);
             printf("bp    : %d\n", this->bp);
+            printf("type    : %d\n", this->is_type_second);
 
         }
 
         static Encoder copy(Encoder &encoder){
-            Encoder tmp(encoder.a, encoder.b, encoder.bp);
-            return tmp;
+            
+            if(encoder.is_type_second){
+                Encoder tmp(encoder.a, abs(encoder.a), encoder.bp, encoder.is_type_second);
+                return tmp;
+            }else{
+                Encoder tmp(encoder.a, encoder.b, encoder.bp, encoder.is_type_second);
+                return tmp;
+            }
         }
 
         Encoder(){
-            this->a = -10.;
-            this->b = 10.;
-            this->d = b-a;
-            this->d2 = b-a;
-            this->half_d = (b-a)/2.;
-            this->half = (b+a)/2.;
-
-            this->bp = 16;
-        };
-
-        Encoder(double a, double b, int bp){
-            //this->a = a;
-            //this->b = b;
+            //this->a = -10.;
+            //this->b = 10.;
             //this->d = b-a;
             //this->d2 = b-a;
             //this->half_d = (b-a)/2.;
             //this->half = (b+a)/2.;
-            //this->bp = bp;
 
-            this->a = a;
-            double tmp = b-a;
-            this->b = b + tmp;
-            this->d = this->b-this->a;
-            this->half_d = (this->b-this->a)/2.;
-            this->half = (this->b+this->a)/2.;
+            //this->bp = 16;
+        };
 
-            this->bp = bp;
+        Encoder(double a, double b, int bp, bool is_type_second=true){
+
+            if(is_type_second){
+                this->a = a;
+                this->effective_b = b;
+                double tmp = b-a;
+                this->b = b + tmp;
+                this->d = this->b-this->a;
+                this->half_d = (this->b-this->a)/2.;
+                this->half = (this->b+this->a)/2.;
+                this->bp = bp;
+                this->is_type_second = true;
+            }else{
+                this->a = a;
+                this->b = b;
+                this->d = b-a;
+                this->d2 = b-a;
+                this->half_d = (b-a)/2.;
+                this->half = (b+a)/2.;
+                this->bp = bp;
+                this->is_type_second = false;
+            }
+
 
         }
 
@@ -83,14 +100,27 @@ class Encoder
             //this->half = (b+a)/2.;
             //this->bp = bp;
 
-            this->a = a;
-            double tmp = b-a;
-            this->b = b + tmp;
-            this->d = this->b-this->a;
-            this->half_d = (this->b-this->a)/2.;
-            this->half = (this->b+this->a)/2.;
+            if(this->is_type_second){
+                this->a = a;
+                this->b = b;
+                this->effective_b = abs(this->a);
+                this->d = this->b-this->a;
+                this->half_d = (this->b-this->a)/2.;
+                this->half = (this->b+this->a)/2.;
 
-            this->bp = bp;
+                this->bp = bp;
+            }
+        }
+
+        void update(double x){
+            if(this->is_type_second){
+                this->a = this->a*x;
+                this->b = this->b*x;
+                this->effective_b = abs(this->a);
+                this->d = this->b-this->a;
+                this->half_d = (this->b-this->a)/2.;
+                this->half = (this->b+this->a)/2.;
+            }
         }
 
         double encode_0_1(double x) const{
@@ -189,6 +219,7 @@ class Encoder
         }
 
         lvl0param::T encode(double x) const{
+            //printf("here: %f\n", x);
             assert(x >= this->a);
             assert(x <= this->b);
             if (x == this->a) x = encode_sanitize(x);

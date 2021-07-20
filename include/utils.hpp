@@ -8,6 +8,7 @@
 #include <functional>
 #include <limits>
 #include <random>
+#include <cmath>
 
 #include "../thirdparties/randen/randen.h"
 #include "./params.hpp"
@@ -26,6 +27,10 @@ inline double my_identity_function(double x){
 
 inline double my_relu_function(double x){
     return x >= 0 ? x : 0.; 
+}
+
+inline double my_sigmoid_function(double x){
+    return 1./(1.+pow(std::exp(1.0), x*(-1.))); 
 }
 
 inline double frand(double fMin, double fMax)
