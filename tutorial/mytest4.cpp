@@ -39,8 +39,8 @@ double my_multiply_function(double x, double y){
 
 int main(){
     printf("hello, world\n\n");
-    double encoder_a = -100.;
-    double encoder_b = 100.;
+    double encoder_a = -20.;
+    double encoder_b = 20.;
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
@@ -51,12 +51,13 @@ int main(){
     std::unique_ptr<TFHEpp::GateKey> gk =
         std::make_unique<TFHEpp::GateKey>(*sk, encoder_bs);
 
-    double x = 1.6; 
-    double x2 = 0.6;
+    double x = 10.6; 
+    double x2 = 5.6;
     double d, mult;
-    Encoder encoder(-100,100,31);
-    Encoder encoder2(-100,100,31);
+    Encoder encoder(encoder_a,encoder_b,31);
+    Encoder encoder2(encoder_a,encoder_b,31);
     TLWE<lvl0param> c1, c2, c3;
+    TLWE<lvl1param> c1p, c2p, c3p;
     c1 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x, lvl0param::alpha, sk->key.lvl0, encoder);
     c2 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x2, lvl0param::alpha, sk->key.lvl0, encoder);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
@@ -74,25 +75,21 @@ int main(){
     }
 
     printf("\n===============================\n");
-    for(int i=0; i<10; i++){
+    for(int i=0; i<1; i++){
         if(i == 0){
             TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder, encoder_bs, my_identity_function);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
-            printf("bs %f = %f\n",x, d);
+            printf("bs  %f = %f\n",x, d);
             TFHEpp::ProgrammableBootstrapping(c2, c2, *gk.get(), encoder, encoder_bs, my_identity_function);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c2, sk->key.lvl0, encoder_bs);
             printf("bs %f = %f\n",x2, d);
         }else{
             TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder_bs, encoder_bs, my_identity_function);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
-            printf("bs %f = %f\n",x, d);
-            encoder_bs.print();
+            printf("bs  %f = %f\n",x, d);
         }
     }
 
-    return 0;
-
-    
     //printf("\n===============================\n");
     //for(int i=0; i<5; i++){
     //    mult = 0.9;
@@ -100,6 +97,7 @@ int main(){
     //    d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
     //    printf("mult %f = %f\n",x*pow(mult,i+1), d);
     //}
+    //return 0;
 
     TLWE<lvl0param> test1;
     //TFHEpp::HomADDFixedEncoder(test1, c1, c2, encoder_bs, encoder_bs);
