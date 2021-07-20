@@ -13,8 +13,8 @@ struct lvl0param {
 struct lvl1param {
     static constexpr std::uint32_t nbit = 13; //dimension must be a power of 2 for ease of polynomial multiplication.
     static constexpr std::uint32_t n = 1<<nbit; //dimension
-    static constexpr std::uint32_t l = 15;
-    static constexpr std::uint32_t Bgbit = 2;
+    static constexpr std::uint32_t l = 8;
+    static constexpr std::uint32_t Bgbit = 3;
     static constexpr std::uint32_t Bg = 1<<Bgbit;
     static const inline double alpha = std::pow(2.0, -25); //fresh noise
     using T = uint32_t; //Torus representation
@@ -34,8 +34,8 @@ struct lvl2param {
 
 //Key Switching parameters
 struct lvl10param {
-    static constexpr std::uint32_t t = 15; //number of addition in keyswitching
-    static constexpr std::uint32_t basebit = 2; //how many bit should be encrypted in keyswitching key
+    static constexpr std::uint32_t t = 10; //number of addition in keyswitching
+    static constexpr std::uint32_t basebit = 3; //how many bit should be encrypted in keyswitching key
     static const inline double alpha = lvl0param::alpha; //key noise
     using domainP = lvl1param;
     using targetP = lvl0param;

@@ -54,8 +54,8 @@ int main(){
     double x = 1.6; 
     double x2 = 0.6;
     double d, mult;
-    Encoder encoder(-100,100,32);
-    Encoder encoder2(-100,100,32);
+    Encoder encoder(-100,100,31);
+    Encoder encoder2(-100,100,31);
     TLWE<lvl0param> c1, c2, c3;
     c1 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x, lvl0param::alpha, sk->key.lvl0, encoder);
     c2 = TFHEpp::tlweSymEncodeEncrypt<lvl0param>(x2, lvl0param::alpha, sk->key.lvl0, encoder);

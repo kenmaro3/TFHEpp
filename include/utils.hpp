@@ -107,7 +107,9 @@ inline typename P::targetP::T modSwitchFromTorusSpecificTwoBP(typename P::domain
 {
     //return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
     //return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
-    return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL << (P::targetP::nbit + 1));
+    //return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL << (P::targetP::nbit + 1));
+    uint32_t tmp = domain_bp - P::targetP::nbit - 1;
+    return ((phase + (1U << (tmp-1))) >> tmp) % (1UL<<(P::targetP::nbit + 1));
 }
 
 // https://stackoverflow.com/questions/21191307/minimum-number-of-bits-to-represent-a-given-int
