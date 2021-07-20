@@ -26,7 +26,7 @@ int main()
     double x1 = 10.;
     double x2 = 40.;
     double x3 = -50.;
-    int bs_bp = 31;
+    int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(a, b, bs_bp);
 
@@ -160,6 +160,35 @@ int main()
     ////    printf("%llu, ", cmc1[i]);
     ////}
     ////printf("\n");
+
+    cout << "\n\n=============================" << endl;
+    cout << "BS then summation" << endl;
+
+    for(int i=0; i<1; i++){
+        double d1, d2, d3;
+        TLWE<lvl0param> c1, c2, c3;
+        x1 = 20.;
+        x2 = 30.;
+        Encoder encoder(-100., 100., 32);
+        cout << "\n=============================" << endl;
+        TLWE<lvl1param> cpb1;
+        TLWE<lvl0param> cpb0;
+        c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+        c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+        ProgrammableBootstrapping(c1, c1, *gk.get(), encoder, encoder_bs, my_identity_function);
+        ProgrammableBootstrapping(c2, c2, *gk.get(), encoder, encoder_bs, my_identity_function);
+        d1 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c1, sk->key.lvl0, encoder);
+        d2 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c2, sk->key.lvl0, encoder);
+        TFHEpp::HomADDFixedEncoder(c3, c1, c2, encoder, encoder);
+        d3 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c3, sk->key.lvl0, encoder);
+        printf("x1: %f ==> %f, \n", x1, d1);
+        printf("x2: %f ==> %f, \n", x2, d2);
+        printf("x3: %f ==> %f, \n", x1+x2, d3);
+
+    }
+
+    return 0;
+
 
 
     cout << "\n\n=============================" << endl;
