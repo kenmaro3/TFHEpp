@@ -75,7 +75,7 @@ int main(){
     }
 
     printf("\n===============================\n");
-    for(int i=0; i<1; i++){
+    for(int i=0; i<10; i++){
         if(i == 0){
             TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder, encoder_bs, my_identity_function);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);

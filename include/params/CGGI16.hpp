@@ -11,10 +11,10 @@ struct lvl0param {
 };
 
 struct lvl1param {
-    static constexpr std::uint32_t nbit = 10;
+    static constexpr std::uint32_t nbit = 12;
     static constexpr std::uint32_t n = 1<<nbit;
-    static constexpr std::uint32_t l = 2;
-    static constexpr std::uint32_t Bgbit = 10;
+    static constexpr std::uint32_t l = 8;
+    static constexpr std::uint32_t Bgbit = 3;
     static constexpr std::uint32_t Bg = 1<<Bgbit;
     static const inline double alpha = 3.73e-9;
     using T = uint32_t;
@@ -33,8 +33,8 @@ struct lvl2param {
 };
 
 struct lvl10param {
-    static constexpr std::uint32_t t = 8;
-    static constexpr std::uint32_t basebit = 2;
+    static constexpr std::uint32_t t = 10;
+    static constexpr std::uint32_t basebit = 3;
     static const inline double alpha = lvl0param::alpha;
     using domainP = lvl1param;
     using targetP = lvl0param;
