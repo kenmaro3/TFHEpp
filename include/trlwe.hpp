@@ -2,8 +2,9 @@
 
 #include <array>
 
-#include "./utils.hpp"
-#include "./tlwe.hpp"
+#include "utils.hpp"
+#include "tlwe.hpp"
+#include "params.hpp"
 
 namespace TFHEpp {
 using namespace std;

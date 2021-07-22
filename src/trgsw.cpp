@@ -41,7 +41,7 @@ void DecompositionPolynomial(DecomposedPolynomial<P> &decpoly,
     template void DecompositionPolynomial<P>(                         \
         DecomposedPolynomial<P> & decpoly, const Polynomial<P> &poly, \
         const int digit)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -56,7 +56,7 @@ void DecompositionPolynomialFFT(DecomposedPolynomialInFD<P> &decpolyfft,
     template void DecompositionPolynomialFFT<P>(                             \
         DecomposedPolynomialInFD<P> & decpolyfft, const Polynomial<P> &poly, \
         const int digit)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -84,7 +84,7 @@ void trgswfftExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
 #define INST(P)                               \
     template void trgswfftExternalProduct<P>( \
         TRLWE<P> & res, const TRLWE<P> &trlwe, const TRGSWFFT<P> &trgswfft)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -96,7 +96,7 @@ TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
     return trgswfft;
 }
 #define INST(P) template TRGSWFFT<P> ApplyFFT2trgsw<P>(const TRGSW<P> &trgsw)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -108,7 +108,7 @@ TRGSWNTT<P> ApplyNTT2trgsw(const TRGSW<P> &trgsw)
     return trgswntt;
 }
 #define INST(P) template TRGSWNTT<P> ApplyNTT2trgsw<P>(const TRGSW<P> &trgsw)
-// TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+// TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 INST(lvl1param);
 #undef INST
 
@@ -126,43 +126,42 @@ TRGSWNTT<P> TRGSW2NTT(const TRGSW<P> &trgsw)
     return trgswntt;
 }
 #define INST(P) template TRGSWNTT<P> TRGSW2NTT<P>(const TRGSW<P> &trgsw)
-// TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+// TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 INST(lvl1param);
 #undef INST
 
 template <class P>
-TRGSW<P> trgswSymEncrypt(const typename make_signed<typename P::T>::type p,
-                         const double alpha, const Key<P> &key)
+TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
+                         const Key<P> &key)
 {
-    constexpr array<typename P::T, P::l> h = hgen<P>();
+    constexpr std::array<typename P::T, P::l> h = hgen<P>();
 
     TRGSW<P> trgsw;
     for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(alpha, key);
     for (int i = 0; i < P::l; i++) {
-        trgsw[i][0][0] += static_cast<typename P::T>(p) * h[i];
-        trgsw[i + P::l][1][0] += static_cast<typename P::T>(p) * h[i];
+        for (int j = 0; j < P::n; j++) {
+            trgsw[i][0][j] += static_cast<typename P::T>(p[j]) * h[i];
+            trgsw[i + P::l][1][j] += static_cast<typename P::T>(p[j]) * h[i];
+        }
     }
     return trgsw;
 }
-#define INST(P)                                                            \
-    template TRGSW<P> trgswSymEncrypt<P>(                                  \
-        const typename make_signed<typename P::T>::type p, const double alpha, \
-        const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+#define INST(P)                                                  \
+    template TRGSW<P> trgswSymEncrypt<P>(const Polynomial<P> &p, \
+                                         const double alpha, const Key<P> &key)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
-TRGSWFFT<P> trgswfftSymEncrypt(
-    const typename make_signed<typename P::T>::type p, const double alpha,
-    const Key<P> &key)
+TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const double alpha,
+                               const Key<P> &key)
 {
     TRGSW<P> trgsw = trgswSymEncrypt<P>(p, alpha, key);
     return ApplyFFT2trgsw<P>(trgsw);
 }
-#define INST(P)                                                            \
-    template TRGSWFFT<P> trgswfftSymEncrypt<P>(                            \
-        const typename make_signed<typename P::T>::type p, const double alpha, \
-        const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL1_2(INST)
+#define INST(P)                                 \
+    template TRGSWFFT<P> trgswfftSymEncrypt<P>( \
+        const Polynomial<P> &p, const double alpha, const Key<P> &key)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 }  // namespace TFHEpp

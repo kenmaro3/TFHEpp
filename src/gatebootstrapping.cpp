@@ -142,7 +142,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
         TRLWE<typename P::targetP> & acc,            \
         const TLWE<typename P::domainP> &tlwe,       \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double))
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 
@@ -179,7 +179,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
         TRLWE<typename P::targetP> & acc,            \
         const TLWE<typename P::domainP> &tlwe,       \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double, double), double arg)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -215,7 +215,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
         TRLWE<typename P::targetP> & acc,            \
         const TLWE<typename P::domainP> &tlwe,       \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double, double, double, double, double), double arg1, double arg2, double arg3, double arg4)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -247,7 +247,7 @@ void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
         TRLWE<typename P::targetP> & acc,            \
         const TLWE<typename P::domainP> &tlwe,       \
         const BootstrappingKeyFFT<P> &bkfft)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -264,7 +264,7 @@ void ProgrammableBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
         TLWE<typename P::targetP> & res,            \
         const TLWE<typename P::domainP> &tlwe,      \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double))
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -281,7 +281,7 @@ void ProgrammableBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
         TLWE<typename P::targetP> & res,            \
         const TLWE<typename P::domainP> &tlwe,      \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double, double), double arg)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -298,7 +298,7 @@ void ProgrammableBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
         TLWE<typename P::targetP> & res,            \
         const TLWE<typename P::domainP> &tlwe,      \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, Encoder &encoder_target, double (*function)(double, double, double ,double, double), double arg1, double arg2, double arg3, double arg4)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -315,7 +315,7 @@ void GateBootstrappingTLWE2TLWEFFT(TLWE<typename P::targetP> &res,
         TLWE<typename P::targetP> & res,            \
         const TLWE<typename P::domainP> &tlwe,      \
         const BootstrappingKeyFFT<P> &bkfft)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 template <class P>
@@ -342,7 +342,7 @@ void GateBootstrappingTLWE2TLWEFFTvariableMu(
         TLWE<typename P::targetP> & res,                      \
         const TLWE<typename P::domainP> &tlwe,                \
         const BootstrappingKeyFFT<P> &bkfft, const typename P::targetP::T mus2)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 void ProgrammableBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,

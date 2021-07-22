@@ -6,9 +6,8 @@
 #include <stdio.h>
 #include <cassert>
 
-#include "./key.hpp"
-#include "./params.hpp"
-#include "./utils.hpp"
+#include "key.hpp"
+#include "params.hpp"
 
 namespace TFHEpp {
 using namespace std;
@@ -222,14 +221,12 @@ class Encoder
             //printf("here: %f\n", x);
             assert(x >= this->a);
             assert(x <= this->b);
-            if (x == this->a) x = encode_sanitize(x);
             return dtotx((x-this->a)/this->d);
         }
 
         uint64_t encode64(double x) const{
             assert(x >= this->a);
             assert(x <= this->b);
-            if (x == this->a) x = encode_sanitize(x);
             double tmp = (x-this->a)/this->d;
             //printf("tmp encode: %f\n", tmp);
             return dtotx64(tmp);
@@ -310,8 +307,8 @@ bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key);
 template <class P>
 typename P::T tlweSymDecryptRaw(const TLWE<P> &c, const Key<P> &key);
 
-vector<TLWE<lvl0param>> bootsSymEncrypt(const vector<uint8_t> &p,
-                                        const SecretKey &sk);
-vector<uint8_t> bootsSymDecrypt(const vector<TLWE<lvl0param>> &c,
-                                const SecretKey &sk);
+template <class P = lvl0param>
+vector<TLWE<P>> bootsSymEncrypt(const vector<uint8_t> &p, const SecretKey &sk);
+template <class P = lvl0param>
+vector<uint8_t> bootsSymDecrypt(const vector<TLWE<P>> &c, const SecretKey &sk);
 }  // namespace TFHEpp

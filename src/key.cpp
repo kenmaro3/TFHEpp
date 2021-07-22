@@ -1,4 +1,5 @@
-#include "key.hpp"
+#include <key.hpp>
+#include <utils.hpp>
 
 namespace TFHEpp {
 using namespace std;
@@ -25,7 +26,7 @@ Key<P> lweKey::get() const
         static_assert(false_v<P>, "Undefined Secret Key!");
 }
 #define INST(P) template Key<P> lweKey::get<P>() const;
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 }  // namespace TFHEpp

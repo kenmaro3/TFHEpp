@@ -311,8 +311,8 @@ void HomMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
 }
 
 void HomNMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
-            const TLWE<lvl0param> &c1, const TLWE<lvl0param> &c0,
-            const GateKey &gk)
+             const TLWE<lvl0param> &c1, const TLWE<lvl0param> &c0,
+             const GateKey &gk)
 {
     TLWE<lvl0param> temp;
     for (int i = 0; i <= lvl0param::n; i++) temp[i] = cs[i] + c1[i];
@@ -358,7 +358,7 @@ void HomMUXwoSE(TRLWE<typename P::targetP> &res,
                                 const TLWE<typename P::domainP> &c1, \
                                 const TLWE<typename P::domainP> &c0, \
                                 const BootstrappingKeyFFT<P> &bkfft)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL01_02(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
 void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,

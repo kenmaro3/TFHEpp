@@ -3,9 +3,9 @@
 #include <array>
 #include <cstdint>
 
-#include "./mulfft.hpp"
-#include "./params.hpp"
-#include "./trlwe.hpp"
+#include "mulfft.hpp"
+#include "params.hpp"
+#include "trlwe.hpp"
 
 namespace TFHEpp {
 using namespace std;
@@ -42,11 +42,10 @@ template <class P>
 TRGSWNTT<P> TRGSW2NTT(const TRGSW<P> &trgsw);
 
 template <class P>
-TRGSW<P> trgswSymEncrypt(const typename make_signed<typename P::T>::type p,
-                         const double alpha, const Key<P> &key);
+TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
+                         const Key<P> &key);
 
 template <class P>
-TRGSWFFT<P> trgswfftSymEncrypt(
-    const typename make_signed<typename P::T>::type p, const double alpha,
-    const Key<P> &key);
+TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const double alpha,
+                               const Key<P> &key);
 }  // namespace TFHEpp

@@ -12,7 +12,6 @@
 #include <vector>
 
 namespace TFHEpp {
-using namespace std;
 
 
 template <class P>
@@ -35,17 +34,16 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
     template array<typename P::T, P::n + 1> tlweSymEncodeEncrypt<P>( \
         const double &x, const double alpha,                 \
         const array<typename P::T, P::n> &key, const Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
-array<typename P::T, P::n + 1> tlweSymEncrypt(
-    const typename P::T p, const double alpha,
-    const array<typename P::T, P::n> &key)
+TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha,
+                       const std::array<typename P::T, P::n> &key)
 {
-    uniform_int_distribution<typename P::T> Torusdist(
-        0, numeric_limits<typename P::T>::max());
-    array<typename P::T, P::n + 1> res = {};
+    std::uniform_int_distribution<typename P::T> Torusdist(
+        0, std::numeric_limits<typename P::T>::max());
+    TLWE<P> res = {};
     res[P::n] = ModularGaussian<P>(p, alpha);
     for (int i = 0; i < P::n; i++) {
         res[i] = Torusdist(generator);
@@ -53,11 +51,11 @@ array<typename P::T, P::n + 1> tlweSymEncrypt(
     }
     return res;
 }
-#define INST(P)                                                \
-    template array<typename P::T, P::n + 1> tlweSymEncrypt<P>( \
-        const typename P::T p, const double alpha,                 \
-        const array<typename P::T, P::n> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+#define INST(P)                                \
+    template TLWE<P> tlweSymEncrypt<P>(        \
+        const typename P::T p, const double alpha, \
+        const std::array<typename P::T, P::n> &key)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
@@ -74,7 +72,7 @@ void cleanPhase(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 }
 #define INST(P) \
     template void cleanPhase<P>(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
@@ -88,7 +86,7 @@ void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
 }
 #define INST(P) \
     template void showPhase<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
@@ -103,7 +101,7 @@ double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encode
 }
 #define INST(P) \
     template double tlweSymDecryptDecode<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
@@ -112,12 +110,12 @@ bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
     typename P::T phase = c[P::n];
     for (int i = 0; i < P::n; i++) phase -= c[i] * key[i];
     bool res =
-        static_cast<typename make_signed<typename P::T>::type>(phase) > 0;
+        static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
     return res;
 }
 #define INST(P) \
     template bool tlweSymDecrypt<P>(const TLWE<P> &c, const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
 template <class P>
@@ -129,25 +127,37 @@ typename P::T tlweSymDecryptRaw(const TLWE<P> &c, const Key<P> &key)
 }
 #define INST(P) \
     template typename P::T tlweSymDecryptRaw<P>(const TLWE<P> &c, const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
-vector<TLWE<lvl0param>> bootsSymEncrypt(const vector<uint8_t> &p,
-                                        const SecretKey &sk)
+template <class P>
+std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,
+                                     const SecretKey &sk)
 {
-    vector<TLWE<lvl0param>> c(p.size());
+    vector<TLWE<P>> c(p.size());
     for (int i = 0; i < p.size(); i++)
-        c[i] = tlweSymEncrypt<lvl0param>(p[i] ? lvl0param::mu : -lvl0param::mu,
-                                         lvl0param::alpha, sk.key.lvl0);
+        c[i] = tlweSymEncrypt<P>(p[i] ? lvl0param::mu : -lvl0param::mu,
+                                 lvl0param::alpha, sk.key.get<P>());
     return c;
 }
+#define INST(P)                                       \
+    template std::vector<TLWE<P>> bootsSymEncrypt<P>( \
+        const std::vector<uint8_t> &p, const SecretKey &sk)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
+#undef INST
 
-vector<uint8_t> bootsSymDecrypt(const vector<TLWE<lvl0param>> &c,
-                                const SecretKey &sk)
+template <class P>
+std::vector<uint8_t> bootsSymDecrypt(const std::vector<TLWE<P>> &c,
+                                     const SecretKey &sk)
 {
     vector<uint8_t> p(c.size());
-    for (int i = 0; i < p.size(); i++)
-        p[i] = tlweSymDecrypt<lvl0param>(c[i], sk.key.lvl0);
+    for (int i = 0; i < c.size(); i++)
+        p[i] = tlweSymDecrypt<P>(c[i], sk.key.get<P>());
     return p;
 }
+#define INST(P)                                       \
+    template std::vector<uint8_t> bootsSymDecrypt<P>( \
+        const std::vector<TLWE<P>> &c, const SecretKey &sk)
+TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
+#undef INST
 }  // namespace TFHEpp

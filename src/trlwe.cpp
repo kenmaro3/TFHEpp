@@ -19,7 +19,7 @@ TRLWE<P> trlweSymEncryptZero(const double alpha, const Key<P> &key)
 }
 #define INST(P) \
     template TRLWE<P> trlweSymEncryptZero<P>(const double alpha, const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -34,7 +34,7 @@ TRLWE<P> trlweSymEncodeEncrypt(const array<double, P::n> &x, const double alpha,
 #define INST(P)                                                               \
     template TRLWE<P> trlweSymEncodeEncrypt<P>(const array<double, P::n> &p, \
                                          const double alpha, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -49,7 +49,7 @@ TRLWE<P> trlweSymEncrypt(const array<typename P::T, P::n> &p, const double alpha
 #define INST(P)                                                               \
     template TRLWE<P> trlweSymEncrypt<P>(const array<typename P::T, P::n> &p, \
                                          const double alpha, const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -68,7 +68,7 @@ array<double, P::n> trlweSymDecryptDecode(const TRLWE<P> &c, const Key<P> &key, 
 #define INST(P)                                                      \
     template array<double, P::n> trlweSymDecryptDecode<P>(const TRLWE<P> &c, \
                                                   const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 
@@ -89,7 +89,7 @@ array<bool, P::n> trlweSymDecrypt(const TRLWE<P> &c, const Key<P> &key)
 #define INST(P)                                                      \
     template array<bool, P::n> trlweSymDecrypt<P>(const TRLWE<P> &c, \
                                                   const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -107,7 +107,7 @@ void InverseSampleExtractIndex(TRLWE<P> &trlwe, const TLWE<P> &tlwe, const int i
 #define INST(P)                                                                \
     template void InverseSampleExtractIndex<P>(TRLWE<P> & trlwe, const TLWE<P> &tlwe, \
                                         const int index)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 
 template <class P>
@@ -121,6 +121,6 @@ void SampleExtractIndex(TLWE<P> &tlwe, const TRLWE<P> &trlwe, const int index)
 #define INST(P)                                                                \
     template void SampleExtractIndex<P>(TLWE<P> & tlwe, const TRLWE<P> &trlwe, \
                                         const int index)
-TFHEPP_EXPLICIT_INSTANTIATION_LVL0_1_2(INST)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 }  // namespace TFHEpp

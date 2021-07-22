@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./cloudkey.hpp"
-#include "./tlwe.hpp"
+#include "tlwe.hpp"
+#include "cloudkey.hpp"
 
 namespace TFHEpp {
 using namespace std;
@@ -48,8 +48,8 @@ void HomMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
             const TLWE<lvl0param> &c1, const TLWE<lvl0param> &c0,
             const GateKey &gk);
 void HomNMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
-            const TLWE<lvl0param> &c1, const TLWE<lvl0param> &c0,
-            const GateKey &gk);
+             const TLWE<lvl0param> &c1, const TLWE<lvl0param> &c0,
+             const GateKey &gk);
 template <class P>
 void HomMUXwoSE(TRLWE<typename P::targetP> &res,
                 const TLWE<typename P::domainP> &cs,

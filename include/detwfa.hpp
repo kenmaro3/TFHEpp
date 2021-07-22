@@ -1,7 +1,6 @@
 #pragma once
 
-#include "./trgsw.hpp"
-#include "./utils.hpp"
+#include "trgsw.hpp"
 
 namespace TFHEpp {
 template <class P>
