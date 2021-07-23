@@ -58,36 +58,6 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha,
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
-template <class P>
-void cleanPhase(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-{
-    typename P::T phase = c[P::n];
-    for (int i = 0; i < P::n; i++){
-        phase -= c[i] * key[i];
-    }
-    printf("phase: %llu\n", phase);
-    typename P::T phase_int = phase % (1UL << encoder.bp);
-    typename P::T phase_tmp = phase - phase_int;
-    c[P::n] -= phase_tmp;
-}
-#define INST(P) \
-    template void cleanPhase<P>(TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
-#undef INST
-
-template <class P>
-void showPhase(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-{
-    typename P::T phase = c[P::n];
-    for (int i = 0; i < P::n; i++){
-        phase -= c[i] * key[i];
-    }
-    printf("phase: %llu\n", phase);
-}
-#define INST(P) \
-    template void showPhase<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
-TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
-#undef INST
 
 template <class P>
 double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
@@ -118,17 +88,6 @@ bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
-template <class P>
-typename P::T tlweSymDecryptRaw(const TLWE<P> &c, const Key<P> &key)
-{
-    typename P::T phase = c[P::n];
-    for (int i = 0; i < P::n; i++) phase -= c[i] * key[i];
-    return phase;
-}
-#define INST(P) \
-    template typename P::T tlweSymDecryptRaw<P>(const TLWE<P> &c, const Key<P> &key)
-TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
-#undef INST
 
 template <class P>
 std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,

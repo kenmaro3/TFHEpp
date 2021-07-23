@@ -94,6 +94,7 @@ struct GateKeywoFFT {
     BootstrappingKey<lvl01param> bklvl01;
     KeySwitchingKey<lvl10param> ksk;
     GateKeywoFFT(const SecretKey &sk);
+    GateKeywoFFT(const SecretKey &sk, Encoder &encoder);
     GateKeywoFFT() {}
     template <class Archive>
     void serialize(Archive &archive)
