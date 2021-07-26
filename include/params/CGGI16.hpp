@@ -5,7 +5,9 @@
 
 struct lvl0param {
     static constexpr std::uint32_t n = 500;
+    //static constexpr std::uint32_t n = 4;
     static const inline double alpha = 2.44e-5;
+    //static const inline double alpha = 0.0;
     using T = uint32_t;
     static constexpr T mu = 1U << 29;
 };
