@@ -17,8 +17,8 @@ using namespace TFHEpp;
 
 #include <chrono>
 using namespace std::chrono;
-inline double get_time_sec(void){
-    return static_cast<double>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count())/1000000000;
+inline double get_time_msec(void){
+    return static_cast<double>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count())/1000000;
 }
 
 
@@ -366,6 +366,14 @@ vector<double> nonlinear(const vector<double> x, string nonlinear_type){
   }
 }
 
+double avg(vector<double> x){
+  double res = 0;
+  for(int i=0; i<x.size(); i++){
+      res += x[i];
+  }
+  return res/double(x.size());
+}
+
 int main(){
   printf("hello, world\n\n");
 
@@ -420,31 +428,49 @@ int main(){
   vector<TLWE<lvl0param>> c1 = encrypt_vector<lvl0param>(x1, sk->key.lvl0, encoder);
   decrypt_vector<lvl0param>(c1, sk->key.lvl0, encoder);
 
-  printf("\ncipher=============================================================\n");
-  vector<TLWE<lvl0param>> a1 = linear<lvl0param>(c1, w, b, *gk.get(), encoder);
-  printf("\nlineared \n");
-  decrypt_vector<lvl0param>(a1, sk->key.lvl0, encoder);
-  //vector<TLWE<lvl0param>> y1 = nonlinear<lvl0param>(a1, *gk.get(), encoder, nl_type1);
-  printf("\nnon-lineared\n");
-  vector<TLWE<lvl0param>> y1 = sigmoid<lvl0param>(a1, *gk.get(), encoder);
-  decrypt_vector<lvl0param>(y1, sk->key.lvl0, encoder);
 
-  printf("\nraw_debug=============================================================\n");
-  x1 = linear(x1, w, b);
-  x1 = nonlinear(x1, nl_type1);
+  double start, end;
+  vector<double> ts;
+  bool is_decrypt = false;
+  for(int i=0; i<3; i++){
+    start = get_time_msec();
 
-  printf("\ncipher=============================================================\n");
-  vector<TLWE<lvl0param>> a2 = linear<lvl0param>(y1, w2, b2, *gk.get(), encoder);
-  printf("\nlineared\n");
-  decrypt_vector<lvl0param>(a2, sk->key.lvl0, encoder);
-  //vector<TLWE<lvl0param>> y2 = nonlinear<lvl0param>(a2, *gk.get(), encoder, nl_type2);
-  vector<TLWE<lvl0param>> y2 = sigmoid<lvl0param>(a2, *gk.get(), encoder);
-  printf("\nnon-lineared\n");
-  decrypt_vector<lvl0param>(y2, sk->key.lvl0, encoder);
+    printf("\ncipher=============================================================\n");
+    vector<TLWE<lvl0param>> a1 = linear<lvl0param>(c1, w, b, *gk.get(), encoder);
+    if(is_decrypt)
+      printf("\nlineared \n");
+      decrypt_vector<lvl0param>(a1, sk->key.lvl0, encoder);
+    //vector<TLWE<lvl0param>> y1 = nonlinear<lvl0param>(a1, *gk.get(), encoder, nl_type1);
+    printf("\nnon-lineared\n");
+    vector<TLWE<lvl0param>> y1 = sigmoid<lvl0param>(a1, *gk.get(), encoder);
+    if(is_decrypt)
+      decrypt_vector<lvl0param>(y1, sk->key.lvl0, encoder);
 
-  printf("\nraw_debug=============================================================\n");
-  x1 = linear(x1, w2, b2);
-  x1 = nonlinear(x1, nl_type2);
+    printf("\nraw_debug=============================================================\n");
+    vector<double> tmp = linear(x1, w, b);
+    tmp = nonlinear(tmp, nl_type1);
+
+    printf("\ncipher=============================================================\n");
+    vector<TLWE<lvl0param>> a2 = linear<lvl0param>(y1, w2, b2, *gk.get(), encoder);
+    printf("\nlineared\n");
+    if(is_decrypt)
+      decrypt_vector<lvl0param>(a2, sk->key.lvl0, encoder);
+    //vector<TLWE<lvl0param>> y2 = nonlinear<lvl0param>(a2, *gk.get(), encoder, nl_type2);
+    vector<TLWE<lvl0param>> y2 = sigmoid<lvl0param>(a2, *gk.get(), encoder);
+    printf("\nnon-lineared\n");
+    if(is_decrypt)
+      decrypt_vector<lvl0param>(y2, sk->key.lvl0, encoder);
+
+    printf("\nraw_debug=============================================================\n");
+    tmp = linear(tmp, w2, b2);
+    tmp = nonlinear(tmp, nl_type2);
+
+    end = get_time_msec();
+    ts.push_back(end-start);
+  }
+
+  double ts_avg = avg(ts);
+  printf("time avg: %f\n", ts_avg);
 
   
   return 0;
