@@ -60,7 +60,7 @@ TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 
 
 template <class P>
-double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, const Encoder &encoder)
 {
     typename P::T phase = c[P::n];
     for (int i = 0; i < P::n; i++){
@@ -70,7 +70,7 @@ double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encode
     return res;
 }
 #define INST(P) \
-    template double tlweSymDecryptDecode<P>(const TLWE<P> &c, const Key<P> &key, Encoder &encoder)
+    template double tlweSymDecryptDecode<P>(const TLWE<P> &c, const Key<P> &key, const Encoder &encoder)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 

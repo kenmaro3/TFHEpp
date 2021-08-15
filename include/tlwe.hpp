@@ -192,10 +192,8 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
 
 
 template <class P>
-double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, Encoder &encoder);
+double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, const Encoder &encoder);
 
-template <class P>
-double tlweSymDecryptDecode64(const array<uint64_t, lvl0param::n+1> &c, const Key<P> &key, Encoder &encoder);
 
 template <class P>
 array<typename P::T, P::n + 1> tlweSymEncrypt(
