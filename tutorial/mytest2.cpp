@@ -47,6 +47,7 @@ int main()
     int bs_bp = 31;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
+    ReLUFunction relu_function = ReLUFunction();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -166,7 +167,7 @@ int main()
     for (int i = 0; i < dim2; i++) {
         TFHEpp::ProgrammableBootstrapping(cswbr[i], cswb[i], *gk.get(),
                                           encoderswb[i], encoder_bs,
-                                          my_relu_function);
+                                          relu_function);
         encoderswbr[i] = encoder_bs;
     }
 
@@ -237,7 +238,7 @@ int main()
 
     vector<double> rawwbr(dim2);
     for (int i = 0; i < dim2; i++) {
-        rawwbr[i] = my_relu_function(rawwb[i]);
+        rawwbr[i] = relu_function.run(rawwb[i]);
     }
 
     cout << "rawwbr" << endl;

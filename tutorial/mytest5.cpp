@@ -19,6 +19,7 @@ void ser_deser_test()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder(encoder_a, encoder_b, bs_bp);
+    IdentityFunction identity_function = IdentityFunction();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -40,7 +41,7 @@ void ser_deser_test()
     // encoder.print();
 
     TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder, encoder,
-                                      my_identity_function);
+                                      identity_function);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
     printf("original %f = %f\n", x, d);
 
@@ -58,7 +59,7 @@ void ser_deser_test()
     }
 
     TFHEpp::ProgrammableBootstrapping(c1, c1, *gki.get(), encoder, encoder,
-                                      my_identity_function);
+                                      identity_function);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
     printf("original %f = %f\n", x, d);
 
@@ -127,6 +128,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder(encoder_a, encoder_b, bs_bp);
+    IdentityFunction identity_function = IdentityFunction();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -148,7 +150,7 @@ int main()
     // encoder.print();
 
     TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder, encoder,
-                                      my_identity_function);
+                                      identity_function);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
     printf("original %f = %f\n", x, d);
 
@@ -169,7 +171,7 @@ int main()
     }
 
     TFHEpp::ProgrammableBootstrapping(c1, c1, *gki.get(), encoder, encoder,
-                                      my_identity_function);
+                                      identity_function);
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder);
     printf("original %f = %f\n", x, d);
 

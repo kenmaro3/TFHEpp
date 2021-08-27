@@ -42,8 +42,6 @@ void print_vec_2d(vector<vector<double>> x)
     printf("\n");
 }
 
-double my_mult_function(double x, double y) { return x * y; }
-
 double my_batch_normalization_function(double x, double gamma, double mean,
                                        double var, double beta)
 {
@@ -187,6 +185,13 @@ double get_wider(double x)
     }
 }
 
+class MultFunction : public AbstructFunction {
+public:
+    double y;
+    MultFunction(double y) { this->y = y; }
+    double run(double x) { return x * y; }
+};
+
 template <class p>
 vector<TLWE<p>> multd(const vector<TLWE<p>> cs, const vector<double> ds,
                       const GateKey &gk, Encoder &encoder_domain,
@@ -197,9 +202,9 @@ vector<TLWE<p>> multd(const vector<TLWE<p>> cs, const vector<double> ds,
 
     for (int i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
+        MultFunction mult_function = MultFunction(ds[i]);
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_mult_function,
-                                          ds[i]);
+                                          encoder_target, mult_function);
     }
 
     Encoder encoder = encoder_target;
@@ -227,9 +232,9 @@ vector<TLWE<p>> multd(const vector<TLWE<p>> cs, const vector<double> ds,
 
     for (int i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
+        MultFunction mult_function = MultFunction(ds[i]);
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_mult_function,
-                                          ds[i]);
+                                          encoder_target, mult_function);
     }
 
     encoder = encoder_target;
@@ -242,12 +247,14 @@ vector<TLWE<p>> relu(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder::copy(encoder);
+    ReLUFunction relu_function = ReLUFunction();
+
     vector<TLWE<p>> res(cs.size());
 
     for (int i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_relu_function);
+                                          encoder_target, relu_function);
     }
 
     encoder = encoder_target;
@@ -260,6 +267,8 @@ vector<TLWE<p>> relu_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder::copy(encoder);
+    ReLUFunction relu_function = ReLUFunction();
+
     vector<TLWE<p>> res(cs.size());
 
     int i;
@@ -267,7 +276,7 @@ vector<TLWE<p>> relu_omp(const vector<TLWE<p>> cs, const GateKey &gk,
     for (i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_relu_function);
+                                          encoder_target, relu_function);
     }
 
     encoder = encoder_target;
@@ -297,12 +306,14 @@ vector<TLWE<p>> sigmoid(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder(-2, 2, encoder.bp);
+    SigmoidFunction sigmoid_function = SigmoidFunction();
+
     vector<TLWE<p>> res(cs.size());
 
     for (int i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_sigmoid_function);
+                                          encoder_target, sigmoid_function);
     }
 
     encoder = encoder_target;
@@ -315,6 +326,8 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder(-2, 2, encoder.bp);
+    SigmoidFunction sigmoid_function = SigmoidFunction();
+
     vector<TLWE<p>> res(cs.size());
 
     int i;
@@ -322,7 +335,7 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
     for (i = 0; i < cs.size(); i++) {
         // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
-                                          encoder_target, my_sigmoid_function);
+                                          encoder_target, sigmoid_function);
     }
 
     encoder = encoder_target;
@@ -331,9 +344,10 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 
 vector<double> sigmoid(const vector<double> x, bool is_print = true)
 {
+    SigmoidFunction sigmoid_function = SigmoidFunction();
     vector<double> res;
     for (int i = 0; i < x.size(); i++) {
-        res.push_back(my_sigmoid_function(x[i]));
+        res.push_back(sigmoid_function.run(x[i]));
     }
     if (is_print) {
         print_vec_1d(res);

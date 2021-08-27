@@ -39,7 +39,12 @@ void print_vec_2d(vector<vector<double>> x)
     printf("\n");
 }
 
-double my_multiply_function(double x, double y) { return x * y; }
+class MyltiplyFunction : public AbstructFunction {
+    double y;
+    MyltiplyFunction(double y) { this->y = y; }
+
+    double run(double x, double y) { return x * y; }
+};
 
 int main()
 {
@@ -49,6 +54,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
+    IdentityFunction identity_function = IdentityFunction();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -88,14 +94,14 @@ int main()
         if (i == 0) {
             start = get_time_msec();
             TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder,
-                                              encoder_bs, my_identity_function);
+                                              encoder_bs, identity_function);
             end = get_time_msec();
             ts.push_back(end - start);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0,
                                                         encoder_bs);
             printf("bs  %f = %f\n", x, d);
             TFHEpp::ProgrammableBootstrapping(c2, c2, *gk.get(), encoder,
-                                              encoder_bs, my_identity_function);
+                                              encoder_bs, identity_function);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c2, sk->key.lvl0,
                                                         encoder_bs);
             printf("bs %f = %f\n", x2, d);
@@ -103,7 +109,7 @@ int main()
         else {
             start = get_time_msec();
             TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder_bs,
-                                              encoder_bs, my_identity_function);
+                                              encoder_bs, identity_function);
             end = get_time_msec();
             ts.push_back(end - start);
             d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0,
