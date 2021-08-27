@@ -29,8 +29,7 @@ void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                         Encoder &encoder2);
 void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
             const TRLWE<lvl1param> &cb);
-// void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const
-// int &b);
+
 void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                      const int &b, Encoder &encoder);
 void HomMULTCONSTINT(array<uint64_t, lvl0param::n + 1> &res,

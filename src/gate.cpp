@@ -56,7 +56,6 @@ void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
-    // res[lvl0param::n] += encoder1.dtotx(0.5);
     res[lvl0param::n] -= encoder1.encode(0.);
 }
 
@@ -79,8 +78,6 @@ void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
-    // for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] +
-    // encoder1.dtotx(0.5);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i];
     res[lvl0param::n] += encoder1.encode(0.);
 }

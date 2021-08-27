@@ -98,13 +98,9 @@ template <class P>
 void InverseSampleExtractIndex(TRLWE<P> &trlwe, const TLWE<P> &tlwe,
                                const int index)
 {
-    // for (int i = 0; i <= index; i++) tlwe[i] = trlwe[0][index - i];
     for (int i = 0; i <= index; i++) trlwe[0][index - i] = tlwe[i];
-    // for (int i = index + 1; i < P::n; i++)
-    //    tlwe[i] = -trlwe[0][P::n + index - i];
     for (int i = index + 1; i < P::n; i++)
         trlwe[0][P::n + index - i] = -tlwe[i];
-    // tlwe[P::n] = trlwe[1][index];
     trlwe[1][index] = tlwe[P::n];
 }
 #define INST(P)                                 \

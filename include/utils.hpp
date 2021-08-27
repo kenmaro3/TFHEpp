@@ -118,10 +118,6 @@ template <class P>
 inline typename P::targetP::T modSwitchFromTorusSpecificTwoBP(
     typename P::domainP::T phase, int domain_bp, int target_bp)
 {
-    // return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
-    // return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
-    // return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL <<
-    // (P::targetP::nbit + 1));
     uint32_t tmp = domain_bp - P::targetP::nbit - 1;
     return ((phase + (1U << (tmp - 1))) >> tmp) %
            (1UL << (P::targetP::nbit + 1));

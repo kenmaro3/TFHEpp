@@ -23,7 +23,6 @@ void IdentityKeySwitchWITHEncoder(TLWE<typename P::targetP> &res,
     uint32_t target_digit = encoder_target.bp;
     if (domain_digit == target_digit) {
         res[P::targetP::n] = tlwe[P::domainP::n];
-        // printf("debug1: %llu\n", res[P::targetP::n]);
     }
     else if (domain_digit > target_digit) {
         res[P::targetP::n] = (tlwe[P::domainP::n] +
@@ -43,7 +42,6 @@ void IdentityKeySwitchWITHEncoder(TLWE<typename P::targetP> &res,
             if (aij != 0)
                 for (int k = 0; k <= P::targetP::n; k++) {
                     res[k] = (res[k] - ksk[i][j][aij - 1][k]);
-                    // printf("debug%d: %llu\n", k, res[k]);
                 }
         }
     }
