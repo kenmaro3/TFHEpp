@@ -9,7 +9,6 @@
 #include <functional>
 #include <limits>
 #include <random>
-#include <cmath>
 
 #include "params.hpp"
 
@@ -21,16 +20,13 @@ static thread_local randen::Randen<uint64_t> generator(trng());
 template <typename T>
 constexpr bool false_v = false;
 
-inline double my_identity_function(double x){
-    return x;
-}
+inline double my_identity_function(double x) { return x; }
 
-inline double my_relu_function(double x){
-    return x >= 0 ? x : 0.; 
-}
+inline double my_relu_function(double x) { return x >= 0 ? x : 0.; }
 
-inline double my_sigmoid_function(double x){
-    return 1./(1.+pow(std::exp(1.0), x*(-1.))); 
+inline double my_sigmoid_function(double x)
+{
+    return 1. / (1. + pow(std::exp(1.0), x * (-1.)));
 }
 
 inline double frand(double fMin, double fMax)
@@ -39,18 +35,16 @@ inline double frand(double fMin, double fMax)
     return fMin + f * (fMax - fMin);
 }
 
+inline double encode_sanitize(double x) { return x + frand(0.00001, 0.001); }
 
-inline double encode_sanitize(double x){
-    return x + frand(0.00001, 0.001);
-}
-
-inline double decode_sanitize(double x, double b){
-    if (abs(x-b) < 0.001){
+inline double decode_sanitize(double x, double b)
+{
+    if (abs(x - b) < 0.001) {
         return 0.;
-    }else{
+    }
+    else {
         return x;
     }
-
 }
 
 // Double to Torus(32bit fixed-point number)
@@ -64,17 +58,17 @@ inline uint32_t dtot30(double d)
     return int32_t(int64_t((d - int64_t(d)) * (1LL << 30)));
 }
 
-
-inline double t32tod(uint32_t x){
+inline double t32tod(uint32_t x)
+{
     double tmp_0_1 = static_cast<double>(x) / pow(2, 32);
-    //double tmp_0_1 = static_cast<double>(x >> 32);
+    // double tmp_0_1 = static_cast<double>(x >> 32);
     return tmp_0_1;
 }
 
-inline double t30tod(uint32_t x){
+inline double t30tod(uint32_t x)
+{
     double tmp_0_1 = static_cast<double>(x) / pow(2, 30);
     return tmp_0_1;
-
 }
 
 // Modular Gaussian Distribution over Torus
@@ -108,13 +102,16 @@ inline typename P::T modSwitchFromTorus(uint32_t phase)
 }
 
 template <class P>
-inline typename P::targetP::T modSwitchFromTorusSpecificTwoBP(typename P::domainP::T phase, int domain_bp, int target_bp)
+inline typename P::targetP::T modSwitchFromTorusSpecificTwoBP(
+    typename P::domainP::T phase, int domain_bp, int target_bp)
 {
-    //return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
-    //return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
-    //return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL << (P::targetP::nbit + 1));
+    // return std::round((double)phase/pow(2., domain_bp)*pow(2., target_bp));
+    // return (phase >> (domain_bp - target_bp - 1)) % (1UL << (target_bp + 1));
+    // return (phase >> (domain_bp - P::targetP::nbit - 1)) % (1UL <<
+    // (P::targetP::nbit + 1));
     uint32_t tmp = domain_bp - P::targetP::nbit - 1;
-    return ((phase + (1U << (tmp-1))) >> tmp) % (1UL<<(P::targetP::nbit + 1));
+    return ((phase + (1U << (tmp - 1))) >> tmp) %
+           (1UL << (P::targetP::nbit + 1));
 }
 
 // https://stackoverflow.com/questions/21191307/minimum-number-of-bits-to-represent-a-given-int

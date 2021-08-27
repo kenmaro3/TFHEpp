@@ -146,9 +146,9 @@ TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
     }
     return trgsw;
 }
-#define INST(P)                                                  \
-    template TRGSW<P> trgswSymEncrypt<P>(const Polynomial<P> &p, \
-                                         const double alpha, const Key<P> &key)
+#define INST(P)                           \
+    template TRGSW<P> trgswSymEncrypt<P>( \
+        const Polynomial<P> &p, const double alpha, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
 #undef INST
 

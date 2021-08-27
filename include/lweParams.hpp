@@ -8,7 +8,7 @@
 namespace TFHEpp {
 struct portablelvl0param {
     std::uint32_t n;           // dimension
-    double alpha;                  // fresh noise
+    double alpha;              // fresh noise
     std::uint32_t approx_bit;  // Torus representation bit size
 
     portablelvl0param()
@@ -30,7 +30,8 @@ struct portablelvl0param {
 
     bool operator==(const portablelvl0param& in) const
     {
-        return (n == in.n) && (alpha == in.alpha) && (approx_bit == in.approx_bit);
+        return (n == in.n) && (alpha == in.alpha) &&
+               (approx_bit == in.approx_bit);
     };
 };
 
@@ -41,7 +42,7 @@ struct portablelvl1param {
     std::uint32_t l;
     std::uint32_t Bgbit;
     std::uint32_t Bg;
-    double alpha;                  // fresh noise
+    double alpha;              // fresh noise
     std::uint32_t approx_bit;  // Torus representation bit size
 
     portablelvl1param()
@@ -86,7 +87,7 @@ struct portablelvl2param {
     std::uint32_t l;
     std::uint32_t Bgbit;
     std::uint32_t Bg;
-    double alpha;                  // fresh noise
+    double alpha;              // fresh noise
     std::uint32_t approx_bit;  // Torus representation bit size
 
     portablelvl2param()
@@ -128,11 +129,13 @@ struct portablelvl2param {
 struct portablelvl10param {
     std::uint32_t t;  // number of addition in keyswitching
     std::uint32_t
-        basebit;  // how many bit should be encrypted in keyswitching key
-    double alpha;     // key noise
+        basebit;   // how many bit should be encrypted in keyswitching key
+    double alpha;  // key noise
 
     portablelvl10param()
-        : t(lvl10param::t), basebit(lvl10param::basebit), alpha(lvl10param::alpha)
+        : t(lvl10param::t),
+          basebit(lvl10param::basebit),
+          alpha(lvl10param::alpha)
     {
     }
     portablelvl10param(const portablelvl10param& P)
@@ -155,11 +158,13 @@ struct portablelvl10param {
 struct portablelvl20param {
     std::uint32_t t;  // number of addition in keyswitching
     std::uint32_t
-        basebit;  // how many bit should be encrypted in keyswitching key
-    double alpha;     // key noise
+        basebit;   // how many bit should be encrypted in keyswitching key
+    double alpha;  // key noise
 
     portablelvl20param()
-        : t(lvl20param::t), basebit(lvl20param::basebit), alpha(lvl20param::alpha)
+        : t(lvl20param::t),
+          basebit(lvl20param::basebit),
+          alpha(lvl20param::alpha)
     {
     }
     portablelvl20param(const portablelvl20param& P)
@@ -182,11 +187,13 @@ struct portablelvl20param {
 struct portablelvl21param {
     std::uint32_t t;  // number of addition in keyswitching
     std::uint32_t
-        basebit;  // how many bit should be encrypted in keyswitching key
-    double alpha;     // key noise
+        basebit;   // how many bit should be encrypted in keyswitching key
+    double alpha;  // key noise
 
     portablelvl21param()
-        : t(lvl21param::t), basebit(lvl21param::basebit), alpha(lvl21param::alpha)
+        : t(lvl21param::t),
+          basebit(lvl21param::basebit),
+          alpha(lvl21param::alpha)
     {
     }
     portablelvl21param(const portablelvl21param& P)
@@ -209,11 +216,13 @@ struct portablelvl21param {
 struct portablelvl22param {
     std::uint32_t t;  // number of addition in keyswitching
     std::uint32_t
-        basebit;  // how many bit should be encrypted in keyswitching key
-    double alpha;     // key noise
+        basebit;   // how many bit should be encrypted in keyswitching key
+    double alpha;  // key noise
 
     portablelvl22param()
-        : t(lvl22param::t), basebit(lvl22param::basebit), alpha(lvl22param::alpha)
+        : t(lvl22param::t),
+          basebit(lvl22param::basebit),
+          alpha(lvl22param::alpha)
     {
     }
     portablelvl22param(const portablelvl22param& P)
@@ -242,10 +251,11 @@ struct lweParams {
     void serialize(Archive& archive)
     {
         archive(lvl0.n, lvl0.alpha, lvl0.approx_bit, lvl1.nbit, lvl1.n, lvl1.l,
-                lvl1.Bgbit, lvl1.alpha, lvl1.approx_bit, lvl2.nbit, lvl2.n, lvl2.l,
-                lvl2.Bgbit, lvl2.alpha, lvl2.approx_bit, lvl10.t, lvl10.basebit,
-                lvl10.alpha, lvl20.t, lvl20.basebit, lvl20.alpha, lvl21.t,
-                lvl21.basebit, lvl21.alpha, lvl22.t, lvl22.basebit, lvl22.alpha);
+                lvl1.Bgbit, lvl1.alpha, lvl1.approx_bit, lvl2.nbit, lvl2.n,
+                lvl2.l, lvl2.Bgbit, lvl2.alpha, lvl2.approx_bit, lvl10.t,
+                lvl10.basebit, lvl10.alpha, lvl20.t, lvl20.basebit, lvl20.alpha,
+                lvl21.t, lvl21.basebit, lvl21.alpha, lvl22.t, lvl22.basebit,
+                lvl22.alpha);
     }
 
     // https://cpprefjp.github.io/lang/cpp20/consistent_comparison.html
