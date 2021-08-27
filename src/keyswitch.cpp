@@ -10,47 +10,47 @@ using namespace std;
 
 template <class P>
 void IdentityKeySwitchWITHEncoder(TLWE<typename P::targetP> &res,
-                       const TLWE<typename P::domainP> &tlwe,
-                       const KeySwitchingKey<P> &ksk, Encoder &encoder_domain, Encoder &encoder_target)
+                                  const TLWE<typename P::domainP> &tlwe,
+                                  const KeySwitchingKey<P> &ksk,
+                                  Encoder &encoder_domain,
+                                  Encoder &encoder_target)
 {
     typename P::domainP::T prec_offset =
-        1ULL << (encoder_domain.bp -
-                 (1 + P::basebit * P::t));
+        1ULL << (encoder_domain.bp - (1 + P::basebit * P::t));
     constexpr uint32_t mask = (1U << P::basebit) - 1;
     res = {};
     uint32_t domain_digit = encoder_domain.bp;
     uint32_t target_digit = encoder_target.bp;
-    if (domain_digit == target_digit){
+    if (domain_digit == target_digit) {
         res[P::targetP::n] = tlwe[P::domainP::n];
-        //printf("debug1: %llu\n", res[P::targetP::n]);
     }
-    else if (domain_digit > target_digit){
+    else if (domain_digit > target_digit) {
         res[P::targetP::n] = (tlwe[P::domainP::n] +
                               (1ULL << (domain_digit - target_digit - 1))) >>
                              (domain_digit - target_digit);
     }
-    else if (domain_digit < target_digit){
+    else if (domain_digit < target_digit) {
         res[P::targetP::n] = tlwe[P::domainP::n]
                              << (target_digit - domain_digit);
     }
     for (int i = 0; i < P::domainP::n; i++) {
-        const typename P::domainP::T aibar = (tlwe[i] + prec_offset) % (1ULL << domain_digit);
+        const typename P::domainP::T aibar =
+            (tlwe[i] + prec_offset) % (1ULL << domain_digit);
         for (int j = 0; j < P::t; j++) {
             const uint32_t aij =
                 (aibar >> (encoder_domain.bp - (j + 1) * P::basebit)) & mask;
             if (aij != 0)
-                for (int k = 0; k <= P::targetP::n; k++){
+                for (int k = 0; k <= P::targetP::n; k++) {
                     res[k] = (res[k] - ksk[i][j][aij - 1][k]);
-                    //printf("debug%d: %llu\n", k, res[k]);
-
                 }
         }
     }
 }
 #define INST(P)                                                               \
-    template void IdentityKeySwitchWITHEncoder<P>(TLWE<typename P::targetP> & res,       \
-                                       const TLWE<typename P::domainP> &tlwe, \
-                                       const KeySwitchingKey<P> &ksk, Encoder &encoder_domain, Encoder &encoder_target)
+    template void IdentityKeySwitchWITHEncoder<P>(                            \
+        TLWE<typename P::targetP> & res,                                      \
+        const TLWE<typename P::domainP> &tlwe, const KeySwitchingKey<P> &ksk, \
+        Encoder &encoder_domain, Encoder &encoder_target)
 TFHEPP_EXPLICIT_INSTANTIATION_KEY_SWITCH(INST)
 #undef INST
 

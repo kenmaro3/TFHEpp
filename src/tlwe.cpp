@@ -13,11 +13,10 @@
 
 namespace TFHEpp {
 
-
 template <class P>
 array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
-    const double &x, const double alpha,
-    const array<typename P::T, P::n> &key, const Encoder &encoder)
+    const double &x, const double alpha, const array<typename P::T, P::n> &key,
+    const Encoder &encoder)
 {
     uniform_int_distribution<typename P::T> Torusdist(
         0, numeric_limits<typename P::T>::max());
@@ -30,9 +29,9 @@ array<typename P::T, P::n + 1> tlweSymEncodeEncrypt(
     }
     return res;
 }
-#define INST(P)                                                \
+#define INST(P)                                                      \
     template array<typename P::T, P::n + 1> tlweSymEncodeEncrypt<P>( \
-        const double &x, const double alpha,                 \
+        const double &x, const double alpha,                         \
         const array<typename P::T, P::n> &key, const Encoder &encoder)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
@@ -51,26 +50,27 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha,
     }
     return res;
 }
-#define INST(P)                                \
-    template TLWE<P> tlweSymEncrypt<P>(        \
+#define INST(P)                                    \
+    template TLWE<P> tlweSymEncrypt<P>(            \
         const typename P::T p, const double alpha, \
         const std::array<typename P::T, P::n> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
-
 template <class P>
-double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key, const Encoder &encoder)
+double tlweSymDecryptDecode(const TLWE<P> &c, const Key<P> &key,
+                            const Encoder &encoder)
 {
     typename P::T phase = c[P::n];
-    for (int i = 0; i < P::n; i++){
+    for (int i = 0; i < P::n; i++) {
         phase = (phase - c[i] * key[i]);
     }
     double res = encoder.decode(phase);
     return res;
 }
-#define INST(P) \
-    template double tlweSymDecryptDecode<P>(const TLWE<P> &c, const Key<P> &key, const Encoder &encoder)
+#define INST(P)                              \
+    template double tlweSymDecryptDecode<P>( \
+        const TLWE<P> &c, const Key<P> &key, const Encoder &encoder)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
 
@@ -87,7 +87,6 @@ bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
     template bool tlweSymDecrypt<P>(const TLWE<P> &c, const Key<P> &key)
 TFHEPP_EXPLICIT_INSTANTIATION_TLWE(INST)
 #undef INST
-
 
 template <class P>
 std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,
