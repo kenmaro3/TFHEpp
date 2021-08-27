@@ -7,6 +7,7 @@
 
 #include "cloudkey.hpp"
 #include "detwfa.hpp"
+#include "encoder.hpp"
 #include "trlwe.hpp"
 #include "utils.hpp"
 
@@ -131,16 +132,6 @@ void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res,
                                         Encoder &encoder_target,
                                         AbstructFunction &function);
 
-// void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const
-// TLWE<lvl0param> &tlwe,
-//                       const GateKey &gk, Encoder &encoder_domain, Encoder
-//                       &encoder_target);
-
-// void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const
-// TLWE<lvl0param> &tlwe,
-//                       const GateKey &gk, Encoder &encoder_domain, Encoder
-//                       &encoder_target, Key<lvl0param> sk);
-
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk);
 template <class P>
@@ -148,4 +139,4 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(
     TRLWE<typename P::targetP> &acc, const TLWE<typename P::domainP> &tlwe,
     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain,
     Encoder &encoder_target);
-}  // namespace TFHEpp
+}

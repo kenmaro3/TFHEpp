@@ -3,6 +3,7 @@
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/array.hpp>
 
+#include "encoder.hpp"
 #include "params.hpp"
 #include "tlwe.hpp"
 #include "trgsw.hpp"
@@ -33,21 +34,21 @@ inline void bkfftgen(BootstrappingKeyFFT<P> &bkfft, const SecretKey &sk)
 }
 
 template <class P>
-inline void ikskgenSpecific(KeySwitchingKey<P> &ksk, const SecretKey &sk, Encoder &encoder)
+inline void ikskgenSpecific(KeySwitchingKey<P> &ksk, const SecretKey &sk,
+                            Encoder &encoder)
 {
     for (int i = 0; i < P::domainP::n; i++)
         for (int j = 0; j < P::t; j++)
             for (uint32_t k = 0; k < (1 << P::basebit) - 1; k++)
                 ksk[i][j][k] = tlweSymEncrypt<typename P::targetP>(
                     sk.key.get<typename P::domainP>()[i] * (k + 1) *
-                        (1ULL
-                         << (encoder.bp -
-                             (j + 1) * P::basebit)),
+                        (1ULL << (encoder.bp - (j + 1) * P::basebit)),
                     P::alpha, sk.key.get<typename P::targetP>());
-                //ksk[i][j][k] = tlweSymEncodeEncrypt<typename P::targetP>(
-                //    (double)sk.key.get<typename P::domainP>()[i] * (k + 1) / (pow(2., (j+1)* P::basebit)),
-                //    P::alpha, sk.key.get<typename P::targetP>(), encoder);
-            //plainpoly, P::targetP::alpha, sk.key.get<typename P::targetP>());
+    // ksk[i][j][k] = tlweSymEncodeEncrypt<typename P::targetP>(
+    //    (double)sk.key.get<typename P::domainP>()[i] * (k + 1) / (pow(2.,
+    //    (j+1)* P::basebit)), P::alpha, sk.key.get<typename P::targetP>(),
+    //    encoder);
+    // plainpoly, P::targetP::alpha, sk.key.get<typename P::targetP>());
 }
 
 template <class P>

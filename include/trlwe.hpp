@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "encoder.hpp"
 #include "params.hpp"
 #include "tlwe.hpp"
 #include "utils.hpp"
