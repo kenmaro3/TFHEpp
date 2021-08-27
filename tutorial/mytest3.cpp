@@ -201,7 +201,6 @@ vector<TLWE<p>> multd(const vector<TLWE<p>> cs, const vector<double> ds,
     vector<TLWE<p>> res(cs.size());
 
     for (int i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         MultFunction mult_function = MultFunction(ds[i]);
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, mult_function);
@@ -219,19 +218,15 @@ vector<TLWE<p>> multd(const vector<TLWE<p>> cs, const vector<double> ds,
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder::copy(encoder);
 
-    // encoder_target.print();
-
     assert(cs.size() == ds.size());
     vector<TLWE<p>> res(cs.size());
     double max_ds = get_max(ds);
     max_ds = get_wider(max_ds);
     max_ds *= expansion;
-    // printf("max_ds: %f\n", max_ds);
+
     encoder_target.update(max_ds);
-    // encoder_target.print();
 
     for (int i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         MultFunction mult_function = MultFunction(ds[i]);
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, mult_function);
@@ -252,7 +247,6 @@ vector<TLWE<p>> relu(const vector<TLWE<p>> cs, const GateKey &gk,
     vector<TLWE<p>> res(cs.size());
 
     for (int i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, relu_function);
     }
@@ -274,7 +268,6 @@ vector<TLWE<p>> relu_omp(const vector<TLWE<p>> cs, const GateKey &gk,
     int i;
 #pragma omp parallel for private(i)
     for (i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, relu_function);
     }
@@ -311,7 +304,6 @@ vector<TLWE<p>> sigmoid(const vector<TLWE<p>> cs, const GateKey &gk,
     vector<TLWE<p>> res(cs.size());
 
     for (int i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, sigmoid_function);
     }
@@ -333,7 +325,6 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
     int i;
 #pragma omp parallel for private(i)
     for (i = 0; i < cs.size(); i++) {
-        // encoder_domain.print();
         TFHEpp::ProgrammableBootstrapping(res[i], cs[i], gk, encoder_domain,
                                           encoder_target, sigmoid_function);
     }
@@ -397,9 +388,7 @@ vector<TLWE<P>> wtx(const vector<TLWE<P>> cs, const vector<vector<double>> w,
     }
     max_ds = get_wider(max_ds);
     max_ds *= expansion;
-    // printf("max_ds: %f\n", max_ds);
     encoder_target.update(max_ds);
-    // encoder_target.print();
 
     vector<TLWE<P>> res;
     for (int i = 0; i < w.size(); i++) {
@@ -426,9 +415,7 @@ vector<TLWE<P>> wtx_omp(const vector<TLWE<P>> cs,
     }
     max_ds = get_wider(max_ds);
     max_ds *= expansion;
-    // printf("max_ds: %f\n", max_ds);
     encoder_target.update(max_ds);
-    // encoder_target.print();
 
     vector<TLWE<P>> res(w.size());
 

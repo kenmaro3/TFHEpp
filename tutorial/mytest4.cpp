@@ -120,29 +120,15 @@ int main()
     double avg = 0;
     for (int i = 0; i < ts.size(); i++) {
         avg += ts[i];
-        // cout << ts[i] << endl;
     }
     avg = avg / double(ts.size());
     printf("bs avg: %f\n", avg);
 
-    // printf("\n===============================\n");
-    // for(int i=0; i<5; i++){
-    //    mult = 0.9;
-    //    TFHEpp::ProgrammableBootstrapping(c1, c1, *gk.get(), encoder_bs,
-    //    encoder_bs, my_multiply_function, mult); d =
-    //    TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, sk->key.lvl0, encoder_bs);
-    //    printf("mult %f = %f\n",x*pow(mult,i+1), d);
-    //}
-    // return 0;
-
     TLWE<lvl0param> test1;
-    // TFHEpp::HomADDFixedEncoder(test1, c1, c2, encoder_bs, encoder_bs);
-    // TFHEpp::HomSUBFixedEncoder(test1, c1, c2, encoder_bs, encoder_bs);
     TFHEpp::HomMAX(test1, c1, c2, encoder_bs, encoder_bs, encoder_bs,
                    *gk.get());
     d = TFHEpp::tlweSymDecryptDecode<lvl0param>(test1, sk->key.lvl0,
                                                 encoder_bs);
     printf("max of (%f, %f) = %f\n", x, x2, d);
-    // printf("sum of (%f, %f) = %f\n",x,x2, d);
     return 0;
 }

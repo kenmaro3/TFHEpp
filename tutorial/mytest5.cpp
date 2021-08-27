@@ -95,28 +95,6 @@ void ser_deser_test()
 
     TFHEpp::tlweSymDecryptDecode<lvl0param>(c1, ski->key.lvl0, encoder);
     printf("original %f = %f\n", x, d);
-
-    //{
-    //  TFHEpp::IOpacket iopacket;
-    //  iopacket.tlwelvl0ports["test"].resize(1);
-    //  iopacket.tlwelvl0ports["test"][0] = c1;
-    //  {
-    //    std::ofstream ofs{"./iopacket.data", std::ios::binary};
-    //    cereal::PortableBinaryOutputArchive ar(ofs);
-    //    iopacket.serialize(ar);
-    //  }
-    //}
-
-    // TFHEpp::IOpacket ip;
-    //{
-    //  std::ifstream ifs{"./iopacket.data", std::ios::binary};
-    //  cereal::PortableBinaryInputArchive ar(ifs);
-    //  ip.serialize(ar);
-    //}
-
-    // TFHEpp::TLWE<lvl0param> c1_load = ip.tlwelvl0ports["test"][0];
-    // d = TFHEpp::tlweSymDecryptDecode<lvl0param>(c1_load, sk->key.lvl0,
-    // encoder); printf("original %f = %f\n",x, d);
 }
 
 int main()
@@ -158,14 +136,12 @@ int main()
     std::stringstream ss;
 
     {
-        // std::ofstream ofs{"./gk.key", std::ios::binary};
         cereal::PortableBinaryOutputArchive ar(ss);
         gk->serialize(ar);
     }
 
     std::unique_ptr<TFHEpp::GateKey> gki = std::make_unique<TFHEpp::GateKey>();
     {
-        // std::ifstream ifs{"./gk.key", std::ios::binary};
         cereal::PortableBinaryInputArchive ar(ss);
         gki->serialize(ar);
     }
@@ -191,14 +167,12 @@ int main()
     printf("original %f = %f\n", x, d);
 
     {
-        // std::ofstream ofs{"./ct.data", std::ios::binary};
         cereal::PortableBinaryOutputArchive ar(ss);
         ar(c1);
     }
 
     TFHEpp::TLWE<lvl0param> ci;
     {
-        // std::ifstream ifs{"./ct.data", std::ios::binary};
         cereal::PortableBinaryInputArchive ar(ss);
         ar(ci);
     }

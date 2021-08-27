@@ -128,12 +128,10 @@ int main()
     vector<TLWE<lvl0param>> csw(dim2);
     vector<Encoder> encodersw(dim2);
     for (int j = 0; j < dim2; j++) {
-        // cout << "loop1: " << j << endl;
         TLWE<lvl0param> tmp;
         TFHEpp::HomMULTCONSTREAL(tmp, cs_copy[j][0], w[0][j],
                                  encoder_copy[j][0], 8, 1);
         for (int i = 1; i < dim1; i++) {
-            // cout << "loop2: " << i << endl;
             TLWE<lvl0param> tmp2;
             TFHEpp::HomMULTCONSTREAL(tmp2, cs_copy[j][i], w[i][j],
                                      encoder_copy[j][i], 8, 1);
@@ -145,8 +143,6 @@ int main()
                 TFHEpp::HomADDFixedEncoder(tmp, tmp, tmp2, encoder_copy[j][0],
                                            encoder_copy[j][i]);
             }
-            // TFHEpp::HomADD(tmp, tmp, tmp2, encoder_copy[j][0],
-            // encoder_copy[j][i]);
         }
         csw[j] = tmp;
         encodersw[j] = encoder_copy[j][0];
@@ -199,19 +195,6 @@ int main()
 
     cout << "decswbr" << endl;
     print_vec_1d(decswbr);
-
-    // TLWE<lvl0param> tmp_bs;
-    ////TFHEpp::ProgrammableBootstrapping(tmp_bs, cswb[0], *gk.get(),
-    /// encoderswb[0], encoder_bs, my_identity_function);
-    // Encoder encoder_tmp1(-2, 2, 39);
-    // for(int i=0; i<dim2; i++){
-    //    TFHEpp::ProgrammableBootstrapping(tmp_bs, cswb[i], *gk.get(),
-    //    encoder_tmp1, encoder_bs, my_identity_function); double tmp_dec =
-    //    TFHEpp::tlweSymDecryptDecode<lvl0param>(tmp_bs, sk->key.lvl0,
-    //    encoder_bs); cout << "here " << tmp_dec << endl;
-    //}
-    // encoderswb[0].print();
-    // encoder_bs.print();
 
     //####################################################################################################
     // validation with raw calc

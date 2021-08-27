@@ -72,12 +72,8 @@ inline void CreateCustomTestVector(
 {
     testvector[0] = {};
     for (int i = 0; i < P::n; i++) {
-        // double tmp = encoder_target.a +
-        // encoder_target.d/2.*double(i)/double(P::n);
         double tmp =
             encoder_domain.a + encoder_domain.d / 2. * double(i) / double(P::n);
-        // double tmp = encoder_target.a +
-        // encoder_target.d*double(i)/double(P::n);
         testvector[1][i] = encoder_target.encode(function.run(tmp));
     }
 }
@@ -90,7 +86,6 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(
 {
     TLWE<typename P::domainP> temp1;
     for (int i = 0; i <= P::domainP::n; i++) {
-        // temp1[i] = tlwe[i] >> 1;
         temp1[i] = tlwe[i];
     }
     uint32_t bara =
@@ -230,8 +225,6 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res,
                                Encoder &encoder_domain, Encoder &encoder_target,
                                AbstructFunction &function)
 {
-    // assert(encoder_domain.a == encoder_target.a);
-    // assert(encoder_domain.b == encoder_target.b);
     TLWE<lvl1param> tlwelvl1;
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(
         tlwelvl1, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target,
@@ -250,24 +243,6 @@ void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res,
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(
         res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target, function);
 }
-
-// void ProgrammableBootstrappingWithoutSE(TRLWE<lvl1param> &res, const
-// TLWE<lvl0param> &tlwe,
-//                       const GateKey &gk, Encoder &encoder_domain, Encoder
-//                       &encoder_target)
-//{
-//    ProgrammableBootstrappingTLWE2TLWEFFTDEBUG<lvl01param>(res, tlwe,
-//    gk.bkfftlvl01, encoder_domain, encoder_target);
-//}
-
-// void ProgrammableBootstrappingWithoutSEWITHKEY(TRLWE<lvl1param> &res, const
-// TLWE<lvl0param> &tlwe,
-//                       const GateKey &gk, Encoder &encoder_domain, Encoder
-//                       &encoder_target, Key<lvl0param> sk)
-//{
-//    ProgrammableBootstrappingTLWE2TLWEFFTDEBUGWITHKEY<lvl01param>(res, tlwe,
-//    gk.bkfftlvl01, encoder_domain, encoder_target, sk);
-//}
 
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk)

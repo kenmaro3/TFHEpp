@@ -75,7 +75,6 @@ inline uint32_t dtot30(double d)
 inline double t32tod(uint32_t x)
 {
     double tmp_0_1 = static_cast<double>(x) / pow(2, 32);
-    // double tmp_0_1 = static_cast<double>(x >> 32);
     return tmp_0_1;
 }
 
