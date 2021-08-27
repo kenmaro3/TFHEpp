@@ -1,7 +1,7 @@
-#include <gatebootstrapping.hpp>
-#include <keyswitch.hpp>
 #include <math.h>
 
+#include <gatebootstrapping.hpp>
+#include <keyswitch.hpp>
 
 namespace TFHEpp {
 
@@ -31,86 +31,99 @@ void HomCOPY(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca)
 
 void adjust_bp(TLWE<lvl0param> &c, Encoder &encoder, int bp_diff)
 {
-    for(int i=0; i<=lvl0param::n; i++){
+    for (int i = 0; i <= lvl0param::n; i++) {
         c[i] = c[i] << bp_diff;
     }
-    encoder.update(encoder.a, encoder.b, encoder.bp+bp_diff);
-
+    encoder.update(encoder.a, encoder.b, encoder.bp + bp_diff);
 }
 
-
-void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomADD(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+            const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
-    encoder1.update(encoder1.a+encoder2.a, encoder1.b+encoder2.b, encoder1.bp+1);
+    encoder1.update(encoder1.a + encoder2.a, encoder1.b + encoder2.b,
+                    encoder1.bp + 1);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
 }
 
-void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomADDFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                        const TLWE<lvl0param> &cb, Encoder &encoder1,
+                        Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] + cb[i];
-    //res[lvl0param::n] += encoder1.dtotx(0.5);
+    // res[lvl0param::n] += encoder1.dtotx(0.5);
     res[lvl0param::n] -= encoder1.encode(0.);
 }
 
-void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomSUB(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+            const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
-    encoder1.update(encoder1.a-encoder2.b, encoder1.b-encoder2.a, encoder1.bp+1);
-    for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
+    encoder1.update(encoder1.a - encoder2.b, encoder1.b - encoder2.a,
+                    encoder1.bp + 1);
+    for (int i = 0; i <= lvl0param::n; i++)
+        res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
 }
 
-void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2)
+void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                        const TLWE<lvl0param> &cb, Encoder &encoder1,
+                        Encoder &encoder2)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
-    //for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] + encoder1.dtotx(0.5);
+    // for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i] +
+    // encoder1.dtotx(0.5);
     for (int i = 0; i <= lvl0param::n; i++) res[i] = ca[i] - cb[i];
     res[lvl0param::n] += encoder1.encode(0.);
 }
 
-void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2, Encoder &encoder_bs, GateKey &gk)
+void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+            const TLWE<lvl0param> &cb, Encoder &encoder1, Encoder &encoder2,
+            Encoder &encoder_bs, GateKey &gk)
 {
     assert(encoder1.a == encoder2.a);
     assert(encoder1.b == encoder2.b);
     assert(encoder1.bp == encoder2.bp);
     TLWE<lvl0param> test_x_minus_y, test_bs;
     TFHEpp::HomSUBFixedEncoder(test_x_minus_y, ca, cb, encoder1, encoder2);
-    TFHEpp::ProgrammableBootstrapping(test_bs, test_x_minus_y, gk, encoder1, encoder_bs, my_relu_function);
+    TFHEpp::ProgrammableBootstrapping(test_bs, test_x_minus_y, gk, encoder1,
+                                      encoder_bs, my_relu_function);
     TFHEpp::HomADDFixedEncoder(res, test_bs, cb, encoder_bs, encoder2);
 }
 
-void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder)
+void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                 const double &b, Encoder &encoder)
 {
     for (int i = 0; i < lvl0param::n; i++) res[i] = ca[i];
-    if(b>0){
+    if (b > 0) {
         lvl0param::T tmp = encoder.encode(b + encoder.a);
         res[lvl0param::n] = ca[lvl0param::n] + tmp;
-    }else{
+    }
+    else {
         lvl0param::T tmp = encoder.encode(-b + encoder.a);
         res[lvl0param::n] = ca[lvl0param::n] - tmp;
-
     }
 }
 
-
-void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int &b, Encoder &encoder)
+void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                     const int &b, Encoder &encoder)
 {
     lvl0param::T prev_0 = encoder.encode(0.);
-    
-    for (int i = 0; i <= lvl0param::n; i++){
+
+    for (int i = 0; i <= lvl0param::n; i++) {
         lvl0param::T ca_minus_0;
-        if(i==lvl0param::n){
+        if (i == lvl0param::n) {
             ca_minus_0 = ca[i] - prev_0;
-        }else{
+        }
+        else {
             ca_minus_0 = ca[i];
         }
         res[i] = ca_minus_0 * b;
@@ -119,13 +132,13 @@ void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const int 
     res[lvl0param::n] += after_0;
 }
 
-
-int find_index(double x, vector<double> y){
+int find_index(double x, vector<double> y)
+{
     double dist = 100000.;
     int res = 0;
-    for(int i=0; i<y.size(); i++){
-        double tmp_dist = abs(x-y[i]);
-        if(tmp_dist < dist){
+    for (int i = 0; i < y.size(); i++) {
+        double tmp_dist = abs(x - y[i]);
+        if (tmp_dist < dist) {
             res = i;
             dist = tmp_dist;
         }
@@ -133,91 +146,97 @@ int find_index(double x, vector<double> y){
     return res;
 }
 
-void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int mult_bp, double mult_max)
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                      const double &b, Encoder &encoder, int mult_bp,
+                      double mult_max)
 {
-    assert(b<=mult_max);
-    assert(b>=(-1)*mult_max);
+    assert(b <= mult_max);
+    assert(b >= (-1) * mult_max);
 
     lvl0param::T prev_0 = encoder.encode(0.);
     double b_abs_decimal = abs(b);
 
     lvl0param::T index = Encoder::dtotx(b_abs_decimal, mult_max, mult_bp);
-    
-    for (int i = 0; i <= lvl0param::n; i++){
+
+    for (int i = 0; i <= lvl0param::n; i++) {
         lvl0param::T ca_minus_0;
-        if(i==lvl0param::n){
+        if (i == lvl0param::n) {
             ca_minus_0 = ca[i] - prev_0;
-        }else{
+        }
+        else {
             ca_minus_0 = ca[i];
         }
         res[i] = ca_minus_0 * index;
     }
-    encoder.update(encoder.a*mult_max, encoder.b*mult_max, encoder.bp+mult_bp);
+    encoder.update(encoder.a * mult_max, encoder.b * mult_max,
+                   encoder.bp + mult_bp);
     lvl0param::T after_0 = encoder.encode(0.);
     res[lvl0param::n] += after_0;
 
-    if(b >=0){
-    }else{
+    if (b >= 0) {
+    }
+    else {
         HomMULTCONSTINT(res, res, -1, encoder);
     }
 }
 
-void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca, const double &b, Encoder &encoder, int mult_bp)
+void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                    const double &b, Encoder &encoder, int mult_bp)
 {
-    assert(b<=1.);
-    assert(b>=-1.);
+    assert(b <= 1.);
+    assert(b >= -1.);
     lvl0param::T prev_0 = encoder.encode(0.);
     double b_abs_decimal = abs(b);
 
     vector<double> test2;
-    for(int i=0; i<(1U << mult_bp); i++){
-        test2.push_back(i*1.0/pow(2., mult_bp));
+    for (int i = 0; i < (1U << mult_bp); i++) {
+        test2.push_back(i * 1.0 / pow(2., mult_bp));
     }
 
     int index = find_index(b_abs_decimal, test2);
-    
-    for (int i = 0; i <= lvl0param::n; i++){
+
+    for (int i = 0; i <= lvl0param::n; i++) {
         lvl0param::T ca_minus_0;
-        if(i==lvl0param::n){
+        if (i == lvl0param::n) {
             ca_minus_0 = ca[i] - prev_0;
-        }else{
+        }
+        else {
             ca_minus_0 = ca[i];
         }
         res[i] = ca_minus_0 * index;
     }
-    encoder.update(encoder.a*1, encoder.b*1, encoder.bp+mult_bp);
+    encoder.update(encoder.a * 1, encoder.b * 1, encoder.bp + mult_bp);
     lvl0param::T after_0 = encoder.encode(0.);
     res[lvl0param::n] += after_0;
 
-    if(b >=0){
-    }else{
+    if (b >= 0) {
+    }
+    else {
         HomMULTCONSTINT(res, res, -1, encoder);
     }
-
-
 }
 
-void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb)
+void HomADD(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
+            const TRLWE<lvl1param> &cb)
 {
-    for (int i = 0; i <2; i++) 
-        for(int j=0; j<= lvl1param::n; j++)
-            res[i][j] = ca[i][j] + cb[i][j];
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j <= lvl1param::n; j++) res[i][j] = ca[i][j] + cb[i][j];
 }
 
-void HomADDCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const array<double, lvl1param::n> &b, Encoder &encoder)
+void HomADDCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
+                 const array<double, lvl1param::n> &b, Encoder &encoder)
 {
     for (int i = 0; i < lvl1param::n; i++) res[0][i] = ca[0][i];
-    for (int i = 0; i < lvl1param::n; i++) res[1][i] = ca[1][i] + encoder.dtotx(encoder.encode_0_1(b[i]));
+    for (int i = 0; i < lvl1param::n; i++)
+        res[1][i] = ca[1][i] + encoder.dtotx(encoder.encode_0_1(b[i]));
 }
 
-
-void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca, const TRLWE<lvl1param> &cb)
+void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
+            const TRLWE<lvl1param> &cb)
 {
-    for (int i = 0; i <2; i++) 
-        for(int j=0; j<= lvl1param::n; j++)
-            res[i][j] = ca[i][j] - cb[i][j];
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j <= lvl1param::n; j++) res[i][j] = ca[i][j] - cb[i][j];
 }
-
 
 template <int casign, int cbsign, typename lvl0param::T offset>
 inline void HomGate(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
@@ -324,7 +343,7 @@ void HomNMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
     GateBootstrappingTLWE2TLWEFFT<lvl01param>(and1, temp, gk.bkfftlvl01);
     GateBootstrappingTLWE2TLWEFFT<lvl01param>(and0, res, gk.bkfftlvl01);
 
-    for (int i = 0; i <= lvl1param::n; i++) and1[i] = -and1[i]-and0[i];
+    for (int i = 0; i <= lvl1param::n; i++) and1[i] = -and1[i] - and0[i];
     and1[lvl1param::n] -= lvl1param::mu;
     IdentityKeySwitch<lvl10param>(res, and1, gk.ksk);
 }
