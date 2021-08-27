@@ -94,8 +94,10 @@ void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     assert(encoder1.bp == encoder2.bp);
     TLWE<lvl0param> test_x_minus_y, test_bs;
     TFHEpp::HomSUBFixedEncoder(test_x_minus_y, ca, cb, encoder1, encoder2);
+
+    ReLUFunction relu_function = ReLUFunction();
     TFHEpp::ProgrammableBootstrapping(test_bs, test_x_minus_y, gk, encoder1,
-                                      encoder_bs, my_relu_function);
+                                      encoder_bs, relu_function);
     TFHEpp::HomADDFixedEncoder(res, test_bs, cb, encoder_bs, encoder2);
 }
 

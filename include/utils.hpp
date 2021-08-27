@@ -20,14 +20,28 @@ static thread_local randen::Randen<uint64_t> generator(trng());
 template <typename T>
 constexpr bool false_v = false;
 
-inline double my_identity_function(double x) { return x; }
+class AbstructFunction {
+public:
+    virtual double run(double arg) = 0;
+};
 
-inline double my_relu_function(double x) { return x >= 0 ? x : 0.; }
+class IdentityFunction : public AbstructFunction {
+public:
+    IdentityFunction() {}
+    double run(double x) { return x; }
+};
 
-inline double my_sigmoid_function(double x)
-{
-    return 1. / (1. + pow(std::exp(1.0), x * (-1.)));
-}
+class ReLUFunction : public AbstructFunction {
+public:
+    ReLUFunction() {}
+    double run(double x) { return x >= 0 ? x : 0.; }
+};
+
+class SigmoidFunction : public AbstructFunction {
+public:
+    SigmoidFunction() {}
+    double run(double x) { return 1. / (1. + pow(std::exp(1.0), x * (-1.))); }
+};
 
 inline double frand(double fMin, double fMax)
 {
