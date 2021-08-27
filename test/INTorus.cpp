@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace cuHEpp;
-namespace mp = boost::multiprecision;
+using cpp_int = boost::multiprecision::cpp_int;
 
 int main()
 {
@@ -93,7 +93,7 @@ int main()
             for (int i = 0; i < numTest; i++) {
                 uint64_t temp = dist(engine);
                 INTorus A(temp);
-                // mp::cpp_int a = temp;
+                // cpp_int a = temp;
                 mpz_class a = temp;
                 // cout<<static_cast<uint64_t>(a)<<":";
                 // if((A<<l).value!=(static_cast<uint64_t>((a<<l)%P))){
@@ -109,7 +109,7 @@ int main()
             }
             __uint128_t temp = ((1UL << 32) - 1) << 32;
             INTorus A(temp);
-            mp::cpp_int a = temp;
+            cpp_int a = temp;
             if ((A << l).value != (static_cast<uint64_t>((a << l) % P))) {
                 cout << (A << l).value << ":"
                      << static_cast<uint64_t>((a << l) % P) << endl;
