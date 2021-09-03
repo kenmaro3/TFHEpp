@@ -40,25 +40,15 @@ public:
 
     Encoder(){};
 
-    Encoder(double a, double b, int bp, bool is_type_second = true)
+    Encoder(double a, double b, int bp)
     {
-        if (is_type_second) {
-            this->a = a;
-            double tmp = b - a;
-            this->b = b + tmp;
-            this->d = this->b - this->a;
-            this->half_d = (this->b - this->a) / 2.;
-            this->half = (this->b + this->a) / 2.;
-            this->bp = bp;
-        }
-        else {
-            this->a = a;
-            this->b = b;
-            this->d = b - a;
-            this->half_d = (b - a) / 2.;
-            this->half = (b + a) / 2.;
-            this->bp = bp;
-        }
+        this->a = a;
+        double tmp = b - a;
+        this->b = b + tmp;
+        this->d = this->b - this->a;
+        this->half_d = (this->b - this->a) / 2.;
+        this->half = (this->b + this->a) / 2.;
+        this->bp = bp;
     }
 
     void update(double a, double b, int bp)
@@ -88,12 +78,8 @@ public:
         double tmp = d - floor(d);
         tmp = tmp * pow(2., bpx);
         double tmp2 = tmp - floor(tmp);
-        if (tmp2 < 0.5) {
-            return static_cast<lvl0param::T>(tmp);
-        }
-        else {
-            return static_cast<lvl0param::T>(tmp + 1);
-        }
+
+        return static_cast<lvl0param::T>(round(tmp2));
     }
 
     static lvl0param::T dtotx(double d, double max, int bpx)
@@ -102,12 +88,8 @@ public:
         double tmp = d - floor(d);
         tmp = tmp * pow(2., bpx);
         double tmp2 = tmp - floor(tmp);
-        if (tmp2 < 0.5) {
-            return static_cast<lvl0param::T>(tmp);
-        }
-        else {
-            return static_cast<lvl0param::T>(tmp + 1);
-        }
+
+        return static_cast<lvl0param::T>(round(tmp2));
     }
 
     lvl0param::T dtotx(double d) const
@@ -115,12 +97,8 @@ public:
         double tmp = d - floor(d);
         tmp = tmp * pow(2., this->bp);
         double tmp2 = tmp - floor(tmp);
-        if (tmp2 < 0.5) {
-            return static_cast<lvl0param::T>(tmp);
-        }
-        else {
-            return static_cast<lvl0param::T>(tmp + 1);
-        }
+
+        return static_cast<lvl0param::T>(round(tmp2));
     }
 
     lvl0param::T encode(double x) const
