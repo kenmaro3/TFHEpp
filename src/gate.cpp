@@ -112,6 +112,49 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     }
 }
 
+/**
+ * ((a + b) ** 2 + (a - b) ** 2 )/ 4
+ * = (a ** 2 + 2ab + b ** 2 - a ** 2 + 2ab - b ** 2)/4
+ * = (a ** 2 - a ** 2 + b ** 2 - b ** 2 + 2ab + 2ab) / 4
+ * = 4ab / 4
+ * = ab
+ */
+void HomMUL(TLWE<lvl0param> &res, const TLWE<lvl0param> &c1,
+            const TLWE<lvl0param> &c0, const TFHEpp::GateKey &gk,
+            Encoder &encoder_domain1, Encoder &encoder_domain2,
+            Encoder &encoder_target)
+{
+    SquareDividedByFourFunction programable_boostrap_function =
+        SquareDividedByFourFunction();
+
+    // sum = c0 + c1
+    TLWE<lvl0param> sum;
+    HomADDFixedEncoder(sum, c0, c1, encoder_domain1, encoder_domain2);
+
+    // diff = c0 - c1
+    TLWE<lvl0param> diff;
+    HomSUBFixedEncoder(diff, c0, c1, encoder_domain1, encoder_domain2);
+
+    // (sum ** 2 )/ 4 = ((c0 + c1) ** 2) / 4
+    TLWE<lvl0param> sum_squared_and_divided_by_four;
+    ProgrammableBootstrapping(sum_squared_and_divided_by_four, sum, gk,
+                              encoder_domain2, encoder_target,
+                              programable_boostrap_function);
+
+    // (diff ** 2 )/ 4 = ((c0 - c1) ** 2) / 4
+    TLWE<lvl0param> diff_squared_and_divided_by_four;
+    ProgrammableBootstrapping(diff_squared_and_divided_by_four, diff, gk,
+                              encoder_domain2, encoder_target,
+                              programable_boostrap_function);
+
+    // sum_squared - diff_squared
+    // = ((c0 + c1) ** 2) / 4 - ((c0 - c1) ** 2) / 4
+    // = ab
+    HomSUBFixedEncoder(res, sum_squared_and_divided_by_four,
+                       diff_squared_and_divided_by_four, encoder_target,
+                       encoder_target);
+}
+
 void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                      const int &b, Encoder &encoder)
 {
@@ -236,7 +279,6 @@ void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
     for (int i = 0; i < 2; i++)
         for (int j = 0; j <= lvl1param::n; j++) res[i][j] = ca[i][j] - cb[i][j];
 }
-
 template <int casign, int cbsign, typename lvl0param::T offset>
 inline void HomGate(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                     const TLWE<lvl0param> &cb, const GateKey &gk)

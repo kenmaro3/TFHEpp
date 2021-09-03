@@ -43,6 +43,11 @@ public:
     double run(double x) { return 1. / (1. + pow(std::exp(1.0), x * (-1.))); }
 };
 
+class SquareDividedByFourFunction : public AbstructFunction {
+public:
+    double run(double x) { return pow(x, 2) / 4.; }
+};
+
 inline double frand(double fMin, double fMax)
 {
     double f = (double)rand() / RAND_MAX;

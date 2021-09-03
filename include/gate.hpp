@@ -29,7 +29,10 @@ void HomSUBFixedEncoder(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                         Encoder &encoder2);
 void HomSUB(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &ca,
             const TRLWE<lvl1param> &cb);
-
+void HomMUL(TLWE<lvl0param> &res, const TLWE<lvl0param> &c1,
+            const TLWE<lvl0param> &c0, const TFHEpp::GateKey &gk,
+            Encoder &encoder_domain1, Encoder &encoder_domain2,
+            Encoder &target_encoder);
 void HomMULTCONSTINT(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                      const int &b, Encoder &encoder);
 void HomMULTCONSTINT(array<uint64_t, lvl0param::n + 1> &res,
