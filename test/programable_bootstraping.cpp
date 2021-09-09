@@ -18,12 +18,24 @@ public:
         init(function, encoder1, encoder2, seed_gen);
     }
 
-    bool assert_bootstrap(double result, double arg)
+    bool test() override
     {
-        auto function = T();
-        auto expected = function.run(arg);
+        double x = (double)dist(engine);
 
-        return abs(expected - result) < permit_error;
+        TLWE<TFHEpp::lvl0param> c0 =
+            TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
+                x, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
+
+        ProgrammableBootstrapping(c0, c0, *gk.get(), encoder_domain,
+                                  encoder_target, *function);
+
+        double res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
+            c0, sk->key.lvl0, encoder_domain);
+
+        auto function = T();
+        auto expected = function.run(x);
+
+        return assert_test(res, expected);
     }
 
     ~SameEncoderBoostrapTester() { delete function; }
@@ -41,9 +53,9 @@ int main()
     auto result = true;
 
     for (int test = 0; test < num_test; test++) {
-        result &= identity_tester.test_bootstrap();
-        result &= relu_tester.test_bootstrap();
-        result &= sigmoid_tester.test_bootstrap();
+        result &= identity_tester.test();
+        result &= relu_tester.test();
+        result &= sigmoid_tester.test();
     }
 
     if (result)
