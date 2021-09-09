@@ -2,45 +2,99 @@
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
-#
 
 using namespace std;
 using namespace TFHEpp;
 
-int main()
-{
-    constexpr uint32_t num_test = 100;
-    constexpr int dist_max = 100;
-    constexpr double permit_error = dist_max / 20;
+constexpr uint32_t num_test = 100;
+constexpr int dist_max = 100;
+constexpr double permit_error = dist_max / 10;
 
-    IdentityFunction identity_function = IdentityFunction();
-    TFHEpp::Encoder encoder(-dist_max, dist_max, 31);
+class AbstructBootstrapTester {
+public:
+    AbstructFunction *function;
+    Encoder encoder_domain;
+    Encoder encoder_target;
+    std::unique_ptr<TFHEpp::GateKey> gk;
+    std::unique_ptr<TFHEpp::SecretKey> sk;
+    uniform_int_distribution<> dist;
+    default_random_engine engine;
 
-    random_device seed_gen;
-    default_random_engine engine(seed_gen());
-    uniform_int_distribution<> dist(-dist_max + permit_error,
-                                    dist_max - permit_error);
+    void init(AbstructFunction *function, Encoder &encoder_domain,
+              Encoder &encoder_target, random_device &seed_gen)
+    {
+        this->function = function;
 
-    auto sk = std::make_unique<TFHEpp::SecretKey>();
-    auto gk = std::make_unique<TFHEpp::GateKey>(*sk, encoder);
+        this->encoder_domain = encoder_domain;
+        this->encoder_target = encoder_target;
 
-    for (int test = 0; test < num_test; test++) {
-        double x = (double)dist(engine);
+        sk = std::make_unique<TFHEpp::SecretKey>();
+        gk = std::make_unique<TFHEpp::GateKey>(*sk, encoder_domain);
 
-        auto c = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-            x, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
-
-        ProgrammableBootstrapping(c, c, *gk.get(), encoder, encoder,
-                                  identity_function);
-
-        double res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
-            c, sk->key.lvl0, encoder);
-
-        if (abs(x - res) > permit_error) {
-            std::cerr << "expected: " << x << "\nresult :" << res << std::endl;
-            assert(false);
-        }
+        engine = default_random_engine(seed_gen());
+        dist = uniform_int_distribution<>(-dist_max + permit_error,
+                                          dist_max - permit_error);
     }
 
-    cout << "Passed" << endl;
+    bool test_bootstrap()
+    {
+        double expected = (double)dist(engine);
+
+        TLWE<TFHEpp::lvl0param> c0 =
+            TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
+                expected, TFHEpp::lvl0param::alpha, sk->key.lvl0,
+                encoder_domain);
+
+        ProgrammableBootstrapping(c0, c0, *gk.get(), encoder_domain,
+                                  encoder_target, *function);
+
+        double res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
+            c0, sk->key.lvl0, encoder_domain);
+
+        if (!assert_bootstrap(res, expected)) {
+            std::cerr << "----\nexpected: " << expected << "\nresult :" << res
+                      << std::endl;
+
+            return false;
+        }
+
+        return true;
+    };
+
+    virtual bool assert_bootstrap(double result, double expected) = 0;
+};
+
+class IdentityBoostrapTester : public AbstructBootstrapTester {
+public:
+    IdentityBoostrapTester(random_device &seed_gen)
+    {
+        auto function = new IdentityFunction();
+        auto encoder1 = Encoder(-dist_max, dist_max, 31);
+        auto encoder2 = Encoder(-dist_max, dist_max, 31);
+
+        init(function, encoder1, encoder2, seed_gen);
+    }
+
+    bool assert_bootstrap(double result, double expected)
+    {
+        return abs(expected - result) < permit_error;
+    }
+};
+
+int main()
+{
+    random_device seed_gen;
+    auto identity_tester = IdentityBoostrapTester(seed_gen);
+
+    auto result = true;
+
+    for (int test = 0; test < num_test; test++) {
+        result &= identity_tester.test_bootstrap();
+    }
+
+    if (result)
+        cout << "Passed" << endl;
+    else {
+        cout << "Error" << endl;
+    }
 }

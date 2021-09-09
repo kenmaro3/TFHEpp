@@ -113,11 +113,6 @@ void ProgrammableBootstrapping(TLWE<lvl0param> &res,
                                Encoder &encoder_domain, Encoder &encoder_target,
                                AbstructFunction &function);
 
-void ProgrammableBootstrapping(TLWE<lvl0param> &res,
-                               const TLWE<lvl0param> &tlwe, const GateKey &gk,
-                               Encoder &encoder_domain, Encoder &encoder_target,
-                               AbstructFunction &function);
-
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res,
                                         const TLWE<lvl0param> &tlwe,
                                         const GateKey &gk,
