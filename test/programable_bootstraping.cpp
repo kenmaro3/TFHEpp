@@ -83,6 +83,8 @@ public:
 
         return abs(expected - result) < permit_error;
     }
+
+    ~SameEncoderBoostrapTester() { delete function; }
 };
 
 int main()
