@@ -37,31 +37,21 @@ public:
                                           dist_max - permit_error);
     }
 
-    bool test_bootstrap()
+    bool assert_test(double expected, double res)
     {
-        double expected = (double)dist(engine);
+        double diff = abs(expected - res);
+        bool is_succeeded = diff < permit_error;
 
-        TLWE<TFHEpp::lvl0param> c0 =
-            TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-                expected, TFHEpp::lvl0param::alpha, sk->key.lvl0,
-                encoder_domain);
-
-        ProgrammableBootstrapping(c0, c0, *gk.get(), encoder_domain,
-                                  encoder_target, *function);
-
-        double res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
-            c0, sk->key.lvl0, encoder_domain);
-
-        if (!assert_bootstrap(res, expected)) {
+        if (!is_succeeded) {
             std::cerr << "----\nexpected: " << expected << "\nresult :" << res
                       << std::endl;
 
-            return false;
+            std::cerr << diff << "(diff) > " << permit_error << "(permit)"
+                      << std::endl;
         }
+        return is_succeeded;
+    }
 
-        return true;
-    };
-
-    virtual bool assert_bootstrap(double result, double expected) = 0;
+    virtual bool test() = 0;
 };
 }  // namespace TFHEpp
