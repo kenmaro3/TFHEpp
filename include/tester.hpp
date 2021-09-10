@@ -8,7 +8,7 @@
 
 namespace TFHEpp {
 
-constexpr uint32_t num_test = 100;
+constexpr uint32_t num_test = 20;
 
 class AbstructBootstrapTester {
 public:
