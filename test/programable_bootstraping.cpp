@@ -79,7 +79,7 @@ public:
         double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
             c3, sk->key.lvl0, encoder_target);
 
-        printf("%lf x %lf = %lf ~= %lf\n\n", x1, x2, x1 * x2, d);
+        // printf("%lf x %lf = %lf ~= %lf\n\n", x1, x2, x1 * x2, d);
 
         return assert_test(abs(x1 * x2), d, false);
     }
