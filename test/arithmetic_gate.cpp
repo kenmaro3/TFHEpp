@@ -89,16 +89,7 @@ int main()
     auto add_tester = AddTester(seed_gen);
     auto mul_tester = MulTester(seed_gen);
 
-    auto result = true;
+    std::vector<AbstructBootstrapTester *> testers{&add_tester, &mul_tester};
 
-    for (int test = 0; test < num_test; test++) {
-        result &= add_tester.test();
-        result &= mul_tester.test();
-    }
-
-    if (result)
-        cout << "Passed" << endl;
-    else {
-        cout << "Error" << endl;
-    }
+    test(testers);
 }

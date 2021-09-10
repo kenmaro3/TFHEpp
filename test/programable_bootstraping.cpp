@@ -53,17 +53,8 @@ int main()
     auto sigmoid_tester = SameEncoderBoostrapTester<SigmoidFunction>(seed_gen);
     auto relu_tester = SameEncoderBoostrapTester<ReLUFunction>(seed_gen);
 
-    auto result = true;
+    std::vector<AbstructBootstrapTester *> testers{
+        &identity_tester, &sigmoid_tester, &relu_tester};
 
-    for (int test = 0; test < num_test; test++) {
-        result &= identity_tester.test();
-        result &= relu_tester.test();
-        result &= sigmoid_tester.test();
-    }
-
-    if (result)
-        cout << "Passed" << endl;
-    else {
-        cout << "Error" << endl;
-    }
+    test(testers);
 }
