@@ -55,4 +55,19 @@ public:
 
     virtual bool test() = 0;
 };
+
+void test(vector<AbstructBootstrapTester *> testers)
+{
+    bool result = true;
+
+    for (int test = 0; test < num_test; test++)
+        for (auto &tester : testers) result &= tester->test();
+
+    if (result)
+        cout << "Passed" << endl;
+    else {
+        cout << "Error" << endl;
+    }
+}
+
 }  // namespace TFHEpp
