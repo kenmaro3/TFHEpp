@@ -22,18 +22,14 @@ public:
     bool test() override
     {
         double x = (double)dist(engine);
+        auto encoder = Encoder(-dist_max, dist_max, 31);
 
-        auto encoder_domain = Encoder(-dist_max, dist_max, 31);
+        auto c = encrypt(x, encoder);
 
-        TLWE<TFHEpp::lvl0param> c0 =
-            TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-                x, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
+        ProgrammableBootstrapping(c, c, *gk(encoder).get(), encoder, encoder,
+                                  *function);
 
-        ProgrammableBootstrapping(c0, c0, *gk(encoder_domain).get(),
-                                  encoder_domain, encoder_domain, *function);
-
-        double res = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
-            c0, sk->key.lvl0, encoder_domain);
+        double res = decrypt(c, encoder);
 
         auto function = T();
         auto expected = function.run(x);

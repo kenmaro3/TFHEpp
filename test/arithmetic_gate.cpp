@@ -33,15 +33,12 @@ public:
 
         TFHEpp::Encoder encoder(-dist_max * 2, dist_max * 2, 31);
 
-        c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-            x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
-        c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-            x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+        c1 = encrypt(x1, encoder);
+        c2 = encrypt(x2, encoder);
 
         double expected = calc(c3, c1, c2, encoder, encoder, x1, x2, NULL);
 
-        double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
-            c3, sk->key.lvl0, encoder);
+        double d = decrypt(c3, encoder);
 
         return assert_test(expected, d, false);
     }
@@ -102,19 +99,15 @@ public:
         TFHEpp::Encoder encoder_domain(-40, 40, 31);
         TFHEpp::Encoder encoder_target(-400, 400, 31);
 
-        c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-            x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
-        c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
-            x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
+        c1 = encrypt(x1, encoder_domain);
+        c2 = encrypt(x2, encoder_domain);
 
         auto _gk = gk(encoder_domain);
 
         double expected =
             calc(c3, c1, c2, encoder_domain, encoder_target, x1, x2, _gk.get());
 
-        double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
-            c3, sk->key.lvl0, encoder_target);
-
+        double d = decrypt(c3, encoder_target);
         return assert_test(expected, d, false);
     }
 };
@@ -152,12 +145,11 @@ int main()
     auto sub_fixed_gate = AddOrSubTester(seed_gen, sub_fixed_gate_);
 
     auto mult_tester = MulTester(seed_gen, mult_gate);
-    // auto mult_const_tester = MulTester(seed_gen, all_mult_const_gate);
-    auto mult_const_tester = MulTester(seed_gen, mult_const_gate);
+    // auto mult_const_tester = MulTester(seed_gen, mult_const_gate);
 
     std::vector<AbstructBootstrapTester *> testers{
-        &add_tester,     &add_fixed_tester, &add_const,        &sub_tester,
-        &sub_fixed_gate, &mult_tester,      &mult_const_tester};
+        &add_tester, &add_fixed_tester, &add_const,
+        &sub_tester, &sub_fixed_gate,   &mult_tester};
 
     test(testers);
 }

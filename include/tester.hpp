@@ -53,6 +53,18 @@ public:
         return std::make_unique<TFHEpp::GateKey>(*sk, encoder);
     }
 
+    TLWE<TFHEpp::lvl0param> encrypt(double x, Encoder &encoder)
+    {
+        return TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
+            x, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
+    }
+
+    double decrypt(TLWE<TFHEpp::lvl0param> &c, Encoder &encoder)
+    {
+        return TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c, sk->key.lvl0,
+                                                               encoder);
+    }
+
     virtual bool test() = 0;
 };
 
