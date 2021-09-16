@@ -9,7 +9,7 @@ using namespace TFHEpp;
 #define CALC_ARGS                                                   \
     TFHEpp::TLWE<lvl0param> &c3, const TFHEpp::TLWE<lvl0param> &c1, \
         const TFHEpp::TLWE<lvl0param> &c2, Encoder &encoder_domain, \
-        Encoder &encoder_target, const double x1, const double x2, GateKey *gk
+        Encoder &encoder_target, const double x1, const double x2
 
 class AddOrSubTester : public AbstructBootstrapTester {
 public:
@@ -36,7 +36,7 @@ public:
         c1 = encrypt(x1, encoder);
         c2 = encrypt(x2, encoder);
 
-        double expected = calc(c3, c1, c2, encoder, encoder, x1, x2, NULL);
+        double expected = calc(c3, c1, c2, encoder, encoder, x1, x2);
 
         double d = decrypt(c3, encoder);
 
@@ -99,8 +99,6 @@ public:
 
         TFHEpp::HomMULT(c3, c1, c2, *gk(encoder_domain).get(), encoder_domain,
                         encoder_domain, encoder_target);
-
-        auto _gk = gk(encoder_domain);
 
         double expected = x1 * x2;
 
