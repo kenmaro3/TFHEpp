@@ -77,7 +77,7 @@ double sub_fixed_gate(CALC_ARGS)
 class MulTester : public AbstructBootstrapTester {
 public:
     int dist_max = 20;
-    double permit_error = pow(dist_max, 2) / 15;
+    double permit_error = pow(dist_max, 2) / 13;
 
     MulTester(random_device &seed_gen)
     {
