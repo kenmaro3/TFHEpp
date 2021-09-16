@@ -11,14 +11,16 @@ using namespace TFHEpp;
         const TFHEpp::TLWE<lvl0param> &c2, Encoder &encoder_domain, \
         Encoder &encoder_target, const double x1, const double x2
 
-class AbstructAddTester : public AbstructBootstrapTester {
+class AddTester : public AbstructBootstrapTester {
 public:
     int dist_max = 100;
     double permit_error = dist_max / 100;
+    std::function<void(ADD_ARG)> add;
 
-    AbstructAddTester(random_device &seed_gen)
+    AddTester(random_device &seed_gen, std::function<void(ADD_ARG)> add)
     {
         init(function, seed_gen, dist_max, permit_error);
+        this->add = add;
     }
 
     bool test() override
@@ -42,35 +44,21 @@ public:
 
         return assert_test(x1 + x2, d, false);
     }
-
-    virtual void add(ADD_ARG) = 0;
 };
 
-class AddTester : public AbstructAddTester {
-public:
-    AddTester(random_device &seed_gen) : AbstructAddTester(seed_gen) {}
-
-    void add(ADD_ARG)
-    {
-        TFHEpp::HomADD(c3, c1, c2, encoder_domain, encoder_target);
-    };
+void add_gate(ADD_ARG)
+{
+    TFHEpp::HomADD(c3, c1, c2, encoder_domain, encoder_target);
 };
 
-class AddFixedEncoder : public AbstructAddTester {
-public:
-    AddFixedEncoder(random_device &seed_gen) : AbstructAddTester(seed_gen) {}
-
-    void add(ADD_ARG)
-    {
-        TFHEpp::HomADDFixedEncoder(c3, c1, c2, encoder_domain, encoder_target);
-    };
+void add_fixed_gate(ADD_ARG)
+{
+    TFHEpp::HomADDFixedEncoder(c3, c1, c2, encoder_domain, encoder_target);
 };
 
-class AddConst : public AbstructAddTester {
-public:
-    AddConst(random_device &seed_gen) : AbstructAddTester(seed_gen) {}
-
-    void add(ADD_ARG) { TFHEpp::HomADDCONST(c3, c1, x2, encoder_domain); };
+void add_const_gate(ADD_ARG)
+{
+    TFHEpp::HomADDCONST(c3, c1, x2, encoder_domain);
 };
 
 class MulTester : public AbstructBootstrapTester {
@@ -119,9 +107,9 @@ int main()
     random_device seed_gen;
 
     auto mul_tester = MulTester(seed_gen);
-    auto add_tester = AddTester(seed_gen);
-    auto add_fixed_tester = AddFixedEncoder(seed_gen);
-    auto add_const = AddConst(seed_gen);
+    auto add_tester = AddTester(seed_gen, add_gate);
+    auto add_fixed_tester = AddTester(seed_gen, add_fixed_gate);
+    auto add_const = AddTester(seed_gen, add_const_gate);
 
     std::vector<AbstructBootstrapTester *> testers{
         &add_tester, &add_fixed_tester, &add_const, &mul_tester};
