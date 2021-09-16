@@ -68,10 +68,7 @@ double sub_gate(CALC_ARGS)
     return x1 - x2;
 };
 
-// Note:
-// if the function named sub_fixed_gate, the compilation fail...
-// But I don't know the reason... :(
-double sub_fixed_gate_(CALC_ARGS)
+double sub_fixed_gate(CALC_ARGS)
 {
     TFHEpp::HomSUBFixedEncoder(c3, c1, c2, encoder_domain, encoder_target);
     return x1 - x2;
@@ -120,12 +117,12 @@ int main()
     auto add_fixed_tester = AddOrSubTester(seed_gen, add_fixed_gate);
     auto add_const = AddOrSubTester(seed_gen, add_const_gate);
     auto sub_tester = AddOrSubTester(seed_gen, sub_gate);
-    auto sub_fixed_gate = AddOrSubTester(seed_gen, sub_fixed_gate_);
+    auto sub_fixed_tester = AddOrSubTester(seed_gen, sub_fixed_gate);
     auto mult_tester = MulTester(seed_gen);
 
     std::vector<AbstructBootstrapTester *> testers{
         &add_tester, &add_fixed_tester, &add_const,
-        &sub_tester, &sub_fixed_gate,   &mult_tester};
+        &sub_tester, &sub_fixed_tester, &mult_tester};
 
     test(testers);
 }
