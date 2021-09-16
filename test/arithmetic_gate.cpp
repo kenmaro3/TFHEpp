@@ -83,7 +83,7 @@ double sub_fixed_gate_(ADD_OR_SUB_ARG)
 class MulTester : public AbstructBootstrapTester {
 public:
     int dist_max = 20;
-    double permit_error = pow(dist_max, 2) / 10;
+    double permit_error = pow(dist_max, 2) / 15;
 
     MulTester(random_device &seed_gen)
     {
@@ -95,17 +95,10 @@ public:
         TLWE<TFHEpp::lvl0param> c1, c2, c3;
 
         double x1 = dist(engine);
-
-        // ToDo: remove it
-        x1 = abs(x1);
-
         double x2 = (double)dist(engine);
 
-        // ToDo: remove it
-        x2 = abs(x2);
-
-        TFHEpp::Encoder encoder_domain(-40, 40, 32);
-        TFHEpp::Encoder encoder_target(-40, 1800, 32);
+        TFHEpp::Encoder encoder_domain(-40, 40, 31);
+        TFHEpp::Encoder encoder_target(-400, 400, 31);
 
         c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
             x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
@@ -118,10 +111,7 @@ public:
         double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
             c3, sk->key.lvl0, encoder_target);
 
-        // printf("%lf x %lf = %lf ~= %lf\n\n", x1, x2, x1
-        // * x2, d);
-
-        return assert_test(abs(x1 * x2), d, false);
+        return assert_test(x1 * x2, d, false);
     }
 };
 
