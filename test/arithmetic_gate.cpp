@@ -95,9 +95,13 @@ public:
         TLWE<TFHEpp::lvl0param> c1, c2, c3;
 
         double x1 = dist(engine);
+
+        // ToDo: remove it
         x1 = abs(x1);
 
         double x2 = (double)dist(engine);
+
+        // ToDo: remove it
         x2 = abs(x2);
 
         TFHEpp::Encoder encoder_domain(-40, 40, 32);
