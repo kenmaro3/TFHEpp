@@ -105,8 +105,8 @@ public:
         c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
             x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder_domain);
 
-        TFHEpp::HomMUL(c3, c1, c2, *gk(encoder_domain).get(), encoder_domain,
-                       encoder_domain, encoder_target);
+        TFHEpp::HomMULT(c3, c1, c2, *gk(encoder_domain).get(), encoder_domain,
+                        encoder_domain, encoder_target);
 
         double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
             c3, sk->key.lvl0, encoder_target);
