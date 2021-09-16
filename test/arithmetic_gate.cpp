@@ -6,21 +6,22 @@
 using namespace std;
 using namespace TFHEpp;
 
-#define ADD_ARG                                                     \
+#define ADD_OR_SUB_ARG                                              \
     TFHEpp::TLWE<lvl0param> &c3, const TFHEpp::TLWE<lvl0param> &c1, \
         const TFHEpp::TLWE<lvl0param> &c2, Encoder &encoder_domain, \
         Encoder &encoder_target, const double x1, const double x2
 
-class AddTester : public AbstructBootstrapTester {
+class AddOrSubTester : public AbstructBootstrapTester {
 public:
     int dist_max = 100;
     double permit_error = dist_max / 100;
-    std::function<void(ADD_ARG)> add;
+    std::function<double(ADD_OR_SUB_ARG)> calc;
 
-    AddTester(random_device &seed_gen, std::function<void(ADD_ARG)> add)
+    AddOrSubTester(random_device &seed_gen,
+                   std::function<double(ADD_OR_SUB_ARG)> calc)
     {
         init(function, seed_gen, dist_max, permit_error);
-        this->add = add;
+        this->calc = calc;
     }
 
     bool test() override
@@ -30,35 +31,53 @@ public:
         double x1 = dist(engine);
         double x2 = dist(engine);
 
-        TFHEpp::Encoder encoder(-dist_max * 2, dist_max * 2, 32);
+        TFHEpp::Encoder encoder(-dist_max * 2, dist_max * 2, 31);
 
         c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
             x1, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
         c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
             x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
 
-        add(c3, c1, c2, encoder, encoder, x1, x2);
+        double expected = calc(c3, c1, c2, encoder, encoder, x1, x2);
 
         double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(
             c3, sk->key.lvl0, encoder);
 
-        return assert_test(x1 + x2, d, false);
+        return assert_test(expected, d, false);
     }
 };
 
-void add_gate(ADD_ARG)
+double add_gate(ADD_OR_SUB_ARG)
 {
     TFHEpp::HomADD(c3, c1, c2, encoder_domain, encoder_target);
+    return x1 + x2;
 };
 
-void add_fixed_gate(ADD_ARG)
+double add_fixed_gate(ADD_OR_SUB_ARG)
 {
     TFHEpp::HomADDFixedEncoder(c3, c1, c2, encoder_domain, encoder_target);
+    return x1 + x2;
 };
 
-void add_const_gate(ADD_ARG)
+double add_const_gate(ADD_OR_SUB_ARG)
 {
     TFHEpp::HomADDCONST(c3, c1, x2, encoder_domain);
+    return x1 + x2;
+};
+
+double sub_gate(ADD_OR_SUB_ARG)
+{
+    TFHEpp::HomSUB(c3, c1, c2, encoder_domain, encoder_target);
+    return x1 - x2;
+};
+
+// Note:
+// if the function named sub_fixed_gate, the compilation fail...
+// But I don't know the reason... :(
+double sub_fixed_gate_(ADD_OR_SUB_ARG)
+{
+    TFHEpp::HomSUBFixedEncoder(c3, c1, c2, encoder_domain, encoder_target);
+    return x1 - x2;
 };
 
 class MulTester : public AbstructBootstrapTester {
@@ -107,12 +126,15 @@ int main()
     random_device seed_gen;
 
     auto mul_tester = MulTester(seed_gen);
-    auto add_tester = AddTester(seed_gen, add_gate);
-    auto add_fixed_tester = AddTester(seed_gen, add_fixed_gate);
-    auto add_const = AddTester(seed_gen, add_const_gate);
+    auto add_tester = AddOrSubTester(seed_gen, add_gate);
+    auto add_fixed_tester = AddOrSubTester(seed_gen, add_fixed_gate);
+    auto add_const = AddOrSubTester(seed_gen, add_const_gate);
+    auto sub_tester = AddOrSubTester(seed_gen, sub_gate);
+    auto sub_fixed_gate = AddOrSubTester(seed_gen, sub_fixed_gate_);
 
     std::vector<AbstructBootstrapTester *> testers{
-        &add_tester, &add_fixed_tester, &add_const, &mul_tester};
+        &add_tester, &add_fixed_tester, &add_const,
+        &mul_tester, &sub_tester,       &sub_fixed_gate};
 
     test(testers);
 }
