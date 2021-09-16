@@ -81,12 +81,10 @@ class MulTester : public AbstructBootstrapTester {
 public:
     int dist_max = 20;
     double permit_error = pow(dist_max, 2) / 15;
-    std::function<double(CALC_ARGS)> calc;
 
-    MulTester(random_device &seed_gen, std::function<double(CALC_ARGS)> calc)
+    MulTester(random_device &seed_gen)
     {
         init(function, seed_gen, dist_max, permit_error);
-        this->calc = calc;
     }
 
     bool test() override
@@ -102,37 +100,17 @@ public:
         c1 = encrypt(x1, encoder_domain);
         c2 = encrypt(x2, encoder_domain);
 
+        TFHEpp::HomMULT(c3, c1, c2, *gk(encoder_domain).get(), encoder_domain,
+                        encoder_domain, encoder_target);
+
         auto _gk = gk(encoder_domain);
 
-        double expected =
-            calc(c3, c1, c2, encoder_domain, encoder_target, x1, x2, _gk.get());
+        double expected = x1 * x2;
 
         double d = decrypt(c3, encoder_target);
         return assert_test(expected, d, false);
     }
 };
-
-double mult_gate(CALC_ARGS)
-{
-    TFHEpp::HomMULT(c3, c1, c2, *gk, encoder_domain, encoder_domain,
-                    encoder_target);
-
-    return x1 * x2;
-}
-
-double mult_const_gate(CALC_ARGS)
-{
-    TLWE<TFHEpp::lvl0param> c4;
-    auto identity_function = TFHEpp::IdentityFunction();
-
-    ProgrammableBootstrapping(c4, c1, *gk, encoder_domain, encoder_target,
-                              identity_function);
-
-    TFHEpp::HomMULTCONSTREAL(c3, c4, x2, encoder_target, encoder_domain.bp,
-                             400);
-
-    return x1 * x2;
-}
 
 int main()
 {
@@ -143,9 +121,7 @@ int main()
     auto add_const = AddOrSubTester(seed_gen, add_const_gate);
     auto sub_tester = AddOrSubTester(seed_gen, sub_gate);
     auto sub_fixed_gate = AddOrSubTester(seed_gen, sub_fixed_gate_);
-
-    auto mult_tester = MulTester(seed_gen, mult_gate);
-    // auto mult_const_tester = MulTester(seed_gen, mult_const_gate);
+    auto mult_tester = MulTester(seed_gen);
 
     std::vector<AbstructBootstrapTester *> testers{
         &add_tester, &add_fixed_tester, &add_const,
