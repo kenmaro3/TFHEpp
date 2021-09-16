@@ -119,10 +119,10 @@ void HomADDCONST(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
  * = 4ab / 4
  * = ab
  */
-void HomMUL(TLWE<lvl0param> &res, const TLWE<lvl0param> &c1,
-            const TLWE<lvl0param> &c0, const TFHEpp::GateKey &gk,
-            Encoder &encoder_domain1, Encoder &encoder_domain2,
-            Encoder &encoder_target)
+void HomMULT(TLWE<lvl0param> &res, const TLWE<lvl0param> &c1,
+             const TLWE<lvl0param> &c0, const TFHEpp::GateKey &gk,
+             Encoder &encoder_domain1, Encoder &encoder_domain2,
+             Encoder &encoder_target)
 {
     SquareDividedByFourFunction programable_boostrap_function =
         SquareDividedByFourFunction();

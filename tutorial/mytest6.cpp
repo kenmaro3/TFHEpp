@@ -34,7 +34,7 @@ void mul_test()
     c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
         x2, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
 
-    TFHEpp::HomMUL(c3, c1, c2, *gk.get(), encoder, encoder, target_encoder);
+    TFHEpp::HomMULT(c3, c1, c2, *gk.get(), encoder, encoder, target_encoder);
 
     double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c3, sk->key.lvl0,
                                                                target_encoder);
