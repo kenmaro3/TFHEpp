@@ -77,9 +77,8 @@ public:
     {
         double tmp = d - floor(d);
         tmp = tmp * pow(2., bpx);
-        double tmp2 = tmp - floor(tmp);
 
-        return static_cast<lvl0param::T>(round(tmp2));
+        return static_cast<lvl0param::T>(round(tmp));
     }
 
     static lvl0param::T dtotx(double d, double max, int bpx)
@@ -87,18 +86,16 @@ public:
         d = d / max;
         double tmp = d - floor(d);
         tmp = tmp * pow(2., bpx);
-        double tmp2 = tmp - floor(tmp);
 
-        return static_cast<lvl0param::T>(round(tmp2));
+        return static_cast<lvl0param::T>(round(tmp));
     }
 
     lvl0param::T dtotx(double d) const
     {
         double tmp = d - floor(d);
         tmp = tmp * pow(2., this->bp);
-        double tmp2 = tmp - floor(tmp);
 
-        return static_cast<lvl0param::T>(round(tmp2));
+        return static_cast<lvl0param::T>(round(tmp));
     }
 
     lvl0param::T encode(double x) const
