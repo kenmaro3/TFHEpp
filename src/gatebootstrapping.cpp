@@ -27,43 +27,6 @@ inline void RotatedTestVector(array<array<typename P::T, P::n>, 2> &testvector,
     }
 }
 
-template <class P>
-inline void NotRotatedTestVector(
-    array<array<typename P::T, P::n>, 2> &testvector, const typename P::T mu)
-{
-    testvector[0] = {};
-    for (int i = 0; i < P::n; i++) testvector[1][i] = mu;
-}
-
-template <class P>
-inline void MyCustomTestVector(array<array<typename P::T, P::n>, 2> &testvector,
-                               const uint32_t bara, const typename P::T mu)
-{
-    testvector[0] = {};
-    if (bara < P::n) {
-        for (int i = 0; i < bara; i++) testvector[1][i] = dtot32(0.5);
-        for (int i = bara; i < P::n; i++) testvector[1][i] = dtot32(0.5);
-    }
-    else {
-        const typename P::T baraa = bara - P::n;
-        for (int i = 0; i < baraa; i++) testvector[1][i] = dtot32(0.5);
-        for (int i = baraa; i < P::n; i++) testvector[1][i] = dtot32(0.5);
-    }
-}
-
-template <class P>
-inline void CreateCustomTestVectorNegative(
-    array<array<typename P::T, P::n>, 2> &testvector, const uint32_t bara,
-    Encoder &encoder_target, AbstructFunction &function)
-{
-    testvector[0] = {};
-    for (int i = 0; i < P::n; i++) {
-        double tmp =
-            encoder_target.a + encoder_target.d * double(i) / double(P::n);
-        testvector[1][i] = encoder_target.encode(function.run(tmp) * (-1.));
-    }
-}
-
 template <class P, typename... A>
 inline void CreateCustomTestVector(
     array<array<typename P::T, P::n>, 2> &testvector, const uint32_t bara,
@@ -130,15 +93,8 @@ void GateBootstrappingTLWE2TRLWEFFT(TRLWE<typename P::targetP> &acc,
 {
     uint32_t bara = 2 * P::targetP::n - modSwitchFromTorus<typename P::targetP>(
                                             tlwe[P::domainP::n]);
-    NotRotatedTestVector<typename P::targetP>(acc, P::targetP::mu);
-    TRLWE<typename P::targetP> temp;
-    if (bara != 0) {
-        PolynomialMulByXai<typename P::targetP>(temp[0], acc[0], bara);
-        PolynomialMulByXai<typename P::targetP>(temp[1], acc[1], bara);
+    RotatedTestVector<typename P::targetP>(acc, bara, P::targetP::mu);
 
-        acc[0] = temp[0];
-        acc[1] = temp[1];
-    }
     for (int i = 0; i < P::domainP::n; i++) {
         bara = modSwitchFromTorus<typename P::targetP>(tlwe[i]);
         if (bara == 0) continue;
