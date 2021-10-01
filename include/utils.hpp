@@ -75,6 +75,25 @@ public:
     double run(double x) { return pow(x, 2) / 4.; }
 };
 
+template <class P>
+class DirectCustomTestVector : public CustomTestVector<P> {
+public:
+    std::array<std::array<typename P::T, P::n>, 2> testvector;
+
+    DirectCustomTestVector(
+        std::array<std::array<typename P::T, P::n>, 2> &testvector)
+    {
+        this->testvector = testvector;
+    }
+
+    void custom_test_vector(
+        std::array<std::array<typename P::T, P::n>, 2> &testvector,
+        const uint32_t bara, Encoder &encoder_domain, Encoder &encoder_target)
+    {
+        testvector = this->testvector;
+    }
+};
+
 inline double frand(double fMin, double fMax)
 {
     double f = (double)rand() / RAND_MAX;
