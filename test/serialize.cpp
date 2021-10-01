@@ -7,7 +7,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder(encoder_a, encoder_b, bs_bp);
-    auto identity_function = TFHEpp::IdentityFunction();
+    auto identity_function = TFHEpp::IdentityFunction<TFHEpp::lvl1param>();
 
     std::unique_ptr<TFHEpp::SecretKey> sk =
         std::make_unique<TFHEpp::SecretKey>();

@@ -184,8 +184,7 @@ double get_wider(double x)
         return tmp * (-1.0);
     }
 }
-
-class MultFunction : public AbstructFunction {
+class MultFunction : public FunctionCustomTestVector<TFHEpp::lvl1param> {
 public:
     double y;
     MultFunction(double y) { this->y = y; }
@@ -242,7 +241,7 @@ vector<TLWE<p>> relu(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder::copy(encoder);
-    ReLUFunction relu_function = ReLUFunction();
+    ReLUFunction relu_function = ReLUFunction<lvl1param>();
 
     vector<TLWE<p>> res(cs.size());
 
@@ -261,7 +260,7 @@ vector<TLWE<p>> relu_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder::copy(encoder);
-    ReLUFunction relu_function = ReLUFunction();
+    ReLUFunction relu_function = ReLUFunction<lvl1param>();
 
     vector<TLWE<p>> res(cs.size());
 
@@ -299,7 +298,7 @@ vector<TLWE<p>> sigmoid(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder(-2, 2, encoder.bp);
-    SigmoidFunction sigmoid_function = SigmoidFunction();
+    SigmoidFunction sigmoid_function = SigmoidFunction<lvl1param>();
 
     vector<TLWE<p>> res(cs.size());
 
@@ -318,7 +317,7 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 {
     Encoder encoder_domain = Encoder::copy(encoder);
     Encoder encoder_target = Encoder(-2, 2, encoder.bp);
-    SigmoidFunction sigmoid_function = SigmoidFunction();
+    SigmoidFunction sigmoid_function = SigmoidFunction<lvl1param>();
 
     vector<TLWE<p>> res(cs.size());
 
@@ -335,7 +334,7 @@ vector<TLWE<p>> sigmoid_omp(const vector<TLWE<p>> cs, const GateKey &gk,
 
 vector<double> sigmoid(const vector<double> x, bool is_print = true)
 {
-    SigmoidFunction sigmoid_function = SigmoidFunction();
+    SigmoidFunction sigmoid_function = SigmoidFunction<lvl1param>();
     vector<double> res;
     for (int i = 0; i < x.size(); i++) {
         res.push_back(sigmoid_function.run(x[i]));
