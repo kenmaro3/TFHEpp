@@ -111,14 +111,14 @@ void GateBootstrappingTLWE2TLWEFFTvariableMu(
 void ProgrammableBootstrapping(TLWE<lvl0param> &res,
                                const TLWE<lvl0param> &tlwe, const GateKey &gk,
                                Encoder &encoder_domain, Encoder &encoder_target,
-                               AbstructFunction &function);
+                               AbstructFunction<lvl1param> &function);
 
 void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res,
                                         const TLWE<lvl0param> &tlwe,
                                         const GateKey &gk,
                                         Encoder &encoder_domain,
                                         Encoder &encoder_target,
-                                        AbstructFunction &function);
+                                        AbstructFunction<lvl1param> &function);
 
 void GateBootstrapping(TLWE<lvl0param> &res, const TLWE<lvl0param> &tlwe,
                        const GateKey &gk);

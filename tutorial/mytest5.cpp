@@ -19,7 +19,7 @@ void ser_deser_test()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder(encoder_a, encoder_b, bs_bp);
-    IdentityFunction identity_function = IdentityFunction();
+    IdentityFunction identity_function = IdentityFunction<lvl1param>();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -106,7 +106,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder(encoder_a, encoder_b, bs_bp);
-    IdentityFunction identity_function = IdentityFunction();
+    IdentityFunction identity_function = IdentityFunction<lvl1param>();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =

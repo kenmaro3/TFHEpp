@@ -45,9 +45,12 @@ int main()
     random_device seed_gen;
 
     auto identity_tester =
-        SameEncoderBoostrapTester<IdentityFunction>(seed_gen);
-    auto sigmoid_tester = SameEncoderBoostrapTester<SigmoidFunction>(seed_gen);
-    auto relu_tester = SameEncoderBoostrapTester<ReLUFunction>(seed_gen);
+        SameEncoderBoostrapTester<IdentityFunction<TFHEpp::lvl1param>>(
+            seed_gen);
+    auto sigmoid_tester =
+        SameEncoderBoostrapTester<SigmoidFunction<TFHEpp::lvl1param>>(seed_gen);
+    auto relu_tester =
+        SameEncoderBoostrapTester<ReLUFunction<TFHEpp::lvl1param>>(seed_gen);
 
     std::vector<AbstructBootstrapTester *> testers{
         &identity_tester, &sigmoid_tester, &relu_tester};

@@ -47,7 +47,7 @@ int main()
     int bs_bp = 31;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
-    ReLUFunction relu_function = ReLUFunction();
+    ReLUFunction relu_function = ReLUFunction<lvl1param>();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =

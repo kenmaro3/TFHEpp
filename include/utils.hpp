@@ -10,6 +10,7 @@
 #include <limits>
 #include <random>
 
+#include "encoder.hpp"
 #include "params.hpp"
 
 namespace TFHEpp {
@@ -20,30 +21,57 @@ static thread_local randen::Randen<uint64_t> generator(trng());
 template <typename T>
 constexpr bool false_v = false;
 
+template <class P>
 class AbstructFunction {
 public:
     virtual double run(double arg) = 0;
+    virtual void custom_test_vector(
+        std::array<std::array<typename P::T, P::n>, 2> &testvector,
+        const uint32_t bara, Encoder &encoder_domain,
+        Encoder &encoder_target) = 0;
 };
 
-class IdentityFunction : public AbstructFunction {
+template <class P>
+class AbstructBasicFunction : public AbstructFunction<P> {
+public:
+    virtual double run(double arg) = 0;
+
+    void custom_test_vector(
+        std::array<std::array<typename P::T, P::n>, 2> &testvector,
+        const uint32_t bara, Encoder &encoder_domain, Encoder &encoder_target)
+    {
+        testvector[0] = {};
+        for (int i = 0; i < P::n; i++) {
+            double tmp = encoder_domain.a +
+                         encoder_domain.d / 2. * double(i) / double(P::n);
+            testvector[1][i] = encoder_target.encode(run(tmp));
+        }
+    }
+};
+
+template <class P>
+class IdentityFunction : public AbstructBasicFunction<P> {
 public:
     IdentityFunction() {}
     double run(double x) { return x; }
 };
 
-class ReLUFunction : public AbstructFunction {
+template <class P>
+class ReLUFunction : public AbstructBasicFunction<P> {
 public:
     ReLUFunction() {}
     double run(double x) { return x >= 0 ? x : 0.; }
 };
 
-class SigmoidFunction : public AbstructFunction {
+template <class P>
+class SigmoidFunction : public AbstructBasicFunction<P> {
 public:
     SigmoidFunction() {}
     double run(double x) { return 1. / (1. + pow(std::exp(1.0), x * (-1.))); }
 };
 
-class SquareDividedByFourFunction : public AbstructFunction {
+template <class P>
+class SquareDividedByFourFunction : public AbstructBasicFunction<P> {
 public:
     double run(double x) { return pow(x, 2) / 4.; }
 };
