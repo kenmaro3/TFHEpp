@@ -39,7 +39,7 @@ void print_vec_2d(vector<vector<double>> x)
     printf("\n");
 }
 
-class MyltiplyFunction : public AbstructBasicFunction<lvl1param> {
+class MyltiplyFunction : public FunctionCustomTestVector<lvl1param> {
     double y;
     MyltiplyFunction(double y) { this->y = y; }
 

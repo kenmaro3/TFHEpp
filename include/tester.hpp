@@ -15,12 +15,12 @@ public:
     int dist_max = 100;
     double permit_error = dist_max / 10;
 
-    AbstructFunction<TFHEpp::lvl1param> *function;
+    CustomTestVector<TFHEpp::lvl1param> *function;
     std::unique_ptr<TFHEpp::SecretKey> sk;
     uniform_int_distribution<> dist;
     default_random_engine engine;
 
-    void init(AbstructFunction<TFHEpp::lvl1param> *function,
+    void init(CustomTestVector<TFHEpp::lvl1param> *function,
               random_device &seed_gen, int dist_max, double permit_error)
     {
         this->function = function;

@@ -31,7 +31,7 @@ template <class P>
 void ProgrammableBootstrappingTLWE2TRLWEFFT(
     TRLWE<typename P::targetP> &acc, const TLWE<typename P::domainP> &tlwe,
     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain,
-    Encoder &encoder_target, AbstructFunction<typename P::targetP> &function)
+    Encoder &encoder_target, CustomTestVector<typename P::targetP> &function)
 {
     TLWE<typename P::domainP> temp1;
     for (int i = 0; i <= P::domainP::n; i++) {
@@ -68,7 +68,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(
         const TLWE<typename P::domainP> &tlwe,                        \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, \
         Encoder &encoder_target,                                      \
-        AbstructFunction<typename P::targetP> &function)
+        CustomTestVector<typename P::targetP> &function)
 TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
@@ -101,7 +101,7 @@ template <class P>
 void ProgrammableBootstrappingTLWE2TLWEFFT(
     TLWE<typename P::targetP> &res, const TLWE<typename P::domainP> &tlwe,
     const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain,
-    Encoder &encoder_target, AbstructFunction<typename P::targetP> &function)
+    Encoder &encoder_target, CustomTestVector<typename P::targetP> &function)
 {
     TRLWE<typename P::targetP> acc;
     ProgrammableBootstrappingTLWE2TRLWEFFT<P>(acc, tlwe, bkfft, encoder_domain,
@@ -114,7 +114,7 @@ void ProgrammableBootstrappingTLWE2TLWEFFT(
         const TLWE<typename P::domainP> &tlwe,                        \
         const BootstrappingKeyFFT<P> &bkfft, Encoder &encoder_domain, \
         Encoder &encoder_target,                                      \
-        AbstructFunction<typename P::targetP> &function)
+        CustomTestVector<typename P::targetP> &function)
 TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 #undef INST
 
@@ -166,7 +166,7 @@ TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
 void ProgrammableBootstrapping(TLWE<lvl0param> &res,
                                const TLWE<lvl0param> &tlwe, const GateKey &gk,
                                Encoder &encoder_domain, Encoder &encoder_target,
-                               AbstructFunction<lvl1param> &function)
+                               CustomTestVector<lvl1param> &function)
 {
     TLWE<lvl1param> tlwelvl1;
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(
@@ -181,7 +181,7 @@ void ProgrammableBootstrappingWithoutKS(TLWE<lvl1param> &res,
                                         const GateKey &gk,
                                         Encoder &encoder_domain,
                                         Encoder &encoder_target,
-                                        AbstructFunction<lvl1param> &function)
+                                        CustomTestVector<lvl1param> &function)
 {
     ProgrammableBootstrappingTLWE2TLWEFFT<lvl01param>(
         res, tlwe, gk.bkfftlvl01, encoder_domain, encoder_target, function);

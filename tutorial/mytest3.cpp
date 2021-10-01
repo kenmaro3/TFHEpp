@@ -184,7 +184,7 @@ double get_wider(double x)
         return tmp * (-1.0);
     }
 }
-class MultFunction : public AbstructBasicFunction<TFHEpp::lvl1param> {
+class MultFunction : public FunctionCustomTestVector<TFHEpp::lvl1param> {
 public:
     double y;
     MultFunction(double y) { this->y = y; }

@@ -22,9 +22,8 @@ template <typename T>
 constexpr bool false_v = false;
 
 template <class P>
-class AbstructFunction {
+class CustomTestVector {
 public:
-    virtual double run(double arg) = 0;
     virtual void custom_test_vector(
         std::array<std::array<typename P::T, P::n>, 2> &testvector,
         const uint32_t bara, Encoder &encoder_domain,
@@ -32,7 +31,7 @@ public:
 };
 
 template <class P>
-class AbstructBasicFunction : public AbstructFunction<P> {
+class FunctionCustomTestVector : public CustomTestVector<P> {
 public:
     virtual double run(double arg) = 0;
 
@@ -50,28 +49,28 @@ public:
 };
 
 template <class P>
-class IdentityFunction : public AbstructBasicFunction<P> {
+class IdentityFunction : public FunctionCustomTestVector<P> {
 public:
     IdentityFunction() {}
     double run(double x) { return x; }
 };
 
 template <class P>
-class ReLUFunction : public AbstructBasicFunction<P> {
+class ReLUFunction : public FunctionCustomTestVector<P> {
 public:
     ReLUFunction() {}
     double run(double x) { return x >= 0 ? x : 0.; }
 };
 
 template <class P>
-class SigmoidFunction : public AbstructBasicFunction<P> {
+class SigmoidFunction : public FunctionCustomTestVector<P> {
 public:
     SigmoidFunction() {}
     double run(double x) { return 1. / (1. + pow(std::exp(1.0), x * (-1.))); }
 };
 
 template <class P>
-class SquareDividedByFourFunction : public AbstructBasicFunction<P> {
+class SquareDividedByFourFunction : public FunctionCustomTestVector<P> {
 public:
     double run(double x) { return pow(x, 2) / 4.; }
 };
