@@ -92,7 +92,7 @@ void HomMAX(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     TLWE<lvl0param> test_x_minus_y, test_bs;
     TFHEpp::HomSUBFixedEncoder(test_x_minus_y, ca, cb, encoder1, encoder2);
 
-    ReLUFunction relu_function = ReLUFunction();
+    ReLUFunction<lvl1param> relu_function = ReLUFunction<lvl1param>();
     TFHEpp::ProgrammableBootstrapping(test_bs, test_x_minus_y, gk, encoder1,
                                       encoder_bs, relu_function);
     TFHEpp::HomADDFixedEncoder(res, test_bs, cb, encoder_bs, encoder2);
@@ -124,8 +124,8 @@ void HomMULT(TLWE<lvl0param> &res, const TLWE<lvl0param> &c1,
              Encoder &encoder_domain1, Encoder &encoder_domain2,
              Encoder &encoder_target)
 {
-    SquareDividedByFourFunction programable_boostrap_function =
-        SquareDividedByFourFunction();
+    auto programable_boostrap_function =
+        SquareDividedByFourFunction<lvl1param>();
 
     // sum = c0 + c1
     TLWE<lvl0param> sum;

@@ -39,7 +39,7 @@ void print_vec_2d(vector<vector<double>> x)
     printf("\n");
 }
 
-class MyltiplyFunction : public AbstructFunction {
+class MyltiplyFunction : public FunctionCustomTestVector<lvl1param> {
     double y;
     MyltiplyFunction(double y) { this->y = y; }
 
@@ -54,7 +54,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(encoder_a, encoder_b, bs_bp);
-    IdentityFunction identity_function = IdentityFunction();
+    IdentityFunction identity_function = IdentityFunction<TFHEpp::lvl1param>();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =

@@ -32,7 +32,7 @@ int main()
     int bs_bp = 32;
 
     TFHEpp::Encoder encoder_bs(a, b, bs_bp);
-    IdentityFunction identity_function = IdentityFunction();
+    IdentityFunction identity_function = IdentityFunction<lvl1param>();
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
