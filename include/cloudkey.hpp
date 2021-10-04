@@ -52,6 +52,17 @@ inline void ikskgenSpecific(KeySwitchingKey<P> &ksk, const SecretKey &sk,
 }
 
 template <class P>
+inline void bknttgen(BootstrappingKeyNTT<P> &bkntt, const SecretKey &sk)
+{
+    for (int i = 0; i < P::domainP::n; i++) {
+        Polynomial<typename P::targetP> plainpoly = {};
+        plainpoly[0] = sk.key.get<typename P::domainP>()[i];
+        bkntt[i] = trgswnttSymEncrypt<typename P::targetP>(
+            plainpoly, P::targetP::alpha, sk.key.get<typename P::targetP>());
+    }
+}
+
+template <class P>
 inline void tlwe2trlweikskkgen(TLWE2TRLWEIKSKey<P> &iksk, const SecretKey &sk)
 {
     for (int i = 0; i < P::domainP::n; i++)
@@ -89,6 +100,33 @@ inline void ikskgen(KeySwitchingKey<P> &ksk, const SecretKey &sk)
                          << (numeric_limits<typename P::targetP::T>::digits -
                              (j + 1) * P::basebit)),
                     P::alpha, sk.key.get<typename P::targetP>());
+}
+
+template <class P>
+inline relinKey<P> relinKeygen(const Key<P> &key)
+{
+    constexpr std::array<typename P::T, P::l> h = hgen<P>();
+
+    Polynomial<P> keysquare;
+    PolyMulNaieve<P>(keysquare, key, key);
+    relinKey<P> relinkey;
+    for (TRLWE<P> &ctxt : relinkey) ctxt = trlweSymEncryptZero<P>(P::alpha, key);
+    for (int i = 0; i < P::l; i++)
+        for (int j = 0; j < P::n; j++)
+            relinkey[i][1][j] +=
+                static_cast<typename P::T>(keysquare[j]) * h[i];
+    return relinkey;
+}
+
+template <class P>
+inline relinKeyFFT<P> relinKeyFFTgen(const Key<P> &key)
+{
+    relinKey<P> relinkey = relinKeygen<P>(key);
+    relinKeyFFT<P> relinkeyfft;
+    for (int i = 0; i < P::l; i++)
+        for (int j = 0; j < 2; j++)
+            TwistIFFT<P>(relinkeyfft[i][j], relinkey[i][j]);
+    return relinkeyfft;
 }
 
 struct GateKeywoFFT {

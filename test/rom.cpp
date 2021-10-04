@@ -10,12 +10,12 @@ using namespace TFHEpp;
 
 int main()
 {
-    using CBbsP = lvl02param;
-    using CBprivksP = lvl22param;
-    using ksP = lvl20param;
     // using CBbsP = lvl02param;
-    // using CBprivksP = lvl21param;
-    // using ksP = lvl10param;
+    // using CBprivksP = lvl22param;
+    // using ksP = lvl20param;
+    using CBbsP = lvl02param;
+    using CBprivksP = lvl21param;
+    using ksP = lvl10param;
 
     constexpr uint32_t address_bit = 8;  // Address by words.
     constexpr uint32_t words_bit = 5;
@@ -25,7 +25,7 @@ int main()
         words_bit;  // log_2 of how many words are in one TRLWE message.
     static_assert(address_bit >= width_bit);
     // static_assert(address_bit > width_bit+2);
-    constexpr uint32_t width = 1 << width_bit;
+    // constexpr uint32_t width = 1 << width_bit;
     static_assert(address_bit > width_bit);
     constexpr uint32_t num_trlwe = 1 << (address_bit - width_bit);
     random_device seeder;
