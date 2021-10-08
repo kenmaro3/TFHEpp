@@ -362,8 +362,10 @@ void HomMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
     res[lvl0param::n] -= lvl0param::mu;
     TLWE<lvl1param> and1;
     TLWE<lvl1param> and0;
-    GateBootstrappingTLWE2TLWEFFT<lvl01param>(and1, temp, gk.bkfftlvl01);
-    GateBootstrappingTLWE2TLWEFFT<lvl01param>(and0, res, gk.bkfftlvl01);
+    GateBootstrappingTLWE2TLWEFFT<lvl01param>(
+        and1, temp, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
+    GateBootstrappingTLWE2TLWEFFT<lvl01param>(
+        and0, res, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
 
     for (int i = 0; i <= lvl1param::n; i++) and1[i] += and0[i];
     and1[lvl1param::n] += lvl1param::mu;
@@ -381,8 +383,10 @@ void HomNMUX(TLWE<lvl0param> &res, const TLWE<lvl0param> &cs,
     res[lvl0param::n] -= lvl0param::mu;
     TLWE<lvl1param> and1;
     TLWE<lvl1param> and0;
-    GateBootstrappingTLWE2TLWEFFT<lvl01param>(and1, temp, gk.bkfftlvl01);
-    GateBootstrappingTLWE2TLWEFFT<lvl01param>(and0, res, gk.bkfftlvl01);
+    GateBootstrappingTLWE2TLWEFFT<lvl01param>(
+        and1, temp, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
+    GateBootstrappingTLWE2TLWEFFT<lvl01param>(
+        and0, res, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
 
     for (int i = 0; i <= lvl1param::n; i++) and1[i] = -and1[i] - and0[i];
     and1[lvl1param::n] -= lvl1param::mu;
@@ -403,8 +407,8 @@ void HomMUXwoSE(TRLWE<typename P::targetP> &res,
     temp1[lvl0param::n] -= P::domainP::mu;
     temp0[lvl0param::n] -= P::domainP::mu;
     TRLWE<typename P::targetP> and0;
-    GateBootstrappingTLWE2TRLWEFFT<P>(res, temp1, bkfft);
-    GateBootstrappingTLWE2TRLWEFFT<P>(and0, temp0, bkfft);
+    BlindRotate<P>(res, temp1, bkfft, mupolygen<typename P::targetP,P::targetP::mu>());
+    BlindRotate<P>(and0, temp0, bkfft, mupolygen<typename P::targetP,P::targetP::mu>());
 
     for (int i = 0; i < P::targetP::n; i++) {
         res[0][i] += and0[0][i];
@@ -418,7 +422,7 @@ void HomMUXwoSE(TRLWE<typename P::targetP> &res,
                                 const TLWE<typename P::domainP> &c1, \
                                 const TLWE<typename P::domainP> &c0, \
                                 const BootstrappingKeyFFT<P> &bkfft)
-TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST);
+TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST)
 #undef INST
 
 void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
@@ -439,8 +443,8 @@ void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
     c1[lvl0param::n] -= lvl0param::mu;
     c0[lvl0param::n] -= lvl0param::mu;
     TRLWE<lvl1param> and0;
-    GateBootstrappingTLWE2TRLWEFFT<lvl01param>(res, c1, gk.bkfftlvl01);
-    GateBootstrappingTLWE2TRLWEFFT<lvl01param>(and0, c0, gk.bkfftlvl01);
+    BlindRotate<lvl01param>(res, c1, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
+    BlindRotate<lvl01param>(and0, c0, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
 
     for (int i = 0; i < lvl1param::n; i++) {
         res[0][i] += and0[0][i];

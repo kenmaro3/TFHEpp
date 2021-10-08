@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 
 struct lvl0param {
     static constexpr std::uint32_t n = 635; //dimension
@@ -32,7 +32,7 @@ struct lvl2param {
     static constexpr T mu = 1ULL << 61;
 };
 
-//Key Switching parameters
+// Key Switching parameters
 struct lvl10param {
     static constexpr std::uint32_t t = 10; //number of addition in keyswitching
     static constexpr std::uint32_t basebit = 3; //how many bit should be encrypted in keyswitching key

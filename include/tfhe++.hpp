@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bfv++.hpp"
 #include "circuitbootstrapping.hpp"
 #include "cloudkey.hpp"
 #include "cmuxmem.hpp"

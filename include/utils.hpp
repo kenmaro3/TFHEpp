@@ -92,7 +92,23 @@ public:
     {
         testvector = this->testvector;
     }
+
+    static void basic_custom_test_vector(std::array<double, P::n> &args, Encoder &encoder_domain){
+        for (int i = 0; i < P::n; i++) 
+            args[i] = encoder_domain.a +
+                         encoder_domain.d / 2. * double(i) / double(P::n);
+    }
+
+    static DirectCustomTestVector from_unencoded(std::array<std::array<typename P::T, P::n>, 2> &testvector, std::array<double, P::n> &unencoded, Encoder &encoder_target){
+        testvector[0] = {};
+
+        for (int i = 0; i < P::n; i++) 
+            testvector[1][i] = encoder_target.encode(unencoded[i]);
+
+        return DirectCustomTestVector(testvector);
+    }
 };
+
 
 inline double frand(double fMin, double fMax)
 {
