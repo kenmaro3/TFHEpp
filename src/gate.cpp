@@ -2,6 +2,7 @@
 
 #include <gatebootstrapping.hpp>
 #include <keyswitch.hpp>
+#include <trlwe.hpp>
 
 namespace TFHEpp {
 
@@ -289,6 +290,29 @@ inline void HomGate(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     GateBootstrapping(res, res, gk);
 }
 
+void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
+                  const Polynomial<lvl1param> &poly, const Encoder &encoder)
+
+{
+    PolyMul<lvl1param>(res[0], crypt[0], poly);
+    PolyMul<lvl1param>(res[1], crypt[1], poly);
+}
+
+void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
+                  const array<double, lvl1param::n> &array,
+                  const Encoder &encoder)
+
+{
+    std::array<lvl1param::T, lvl1param::n> encoded;
+    for (int i = 0; i < lvl1param::n; i++) {
+        // encoded[i] = encoder.encode(array[i]);
+        encoded[i] = array[i];
+    }
+
+    Polynomial<lvl1param> poly = encoded;
+    HomMULTCONST(res, crypt, poly, encoder);
+}
+
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
              const TLWE<lvl0param> &cb, const GateKey &gk)
 {
@@ -407,8 +431,10 @@ void HomMUXwoSE(TRLWE<typename P::targetP> &res,
     temp1[lvl0param::n] -= P::domainP::mu;
     temp0[lvl0param::n] -= P::domainP::mu;
     TRLWE<typename P::targetP> and0;
-    BlindRotate<P>(res, temp1, bkfft, mupolygen<typename P::targetP,P::targetP::mu>());
-    BlindRotate<P>(and0, temp0, bkfft, mupolygen<typename P::targetP,P::targetP::mu>());
+    BlindRotate<P>(res, temp1, bkfft,
+                   mupolygen<typename P::targetP, P::targetP::mu>());
+    BlindRotate<P>(and0, temp0, bkfft,
+                   mupolygen<typename P::targetP, P::targetP::mu>());
 
     for (int i = 0; i < P::targetP::n; i++) {
         res[0][i] += and0[0][i];
@@ -443,8 +469,10 @@ void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
     c1[lvl0param::n] -= lvl0param::mu;
     c0[lvl0param::n] -= lvl0param::mu;
     TRLWE<lvl1param> and0;
-    BlindRotate<lvl01param>(res, c1, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
-    BlindRotate<lvl01param>(and0, c0, gk.bkfftlvl01, mupolygen<lvl1param, lvl1param::mu>());
+    BlindRotate<lvl01param>(res, c1, gk.bkfftlvl01,
+                            mupolygen<lvl1param, lvl1param::mu>());
+    BlindRotate<lvl01param>(and0, c0, gk.bkfftlvl01,
+                            mupolygen<lvl1param, lvl1param::mu>());
 
     for (int i = 0; i < lvl1param::n; i++) {
         res[0][i] += and0[0][i];
