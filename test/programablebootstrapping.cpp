@@ -9,12 +9,12 @@ using namespace TFHEpp;
 template <typename T>
 class SameEncoderBoostrapTester : public AbstructBootstrapTester {
 public:
-    SameEncoderBoostrapTester(random_device &seed_gen)
+    SameEncoderBoostrapTester(random_device &seed_gen, double _permit_error=0.01)
     {
         auto function = new T();
 
-        int dist_max = 100;
-        double permit_error = dist_max / 10;
+        int dist_max = 10;
+        double permit_error = _permit_error;
 
         init(function, seed_gen, dist_max, permit_error);
     }
@@ -22,7 +22,7 @@ public:
     bool test() override
     {
         double x = (double)dist(engine);
-        auto encoder = Encoder(-dist_max, dist_max, 31);
+        auto encoder = Encoder(-dist_max, dist_max, 32);
 
         auto c = encrypt(x, encoder);
 
@@ -34,7 +34,7 @@ public:
         auto function = T();
         auto expected = function.run(x);
 
-        return assert_test(res, expected);
+        return assert_test(expected, res);
     }
 
     ~SameEncoderBoostrapTester() { delete function; }
@@ -45,10 +45,10 @@ class DirectCustomTestVectorTester : public AbstructBootstrapTester {
 public:
     std::array<std::array<lvl1param::T, lvl1param::n>, 2> testvector;
 
-    DirectCustomTestVectorTester(random_device &seed_gen)
+    DirectCustomTestVectorTester(random_device &seed_gen, double _permit_error=0.01)
     {
         int dist_max = 100;
-        double permit_error = dist_max / 10;
+        double permit_error = _permit_error;
 
         init(function, seed_gen, dist_max, permit_error);
     }
@@ -58,7 +58,7 @@ public:
         auto relu = ReLUFunction<lvl1param>();
 
         double x = (double)dist(engine);
-        auto encoder = Encoder(-dist_max, dist_max, 31);
+        auto encoder = Encoder(-dist_max, dist_max, 32);
 
         auto c = encrypt(x, encoder);
 
@@ -84,17 +84,19 @@ int main()
 
     auto identity_tester =
         SameEncoderBoostrapTester<IdentityFunction<TFHEpp::lvl1param>>(
-            seed_gen);
+            seed_gen, 0.05);
     auto sigmoid_tester =
-        SameEncoderBoostrapTester<SigmoidFunction<TFHEpp::lvl1param>>(seed_gen);
+        SameEncoderBoostrapTester<SigmoidFunction<TFHEpp::lvl1param>>(seed_gen, 0.05);
     auto relu_tester =
-        SameEncoderBoostrapTester<ReLUFunction<TFHEpp::lvl1param>>(seed_gen);
+        SameEncoderBoostrapTester<ReLUFunction<TFHEpp::lvl1param>>(seed_gen, 0.05);
 
     auto direct_tester =
-        DirectCustomTestVectorTester<ReLUFunction<TFHEpp::lvl1param>>(seed_gen);
+        DirectCustomTestVectorTester<ReLUFunction<TFHEpp::lvl1param>>(seed_gen, 0.05);
 
     std::vector<AbstructBootstrapTester *> testers{
         &identity_tester, &sigmoid_tester, &relu_tester, &direct_tester};
+    //std::vector<AbstructBootstrapTester *> testers{
+    //    &identity_tester};
 
     test(testers);
 }

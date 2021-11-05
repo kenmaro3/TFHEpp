@@ -20,6 +20,14 @@ public:
     // bit precision including noise bit (lvl0param::T - bp is padding bit)
     // bp = (noise bit + plaintext precision bit)
 
+    double get_a(){return this->a;}
+    double get_b(){return this->b;}
+    double get_d(){return this->d;}
+    double get_half_d(){return this->half_d;}
+    double get_half(){return this->half;}
+    int get_bp(){return this->bp;}
+
+
     void print()
     {
         printf("=========================================\n");
