@@ -290,27 +290,39 @@ inline void HomGate(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
     GateBootstrapping(res, res, gk);
 }
 
-void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
-                  const Polynomial<lvl1param> &poly, const Encoder &encoder)
-
-{
-    PolyMul<lvl1param>(res[0], crypt[0], poly);
-    PolyMul<lvl1param>(res[1], crypt[1], poly);
-}
+struct lvl1MulParam {
+    using T = u_int64_t;
+    static constexpr std::uint32_t n = lvl1param::n;
+};
 
 void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
                   const array<double, lvl1param::n> &array,
                   const Encoder &encoder)
 
 {
-    std::array<lvl1param::T, lvl1param::n> encoded;
-    for (int i = 0; i < lvl1param::n; i++) {
-        // encoded[i] = encoder.encode(array[i]);
-        encoded[i] = array[i];
+    double one = encoder.encode(1);
+
+    std::array<lvl1MulParam::T, lvl1MulParam::n> encoded;
+    TRLWE<lvl1MulParam> resl, cryptl;
+
+    for (int i = 0; i < lvl1MulParam::n; i++) {
+        encoded[i] = encoder.encode(array[i]);
     }
 
-    Polynomial<lvl1param> poly = encoded;
-    HomMULTCONST(res, crypt, poly, encoder);
+    for (int i = 0; i < lvl1MulParam::n; i++) {
+        cryptl[0][i] = crypt[0][i];
+        cryptl[1][i] = crypt[1][i];
+    }
+
+    Polynomial<lvl1MulParam> poly = encoded;
+
+    PolyMul<lvl1MulParam>(resl[0], cryptl[0], poly);
+    PolyMul<lvl1MulParam>(resl[1], cryptl[1], poly);
+
+    for (int i = 0; i < lvl1MulParam::n; i++) {
+        res[0][i] = resl[0][i] / one;
+        res[1][i] = resl[1][i] / one;
+    }
 }
 
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
