@@ -108,8 +108,15 @@ public:
 
     lvl0param::T encode(double x) const
     {
-        assert(x >= this->a);
-        assert(x <= this->b);
+        //assert(x >= this->a);
+        //assert(x <= this->b);
+        if (x < this->a){
+            //printf("Warning:  x=%f, encoder (%f, %f)\n", x, this->a, this->b);
+            x = 0;
+        }else if (x > b){
+            //printf("Warning:  x=%f, encoder (%f, %f)\n", x, this->a, this->b);
+            x = 0;
+        }
         return dtotx((x - this->a) / this->d);
     }
 
