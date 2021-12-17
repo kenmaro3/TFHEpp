@@ -25,11 +25,9 @@ void print_vec(vector<double> x){
 
 void mul_test()
 {
-    printf("hello, world\n");
-
     double border = 20;
-    TFHEpp::Encoder encoder(border*(-1), border, 32);
-    TFHEpp::Encoder target_encoder(border*(-1), border, 32);
+    TFHEpp::Encoder encoder(-border, border, 32);
+    TFHEpp::Encoder target_encoder(-border, border, 32);
 
     // generate a random key
     std::unique_ptr<TFHEpp::SecretKey> sk =
@@ -54,8 +52,9 @@ void mul_test()
 
     vector<double> res_ratio;
     vector<double> res_time;
-    for(int i=0; i<100; i++){
-        printf("\n%d th iteration==================", i);
+    for(int i=0; i<100; i++)
+    {
+        // printf("\n%d th iteration==================", i);
         c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
             x, TFHEpp::lvl0param::alpha, sk->key.lvl0, encoder);
         c2 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
@@ -67,10 +66,11 @@ void mul_test()
 
         double d3 = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c3, sk->key.lvl0,
                                                                 target_encoder);
-        
-        double ratio = abs(d3-x*x2)/border;
+        int expect = x * x2;
+
+        double ratio = abs(d3 - expect / border);
         res_ratio.emplace_back(ratio);
-        res_time.emplace_back(stop-start);
+        res_time.emplace_back(stop - start);
     }
     printf("\n\n");
     print_vec(res_ratio);
@@ -79,6 +79,5 @@ void mul_test()
 
 int main()
 {
-    printf("hello, world\n");
     mul_test();
 }

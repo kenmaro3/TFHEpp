@@ -1,0 +1,101 @@
+import itertools
+import time
+
+PARAM_PATH = '/workspace/thirdparties/TFHEpp/include/params/128bit.hpp'
+EXEC_PATH = '/workspace/thirdparties/TFHEpp/build/tutorial'
+RESULT_PATH = './result.csv'
+RANGE = list(range(0, 3))
+
+class Param:
+    def __init__(self, N=10, l=4, Bg=6, t=3, base_bit=8):
+        self.N = N
+        self.l = l
+        self.Bg = Bg
+        self.t = t
+        self.base_bit = base_bit
+
+    def __str__(self):
+        return f'{self.N}=N, l={self.l}, Bg={self.Bg}, t={self.t}, base_bit={self.base_bit}'
+
+
+def get_new_source(param: Param):
+    lvl1param = f"""
+    struct lvl1param {{
+        static constexpr std::uint32_t nbit = {param.N}; //dimension must be a power of 2 for ease of polynomial multiplication.
+        static constexpr std::uint32_t n = 1<<nbit; //dimension
+        static constexpr std::uint32_t l = {param.l};
+        static constexpr std::uint32_t Bgbit = {param.Bg};
+        static constexpr std::uint32_t Bg = 1<<Bgbit;
+        static const inline double alpha = std::pow(2.0, -25); //fresh noise
+        using T = uint32_t; //Torus representation
+        static constexpr T mu = 1U << 29;
+    }};
+    """
+
+    lvl10param = f"""
+    // Key Switching parameters
+    struct lvl10param {{
+        static constexpr std::uint32_t t = {param.t}; //number of addition in keyswitching
+        static constexpr std::uint32_t basebit = {param.base_bit}; //how many bit should be encrypted in keyswitching key
+        static const inline double alpha = lvl0param::alpha; //key noise
+        using domainP = lvl1param;
+        using targetP = lvl0param;
+    }};
+    """
+
+    return (lvl1param, lvl10param)
+
+
+def file_body_replace(a, b):
+    with open(PARAM_PATH, 'r') as f:
+        body = f.read()
+    
+    body = body.replace(a, b)
+
+    with open(PARAM_PATH, 'w') as f:
+        f.write(body)
+
+def loop(param):    
+    print(param)
+    (lvl1param,lvl10param) = get_new_source(param)
+
+    file_body_replace('// FMT_LVL1PARAM', lvl1param)
+    file_body_replace('// FMT_LVL01PARAM', lvl10param)
+
+    !make -j
+    r = !./akakou_bench
+    r = '\n'.join(r)
+
+    with open(RESULT_PATH, 'a') as f:
+        f.write(str(param))
+        f.write(r)
+        f.write('\n\n')
+
+    file_body_replace(lvl1param, '// FMT_LVL1PARAM')
+    file_body_replace(lvl10param, '// FMT_LVL01PARAM')
+
+    time.sleep(0.5)
+    return r
+
+def main():
+    %cd {EXEC_PATH}
+
+    default = Param()
+    result = []
+
+    for N, l, Bg, t, base_bit in itertools.product(RANGE, RANGE, RANGE, RANGE, RANGE):
+        N += default.N
+        l += default.l
+        Bg += default.Bg
+        t += default.t
+        base_bit += default.base_bit
+
+        param = Param(N=N, l=l, Bg=Bg, t=t, base_bit=base_bit)
+        r = loop(param)
+        print(r)
+
+        result.append(r)
+    
+    print(result)
+
+main()
