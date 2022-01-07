@@ -1,12 +1,12 @@
 import itertools
 import time
 
-#PARAM_PATH = '/workspace/thirdparties/TFHEpp/include/params/128bit.hpp'
-#EXEC_PATH = '/workspace/thirdparties/TFHEpp/build/tutorial'
-PARAM_PATH = '/from_local/include/params/128bit.hpp'
-EXEC_PATH = '/from_local/build/tutorial'
+PARAM_PATH = '/workspace/thirdparties/TFHEpp/include/params/CGGI16.hpp'
+EXEC_PATH = '/workspace/thirdparties/TFHEpp/build/tutorial'
+# PARAM_PATH = '/from_local/include/params/CGGI16.hpp'
+# EXEC_PATH = '/from_local/build/tutorial'
 RESULT_PATH = './result.csv'
-RANGE = list(range(0, 1))
+RANGE = list(range(0, 3))
 
 class Param:
     def __init__(self, N=10, l=4, Bg=6, t=3, base_bit=8):
@@ -21,29 +21,54 @@ class Param:
 
 
 def get_new_source(param: Param):
-    lvl1param = f"""
-    struct lvl1param {{
-        static constexpr std::uint32_t nbit = {param.N}; //dimension must be a power of 2 for ease of polynomial multiplication.
-        static constexpr std::uint32_t n = 1<<nbit; //dimension
-        static constexpr std::uint32_t l = {param.l};
-        static constexpr std::uint32_t Bgbit = {param.Bg};
-        static constexpr std::uint32_t Bg = 1<<Bgbit;
-        static const inline double alpha = std::pow(2.0, -25); //fresh noise
-        using T = uint32_t; //Torus representation
-        static constexpr T mu = 1U << 29;
-    }};
-    """
+    # lvl1param = f"""
+    # struct lvl1param {{
+    #     static constexpr std::uint32_t nbit = {param.N}; //dimension must be a power of 2 for ease of polynomial multiplication.
+    #     static constexpr std::uint32_t n = 1<<nbit; //dimension
+    #     static constexpr std::uint32_t l = {param.l};
+    #     static constexpr std::uint32_t Bgbit = {param.Bg};
+    #     static constexpr std::uint32_t Bg = 1<<Bgbit;
+    #     static const inline double alpha = std::pow(2.0, -25); //fresh noise
+    #     using T = uint32_t; //Torus representation
+    #     static constexpr T mu = 1U << 29;
+    # }};
+    # """
 
-    lvl10param = f"""
-    // Key Switching parameters
+    # lvl10param = f"""
+    # // Key Switching parameters
+    # struct lvl10param {{
+    #     static constexpr std::uint32_t t = {param.t}; //number of addition in keyswitching
+    #     static constexpr std::uint32_t basebit = {param.base_bit}; //how many bit should be encrypted in keyswitching key
+    #     static const inline double alpha = lvl0param::alpha; //key noise
+    #     using domainP = lvl1param;
+    #     using targetP = lvl0param;
+    # }};
+    # """
+
+    lvl1param = f'''
+    struct lvl1param {{
+        static constexpr std::uint32_t nbit = {param.N};
+        static constexpr std::uint32_t n = 1 << nbit;
+        static constexpr std::uint32_t l =  {param.l};
+        static constexpr std::uint32_t Bgbit =  {param.Bg};
+        static constexpr std::uint32_t Bg = 1 << Bgbit;
+        static const inline double alpha = 3.73e-9;
+        using T = uint32_t;
+        static constexpr T mu = 1U << 29;
+        static constexpr uint32_t plain_modulus = 2;
+        static constexpr double delta =
+            static_cast<double>(1ULL << std::numeric_limits<T>::digits) /
+            plain_modulus;
+    }};'''
+
+    lvl10param = f'''
     struct lvl10param {{
-        static constexpr std::uint32_t t = {param.t}; //number of addition in keyswitching
-        static constexpr std::uint32_t basebit = {param.base_bit}; //how many bit should be encrypted in keyswitching key
-        static const inline double alpha = lvl0param::alpha; //key noise
+        static constexpr std::uint32_t t =  {param.t};
+        static constexpr std::uint32_t basebit = {param.base_bit};
+        static const inline double alpha = lvl0param::alpha;
         using domainP = lvl1param;
         using targetP = lvl0param;
-    }};
-    """
+    }};'''
 
     return (lvl1param, lvl10param)
 
@@ -58,7 +83,7 @@ def file_body_replace(a, b):
         f.write(body)
 
 def loop(param):    
-    print(param)
+    # print(param)
     (lvl1param,lvl10param) = get_new_source(param)
 
     file_body_replace('// FMT_LVL1PARAM', lvl1param)
