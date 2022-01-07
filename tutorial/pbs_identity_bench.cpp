@@ -30,6 +30,11 @@ void pbs_test()
     double res_time_gkgen;
     int res_size_lut, res_size_ctxt;
 
+    printf("N=%d, l=%d, Bg=%d, t=%d, base_bit=%d\n", TFHEpp::lvl1param::nbit,
+           TFHEpp::lvl1param::l, TFHEpp::lvl1param::Bgbit,
+           TFHEpp::lvl10param::t, 
+           TFHEpp::lvl10param::basebit);
+
     res_size_lut = TFHEpp::lvl1param::n * 2;
     res_size_ctxt = TFHEpp::lvl0param::n + 1;
 
