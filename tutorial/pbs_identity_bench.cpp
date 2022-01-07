@@ -30,7 +30,7 @@ void pbs_test()
     double res_time_gkgen;
     int res_size_lut, res_size_ctxt;
 
-    printf("N=%d, l=%d, Bg=%d, t=%d, base_bit=%d\n", TFHEpp::lvl1param::nbit,
+    printf("\nN=%d, l=%d, Bg=%d, t=%d, base_bit=%d\n", TFHEpp::lvl1param::nbit,
            TFHEpp::lvl1param::l, TFHEpp::lvl1param::Bgbit,
            TFHEpp::lvl10param::t, 
            TFHEpp::lvl10param::basebit);
@@ -69,7 +69,7 @@ void pbs_test()
     vector<double> res_time;
     vector<double> res_time_without_ks;
     vector<double> res_lut_gen;
-    for(int i=0; i<10; i++)
+    for(int i=0; i<100; i++)
     {
         // printf("\n%d th iteration==================", i);
         c1 = TFHEpp::tlweSymEncodeEncrypt<TFHEpp::lvl0param>(
@@ -111,7 +111,6 @@ void pbs_test()
         res_ratio.emplace_back(ratio);
         res_ratio_without_ks.emplace_back(ratio_without_ks);
     }
-    printf("\n\n");
     printf("%d\n", res_size_ctxt);
     printf("%d\n", res_size_lut);
     printf("%f\n", res_time_skgen);

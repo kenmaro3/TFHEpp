@@ -5,7 +5,7 @@ set(CMAKE_CXX_FLAGS "-march=native -O3 -g -funroll-loops -Wall -Wextra -pedantic
 
 OPTION(USE_80BIT_SECURITY "Use 80bit security parameter(faster)" ON)
 OPTION(USE_CGGI19 "Use the parameter set proposed in CGGI19" OFF)
-OPTION(ENABLE_TEST "Build tests" ON)
+OPTION(ENABLE_TEST "Build tests" OFF)
 OPTION(ENABLE_BENCHMARK "Build benchmarks" OFF)
 OPTION(ENABLE_TUTORIAL "Build tutorial" ON)
 

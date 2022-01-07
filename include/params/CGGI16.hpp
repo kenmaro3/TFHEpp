@@ -12,7 +12,21 @@ struct lvl0param {
     static constexpr T mu = 1U << 29;
 };
 
-// FMT_LVL1PARAM 
+
+    struct lvl1param {
+        static constexpr std::uint32_t nbit = 10;
+        static constexpr std::uint32_t n = 1 << nbit;
+        static constexpr std::uint32_t l =  4;
+        static constexpr std::uint32_t Bgbit =  6;
+        static constexpr std::uint32_t Bg = 1 << Bgbit;
+        static const inline double alpha = 3.73e-9;
+        using T = uint32_t;
+        static constexpr T mu = 1U << 29;
+        static constexpr uint32_t plain_modulus = 2;
+        static constexpr double delta =
+            static_cast<double>(1ULL << std::numeric_limits<T>::digits) /
+            plain_modulus;
+    }; 
 
 
 struct lvl2param {
@@ -28,7 +42,14 @@ struct lvl2param {
     static constexpr double delta = mu;
 };
 
-// FMT_LVL01PARAM
+
+    struct lvl10param {
+        static constexpr std::uint32_t t =  5;
+        static constexpr std::uint32_t basebit = 12;
+        static const inline double alpha = lvl0param::alpha;
+        using domainP = lvl1param;
+        using targetP = lvl0param;
+    };
 
 
 
