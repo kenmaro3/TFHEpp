@@ -1,10 +1,12 @@
 import itertools
 import time
 
-PARAM_PATH = '/workspace/thirdparties/TFHEpp/include/params/128bit.hpp'
-EXEC_PATH = '/workspace/thirdparties/TFHEpp/build/tutorial'
+#PARAM_PATH = '/workspace/thirdparties/TFHEpp/include/params/128bit.hpp'
+#EXEC_PATH = '/workspace/thirdparties/TFHEpp/build/tutorial'
+PARAM_PATH = '/from_local/include/params/128bit.hpp'
+EXEC_PATH = '/from_local/build/tutorial'
 RESULT_PATH = './result.csv'
-RANGE = list(range(0, 3))
+RANGE = list(range(0, 1))
 
 class Param:
     def __init__(self, N=10, l=4, Bg=6, t=3, base_bit=8):
@@ -15,7 +17,7 @@ class Param:
         self.base_bit = base_bit
 
     def __str__(self):
-        return f'{self.N}=N, l={self.l}, Bg={self.Bg}, t={self.t}, base_bit={self.base_bit}'
+        return f'N={self.N}, l={self.l}, Bg={self.Bg}, t={self.t}, base_bit={self.base_bit}'
 
 
 def get_new_source(param: Param):
@@ -63,7 +65,7 @@ def loop(param):
     file_body_replace('// FMT_LVL01PARAM', lvl10param)
 
     !make -j
-    r = !./akakou_bench
+    r = !./pbs_identity_bench
     r = '\n'.join(r)
 
     with open(RESULT_PATH, 'a') as f:
@@ -83,14 +85,18 @@ def main():
     default = Param()
     result = []
 
-    for N, l, Bg, t, base_bit in itertools.product(RANGE, RANGE, RANGE, RANGE, RANGE):
-        N += default.N
-        l += default.l
-        Bg += default.Bg
-        t += default.t
-        base_bit += default.base_bit
+    for N_index, l_index, Bg_index, t_index, base_bit_index in itertools.product(RANGE, RANGE, RANGE, RANGE, RANGE):
+        N = default.N + N_index * 2
+        l = default.l + l_index * 2
+        Bg = default.Bg + Bg_index * 2
+        t = default.t + t_index * 2
+        base_bit = default.base_bit + base_bit_index * 2
 
         param = Param(N=N, l=l, Bg=Bg, t=t, base_bit=base_bit)
+
+        print("\n\n")
+        print(f"======="*10)
+        print(param)
         r = loop(param)
         print(r)
 

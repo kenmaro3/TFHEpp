@@ -42,7 +42,7 @@ void ProgrammableBootstrappingTLWE2TRLWEFFT(
         modSwitchFromTorusSpecificTwoBP<P>(
             temp1[P::domainP::n], encoder_domain.bp, encoder_target.bp);
 
-    function.custom_test_vector(acc, bara, encoder_domain, encoder_target);
+    function.custom_test_vector(acc, encoder_domain, encoder_target);
 
     TRLWE<typename P::targetP> temp;
     if (bara != 0) {

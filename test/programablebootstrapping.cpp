@@ -62,7 +62,7 @@ public:
 
         auto c = encrypt(x, encoder);
 
-        relu.custom_test_vector(testvector, c[1], encoder, encoder);
+        relu.custom_test_vector(testvector, encoder, encoder);
         auto direct = DirectCustomTestVector<lvl1param>(testvector);
 
         ProgrammableBootstrapping(c, c, *gk(encoder).get(), encoder, encoder,

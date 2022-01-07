@@ -26,7 +26,7 @@ class CustomTestVector {
 public:
     virtual void custom_test_vector(
         std::array<std::array<typename P::T, P::n>, 2> &testvector,
-        const uint32_t bara, Encoder &encoder_domain,
+        Encoder &encoder_domain,
         Encoder &encoder_target) = 0;
 };
 
@@ -37,7 +37,7 @@ public:
 
     void custom_test_vector(
         std::array<std::array<typename P::T, P::n>, 2> &testvector,
-        const uint32_t bara, Encoder &encoder_domain, Encoder &encoder_target)
+        Encoder &encoder_domain, Encoder &encoder_target)
     {
         testvector[0] = {};
         for (int i = 0; i < P::n; i++) {
@@ -88,7 +88,7 @@ public:
 
     void custom_test_vector(
         std::array<std::array<typename P::T, P::n>, 2> &testvector,
-        const uint32_t bara, Encoder &encoder_domain, Encoder &encoder_target)
+        Encoder &encoder_domain, Encoder &encoder_target)
     {
         testvector = this->testvector;
     }
