@@ -305,7 +305,7 @@ void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
 
     std::array<lvl1MulParam::T, lvl1MulParam::n> encoded;
     TRLWE<lvl1MulParam> resl, cryptl;
-    TRLWE<lvl1param> tmp;
+    TRLWE<lvl1param> tmp, tmp1;
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
         encoded[i] = array[i];
@@ -318,15 +318,13 @@ void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
 
     Polynomial<lvl1MulParam> poly = encoded;
 
-    PolyMul<lvl1MulParam>(resl[0], cryptl[0], poly);
-    PolyMul<lvl1MulParam>(resl[1], cryptl[1], poly);
+    PolyMulForMul<lvl1MulParam>(resl[0], cryptl[0], poly, zeroCrypt[0]);
+    PolyMulForMul<lvl1MulParam>(resl[1], cryptl[1], poly, zeroCrypt[1]);
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
-        tmp[0][i] = resl[0][i];
-        tmp[1][i] = resl[1][i];
+        res[0][i] = resl[0][i];
+        res[1][i] = resl[1][i];
     }
-
-    TFHEpp::HomADD(res, tmp, zeroCrypt);
 }
 
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,

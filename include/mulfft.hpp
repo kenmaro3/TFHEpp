@@ -108,14 +108,31 @@ inline void PolyMul(Polynomial<P> &res, const Polynomial<P> &a,
             res[i] = ri;
         }
     }
-    else
-        static_assert(false_v<typename P::T>, "Undefined PolyMul!");
+    else static_assert(false_v<typename P::T>, "Undefined PolyMul!");
 }
 
 template <class P>
-inline void PolyMulRescaleUnsigned(Polynomial<P> &res,
-                                   const UnsignedPolynomial<P> &a,
-                                   const UnsignedPolynomial<P> &b)
+inline void PolyMulForMul(Polynomial<P> &res, const Polynomial<P> &a,
+                          const Polynomial<P> &b,
+                          const Polynomial<P> &zero)
+{
+    for (int i = 0; i < P::n; i++) {
+        typename P::T ri = zero[i];
+        
+        for (int j = 0; j <= i; j++)
+                ri += a[j] * b[i - j];
+
+        for (int j = i + 1; j < P::n; j++)
+            ri -= a[j] * b[P::n + i - j];
+
+        res[i] = ri;
+    }
+};
+
+template <class P>
+inline void PolyMulRescaleUnsigned(Polynomial<P> & res,
+                                    const UnsignedPolynomial<P> &a,
+                                    const UnsignedPolynomial<P> &b)
 {
     if constexpr (std::is_same_v<typename P::T, uint32_t>) {
         PolynomialInFD<P> ffta, fftb;
@@ -129,19 +146,21 @@ inline void PolyMulRescaleUnsigned(Polynomial<P> &res,
 }
 
 template <class P>
-inline void PolyMulNaieve(Polynomial<P> &res, const Polynomial<P> &a,
-                          const Polynomial<P> &b)
+inline void PolyMulNaieve(Polynomial<P> & res, const Polynomial<P> &a,
+                            const Polynomial<P> &b)
 {
     for (int i = 0; i < P::n; i++) {
         typename P::T ri = 0;
         for (int j = 0; j <= i; j++)
-            ri += static_cast<typename std::make_signed<typename P::T>::type>(
-                      a[j]) *
-                  b[i - j];
+            ri +=
+                static_cast<typename std::make_signed<typename P::T>::type>(
+                    a[j]) *
+                b[i - j];
         for (int j = i + 1; j < P::n; j++)
-            ri -= static_cast<typename std::make_signed<typename P::T>::type>(
-                      a[j]) *
-                  b[P::n + i - j];
+            ri -=
+                static_cast<typename std::make_signed<typename P::T>::type>(
+                    a[j]) *
+                b[P::n + i - j];
         res[i] = ri;
     }
 }
