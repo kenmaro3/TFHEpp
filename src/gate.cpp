@@ -297,21 +297,23 @@ struct lvl1MulParam {
 
 void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
                   const array<double, lvl1param::n> &array,
-                  const Encoder &encoder)
+                  const TRLWE<lvl1param> &zeroCrypt, const Encoder &encoder)
 
 {
     double one = encoder.encode(1);
+    double zero = encoder.encode(0);
 
     std::array<lvl1MulParam::T, lvl1MulParam::n> encoded;
     TRLWE<lvl1MulParam> resl, cryptl;
+    TRLWE<lvl1param> tmp;
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
-        encoded[i] = encoder.encode(array[i]);
+        encoded[i] = array[i];
     }
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
-        cryptl[0][i] = crypt[0][i];
-        cryptl[1][i] = crypt[1][i];
+        cryptl[0][i] = crypt[0][i] - zero;
+        cryptl[1][i] = crypt[1][i] - zero;
     }
 
     Polynomial<lvl1MulParam> poly = encoded;
@@ -320,9 +322,11 @@ void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
     PolyMul<lvl1MulParam>(resl[1], cryptl[1], poly);
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
-        res[0][i] = resl[0][i] / one;
-        res[1][i] = resl[1][i] / one;
+        tmp[0][i] = resl[0][i] ;
+        tmp[1][i] = resl[1][i] ;
     }
+
+    TFHEpp::HomADD(res, tmp, zeroCrypt);
 }
 
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
