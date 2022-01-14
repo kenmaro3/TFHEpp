@@ -17,7 +17,9 @@ void mul_test()
         c_double_array, d_double_array, zero_double_array;
     TFHEpp::Polynomial<TFHEpp::lvl1param> a_int_array, b_int_array, c_int_array;
 
-    TFHEpp::Encoder encoder(-40., 40., 31);
+    TFHEpp::Encoder encoder(-20., 40., 31);
+
+    encoder.print();
 
     a_double_array.fill(0);
     b_double_array.fill(0);
@@ -29,11 +31,11 @@ void mul_test()
     for (int i = 0; i < 3; i++) {
         a_double_array[i] = i + 1;
         b_double_array[i] = i + 1;
-        // b_double_array[i] = -(i + 1);
+        b_double_array[i] = -(i + 1);
 
         a_int_array[i] = i + 1;
         b_int_array[i] = i + 1;
-        // b_int_array[i] = -(i + 1);
+        b_int_array[i] = -(i + 1);
     }
 
     TRLWE<TFHEpp::lvl1param> zero, c1, c2, c3;

@@ -17,6 +17,7 @@ public:
     double half;
     double half_d;
     int bp;
+    double max;
     // bit precision including noise bit (lvl0param::T - bp is padding bit)
     // bp = (noise bit + plaintext precision bit)
 
@@ -51,6 +52,8 @@ public:
     Encoder(double a, double b, int bp)
     {
         this->a = a;
+        this->max = b;
+
         double tmp = b - a;
         this->b = b + tmp;
         this->d = this->b - this->a;
@@ -121,9 +124,20 @@ public:
 
     double decode(const lvl0param::T x)
     {
+        //// NOTE: The decoding algorism is WIP(Working In Progress)
+        printf(
+            "\n[warn] NOTE: The decoding algorism is WIP(Working In "
+            "Progress)\n\n");
         double tmp_0_1 = this->txtod(x);
         tmp_0_1 = tmp_0_1 - floor(tmp_0_1);
-        return tmp_0_1 * this->d + this->a;
+        double tmp_0_2 = tmp_0_1 * this->d + this->a;
+
+        int reverse = (int)(tmp_0_2 / half_d) % 2;
+        double tmp_0_3 = fmod(tmp_0_2, half_d);
+
+        if (reverse) return a + tmp_0_3;
+        else if (tmp_0_3 > max) return tmp_0_3 - max;
+        else return tmp_0_3;
     }
 };
 }  // namespace TFHEpp
