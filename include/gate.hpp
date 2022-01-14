@@ -84,8 +84,8 @@ void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
 
 void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
                   const array<double, lvl1param::n> &array,
-                  const Encoder &encoder);
+                  const TRLWE<lvl1param> &zeroCrypt, const Encoder &encoder);
 
 void HomNAND(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
-             const TLWE<lvl0param> &cb, const GateKey &gk);
+                 const TLWE<lvl0param> &cb, const GateKey &gk);
 }  // namespace TFHEpp
