@@ -291,7 +291,7 @@ inline void HomGate(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
 }
 
 struct lvl1MulParam {
-    using T = u_int64_t;
+    using T = u_int32_t;
     static constexpr std::uint32_t n = lvl1param::n;
 };
 
@@ -300,7 +300,7 @@ void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
                   const TRLWE<lvl1param> &zeroCrypt, const Encoder &encoder)
 
 {
-    double one = encoder.encode(1);
+    // double one = encoder.encode(1);
     double zero = encoder.encode(0);
 
     std::array<lvl1MulParam::T, lvl1MulParam::n> encoded;
@@ -322,8 +322,8 @@ void HomMULTCONST(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &crypt,
     PolyMul<lvl1MulParam>(resl[1], cryptl[1], poly);
 
     for (int i = 0; i < lvl1MulParam::n; i++) {
-        tmp[0][i] = resl[0][i] ;
-        tmp[1][i] = resl[1][i] ;
+        tmp[0][i] = resl[0][i];
+        tmp[1][i] = resl[1][i];
     }
 
     TFHEpp::HomADD(res, tmp, zeroCrypt);
