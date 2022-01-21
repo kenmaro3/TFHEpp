@@ -17,7 +17,7 @@ void mul_test()
         c_double_array, d_double_array, zero_double_array;
     TFHEpp::Polynomial<TFHEpp::lvl1param> a_int_array, b_int_array, c_int_array;
 
-    TFHEpp::Encoder encoder(-20., 40., 31);
+    TFHEpp::Encoder encoder(-20., 20., 31);
 
     encoder.print();
 
@@ -38,7 +38,7 @@ void mul_test()
         b_int_array[i] = -(i + 1);
     }
 
-    TRLWE<TFHEpp::lvl1param> zero, c1, c2, c3;
+    TRLWE<TFHEpp::lvl1param> zero, c1, c2, c3, c4, c5;
 
     c1 = TFHEpp::trlweSymEncodeEncrypt<TFHEpp::lvl1param>(
         a_double_array, TFHEpp::lvl1param::alpha, key.lvl1, encoder);
@@ -63,6 +63,19 @@ void mul_test()
     puts("---- mul expected ----");
     TFHEpp::PolyMul<TFHEpp::lvl1param>(c_int_array, a_int_array, b_int_array);
     for (int i = 0; i < 10; i++) printf("%d\n", c_int_array[i]);
+
+    puts("---- mul and sum result(decrypted) ----");
+
+    TFHEpp::HomADD(c3, c2, c1);
+    TFHEpp::HomADD(c4, c3, zero);
+
+    d_double_array =
+        TFHEpp::trlweSymDecryptDecode<TFHEpp::lvl1param>(c4, key.lvl1, encoder);
+
+    for (int i = 0; i < 10; i++) printf("%lf\n", d_double_array[i]);
+
+    puts("---- mul expected ----");
+    for (int i = 0; i < 10; i++) printf("%d\n", c_int_array[i] + a_int_array[i]);
 }
 
 int main()

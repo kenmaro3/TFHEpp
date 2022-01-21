@@ -64,7 +64,7 @@ array<double, P::n> trlweSymDecryptDecode(const TRLWE<P> &c, const Key<P> &key,
     for (int i = 0; i < P::n; i++) phase[i] -= mulres[i];
 
     array<double, P::n> p;
-    for (int i = 0; i < P::n; i++) p[i] = encoder.decode(phase[i]);
+    for (int i = 0; i < P::n; i++) p[i] = encoder.decode_with_mult_option(phase[i], i<10);
     return p;
 }
 #define INST(P)                                            \
