@@ -180,17 +180,55 @@ INST(lvl1param);
 #undef INST
 
 template <class P>
+TRGSW<P> trgswSymEncryptFake(const Polynomial<P> &p, const double alpha,
+                         const Key<P> &key, const Encoder &encoder)
+{
+    constexpr std::array<typename P::T, P::l> h = hgen<P>();
+
+    TRGSW<P> trgsw;
+    //for (TRLWE<P> &trlwe : trgsw) trlwe;
+    for (int i = 0; i < P::l; i++) {
+        for (int j = 0; j < P::n; j++) {
+            //trgsw[i][0][j] = static_cast<typename P::T>(encoder.encode(p[j])) * h[i];
+            //trgsw[i + P::l][1][j] = static_cast<typename P::T>(encoder.encode(p[j])) * h[i];
+            trgsw[i][0][j] = static_cast<typename P::T>(p[j]) * h[i];
+            trgsw[i + P::l][1][j] = static_cast<typename P::T>(p[j]) * h[i];
+        }
+    }
+    return trgsw;
+}
+#define INST(P)                           \
+    template TRGSW<P> trgswSymEncryptFake<P>( \
+        const Polynomial<P> &p, const double alpha, const Key<P> &key, const Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
+#undef INST
+
+template <class P>
+TRGSWFFT<P> trgswfftSymEncryptFake(const Polynomial<P> &p, const double alpha,
+                               const Key<P> &key, const Encoder &encoder)
+{
+    TRGSW<P> trgsw = trgswSymEncryptFake<P>(p, alpha, key, encoder);
+    return ApplyFFT2trgsw<P>(trgsw);
+}
+#define INST(P)                                 \
+    template TRGSWFFT<P> trgswfftSymEncryptFake<P>( \
+        const Polynomial<P> &p, const double alpha, const Key<P> &key, const Encoder &encoder)
+TFHEPP_EXPLICIT_INSTANTIATION_TRLWE(INST)
+#undef INST
+
+
+template <class P>
 TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
                          const Key<P> &key)
 {
     constexpr std::array<typename P::T, P::l> h = hgen<P>();
 
     TRGSW<P> trgsw;
-    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(alpha, key);
+    //for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(alpha, key);
     for (int i = 0; i < P::l; i++) {
         for (int j = 0; j < P::n; j++) {
-            trgsw[i][0][j] += static_cast<typename P::T>(p[j]) * h[i];
-            trgsw[i + P::l][1][j] += static_cast<typename P::T>(p[j]) * h[i];
+            trgsw[i][0][j] + static_cast<typename P::T>(p[j]) * h[i];
+            trgsw[i + P::l][1][j] + static_cast<typename P::T>(p[j]) * h[i];
         }
     }
     return trgsw;

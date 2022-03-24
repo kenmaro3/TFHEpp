@@ -39,6 +39,8 @@ void HomMULTCONSTINT(array<uint64_t, lvl0param::n + 1> &res,
                      const array<uint64_t, lvl0param::n + 1> &ca, const int &b,
                      Encoder &encoder);
 void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                      const double &b, Encoder &encoder);
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                       const double &b, Encoder &encoder, int mult_bp,
                       double mult_max);
 void HomMULTCONST01(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,

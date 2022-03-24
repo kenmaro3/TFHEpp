@@ -38,7 +38,9 @@ void mul_test()
 
     double d = TFHEpp::tlweSymDecryptDecode<TFHEpp::lvl0param>(c3, sk->key.lvl0,
                                                                target_encoder);
-    printf("result: %lf\n", d);
+
+    printf("raw_result   : %lf\n", x * x2);
+    printf("cipher_result: %lf\n", d);
 }
 
 int main()

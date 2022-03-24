@@ -190,6 +190,39 @@ int find_index(double x, vector<double> y)
 }
 
 void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
+                      const double &b, Encoder &encoder)
+{
+
+    lvl0param::T prev_0 = encoder.encode(0.);
+    double b_abs_decimal = abs(b);
+
+    //lvl0param::T index = Encoder::dtotx(b_abs_decimal, mult_max, mult_bp);
+    lvl0param::T index = encoder.encode(b_abs_decimal);
+
+    for (int i = 0; i <= lvl0param::n; i++) {
+        lvl0param::T ca_minus_0;
+        if (i == lvl0param::n) {
+            ca_minus_0 = ca[i] - prev_0;
+        }
+        else {
+            ca_minus_0 = ca[i];
+        }
+        res[i] = ca_minus_0 * index;
+    }
+    // encoder.update(encoder.a * mult_max, encoder.b * mult_max,
+    //                encoder.bp + mult_bp);
+
+    lvl0param::T after_0 = encoder.encode(0.);
+    res[lvl0param::n] += after_0;
+
+    if (b >= 0) {
+    }
+    else {
+        HomMULTCONSTINT(res, res, -1, encoder);
+    }
+}
+
+void HomMULTCONSTREAL(TLWE<lvl0param> &res, const TLWE<lvl0param> &ca,
                       const double &b, Encoder &encoder, int mult_bp,
                       double mult_max)
 {

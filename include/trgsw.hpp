@@ -50,9 +50,16 @@ template <class P>
 TRGSWNTT<P> TRGSW2NTT(const TRGSW<P> &trgsw);
 
 template <class P>
+TRGSW<P> trgswSymEncryptFake(const Polynomial<P> &p, const double alpha,
+                         const Key<P> &key, const Encoder &encoder);
+
+template <class P>
 TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
                          const Key<P> &key);
 
+template <class P>
+TRGSWFFT<P> trgswfftSymEncryptFake(const Polynomial<P> &p, const double alpha,
+                               const Key<P> &key, const Encoder &encoder);
 template <class P>
 TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const double alpha,
                                const Key<P> &key);
